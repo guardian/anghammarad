@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Anghammarad Lambda and SNS topic
+
+Parameters:
+  ArtifactLocation:
+    Description: S3 path to the Lambda's artifact
+    Type: String
+  Stage:
+    Description: Application stage (e.g. PROD, CODE)
+    Type: String
+    AllowedValues:
+    - PROD
+    - CODE
+    - DEV
+
+Resources:
+  ProcessorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: !Sub Process Anghammarad ${Stage} notifications
+      Handler: com.gu.anghammarad.Main::handleRequest
+      Runtime: java8
+      MemorySize: 512
+      Timeout: 30
+      CodeUri: !Sub s3://${ArtifactLocation}
+      Events:
+        Notification:
+          Type: SNS
+          Properties:
+            Topic: !Ref NotificationTopic
+
+  NotificationTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: !Sub Anghammarad ${Stage} notification topic
+
+Outputs:
+  TopicName:
+    Value: !GetAtt NotificationTopic.TopicName

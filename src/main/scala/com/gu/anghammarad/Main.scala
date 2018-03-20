@@ -2,25 +2,31 @@ package com.gu.anghammarad
 
 import com.amazonaws.services.lambda.runtime.events.SNSEvent
 import com.amazonaws.services.lambda.runtime.{Context, RequestHandler}
-import collection.JavaConverters._
+
+import scala.util.Try
 
 
 class Main extends RequestHandler[SNSEvent, Unit] {
   override def handleRequest(input: SNSEvent, context: Context): Unit = {
-    val msgs = input.getRecords.asScala.map { snsRecord =>
-      val msgId = snsRecord.getSNS.getMessageId
-
-      val msgType = snsRecord.getSNS.getType
-      val source = snsRecord.getEventSource
-      val timestamp = snsRecord.getSNS.getTimestamp
-
-      val subject = snsRecord.getSNS.getSubject
-      val message = snsRecord.getSNS.getMessage
-      val msgAttrs = snsRecord.getSNS.getMessageAttributes.asScala.map { case (key, msgAttr) =>
-        s"$key [${msgAttr.getType}]: ${msgAttr.getValue}"
-      }.mkString("{", ",", "}")
-      s"$msgId ($msgType $source $timestamp): [$subject] $message $msgAttrs"
+    // parse raw notification
+    val rawNotification: RawNotification = ???
+    val result = Main.run(rawNotification)
+    // log error
+  }
+}
+object Main {
+  def run(rawNotification: RawNotification): Try[Unit] = {
+    // parse input into Notification
+    val notification: Notification = ???
+    // resolve targets
+    val contacts: List[Contact] = ???
+    // DECIDE!!!
+    val filteredContacts: List[Contact] = ???
+    // send
+    filteredContacts.map { contact =>
+      val message = Logic.channelMessage(contact, notification)
+      Logic.send(contact, message)
     }
-    context.getLogger.log(msgs.mkString("{", ",", "}"))
+    ???
   }
 }

@@ -1,0 +1,57 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Anghammarad Lambda and SNS topic
+
+Parameters:
+  ArtifactBucket:
+    Description: S3 bucket containing the Lambda's artifact
+    Type: String
+  ArtifactLocation:
+    Description: S3 path to the Lambda's artifact
+    Type: String
+  Stage:
+    Description: Application stage (e.g. PROD, CODE)
+    Type: String
+    AllowedValues:
+    - PROD
+    - CODE
+    - DEV
+
+Mappings:
+  Constants:
+    Stack:
+      Value: deploy
+    App:
+      Value: anghammarad
+
+Resources:
+  ProcessorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub anghammarad-${Stage}
+      Description: !Sub Process Anghammarad ${Stage} notifications
+      Handler: com.gu.anghammarad.Main::handleRequest
+      Runtime: java8
+      MemorySize: 512
+      Timeout: 30
+      CodeUri:
+        Bucket: !Ref ArtifactBucket
+        Key: !Ref ArtifactLocation
+      Events:
+        Notification:
+          Type: SNS
+          Properties:
+            Topic: !Ref NotificationTopic
+      Tags:
+        Stack: !FindInMap [ Constants, Stack, Value ]
+        App: !FindInMap [ Constants, App, Value ]
+        Stage: !Ref Stage
+
+  NotificationTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: !Sub Anghammarad ${Stage} notification topic
+
+Outputs:
+  TopicName:
+    Value: !GetAtt NotificationTopic.TopicName

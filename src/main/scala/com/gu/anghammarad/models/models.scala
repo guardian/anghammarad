@@ -1,4 +1,4 @@
-package com.gu.anghammarad
+package com.gu.anghammarad.models
 
 import com.vladsch.flexmark.ast.Node
 
@@ -16,8 +16,7 @@ case class HangoutsChat(webhook: String) extends Contact
 
 
 case class Mapping(
-  targets: List[Target],
-  contacts: List[Contact]
+  mappings: List[(List[Target], List[Contact])]
 )
 
 case class Message(
@@ -31,10 +30,4 @@ case class Notification(
   target: List[Target],
   subject: String,
   message: Node
-)
-case class RawNotification(
-  sourceSystem: String,
-  target: String,
-  subject: String,
-  message: String
 )

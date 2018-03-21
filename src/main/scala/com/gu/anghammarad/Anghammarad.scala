@@ -5,11 +5,7 @@ import scala.util.Try
 
 
 object Anghammarad {
-  def run(notification: Notification): Try[Unit] = {
-    // parse input into Notification
-    val notification: Notification = ???
-    val config: List[Mapping] = ???
-
+  def run(notification: Notification, config: List[Mapping]): Try[Unit] = {
     // resolve targets
     val contacts: List[Contact] = Contacts.resolveTargetContacts(notification.target, config)
     // get contacts for desired channels (if possible)

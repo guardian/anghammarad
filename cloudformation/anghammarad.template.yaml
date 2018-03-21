@@ -33,19 +33,20 @@ Resources:
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
-          Principal:
-            Service:
-            - lambda.amazonaws.com
-          Action:
-          - sts:AssumeRole
-          Path: /
-          Policies:
-            - PolicyName: LambdaPolicy
-            PolicyDocument:
-              Statement:
-                - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+            - sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: LambdaPolicy
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
                 Action:
                 - ses:SendEmail
+                Resource: "*"
 
   ProcessorFunction:
     Type: AWS::Serverless::Function

@@ -1,0 +1,32 @@
+{
+  "emailDomain": "example.com",
+  "mappings": [
+    {
+      "target": {
+        "Stack": "stack1"
+      },
+      "contacts": {
+        "email": "stack1.email",
+        "hangouts": "stack1.room"
+      }
+    },
+    {
+      "target": {
+        "Stack": "stack1",
+        "App": "app1"
+      },
+      "contacts": {
+        "email": "app1.email",
+        "hangouts": "app1.room"
+      }
+    },
+    {
+      "target": {
+        "AwsAccount": "123456789"
+      },
+      "contacts": {
+        "email": "awsAccount.email"
+      }
+    }
+  ]
+}

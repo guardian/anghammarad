@@ -25,11 +25,34 @@ Mappings:
       Value: anghammarad
 
 Resources:
+
+  AnghammaradRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub Anghammarad-${Stage}
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+          Path: /
+          Policies:
+            - PolicyName: LambdaPolicy
+            PolicyDocument:
+              Statement:
+                - Effect: Allow
+                Action:
+                - ses:SendEmail
+
   ProcessorFunction:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub anghammarad-${Stage}
       Description: !Sub Process Anghammarad ${Stage} notifications
+      Role: !GetAtt AnghammaradRole.Arn
       Handler: com.gu.anghammarad.Main::handleRequest
       Runtime: java8
       MemorySize: 512

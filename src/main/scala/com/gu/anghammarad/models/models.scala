@@ -9,25 +9,39 @@ case class Stage(stage: String) extends Target
 case class App(app: String) extends Target
 case class AwsAccount(awsAccount: String) extends Target
 
+sealed trait Channel
+case object Email extends Channel
+case object HangoutsChat extends Channel
 
 sealed trait Contact
-case class Email(address: String) extends Contact
-case class HangoutsChat(webhook: String) extends Contact
-
+case class EmailAddress(address: String) extends Contact
+case class HangoutsRoom(webhook: String) extends Contact
 
 case class Mapping(
-  mappings: List[(List[Target], List[Contact])]
+  targets: List[Target],
+  contacts: List[Contact]
 )
 
-case class Message(
+sealed trait Message
+case class EmailMessage(
   subject: String,
-  contents: String
-)
-
+  plainText: String,
+  html: String
+) extends Message
+case class HangoutMessage(
+  cardJson: String
+) extends Message
 
 case class Notification(
   sourceSystem: String,
+  channel: Channel,
   target: List[Target],
   subject: String,
-  message: Node
+  message: String,
+  actions: List[Action]
+)
+
+case class Action(
+  cta: String,
+  url: String
 )

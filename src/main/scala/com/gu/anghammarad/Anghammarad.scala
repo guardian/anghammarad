@@ -4,6 +4,7 @@ import com.amazonaws.services.simpleemail.model.SendEmailResult
 import com.gu.anghammarad.models._
 import scala.util.Try
 
+
 object Anghammarad {
   def run(notification: Notification): Try[Unit] = {
     // parse input into Notification
@@ -14,7 +15,7 @@ object Anghammarad {
     val filteredContacts: List[Contact] = ???
     // send
     filteredContacts.map { contact =>
-      val message = channelMessage(contact, notification)
+      val message = channelMessage(notification.channel, notification)
       send(contact, message)
     }
     ???
@@ -24,20 +25,22 @@ object Anghammarad {
     ???
   }
 
-  def channelMessage(contact: Contact, notification: Notification): Message = {
-    contact match {
-      case Email(_) =>
-        ???
-      case HangoutsChat(_) =>
+  def channelMessage(channel: Channel, notification: Notification): Message = {
+    channel match {
+      case Email =>
+        val contents = notification.message
+        EmailMessage(notification.subject, contents, ???)
+      case HangoutsChat =>
+        HangoutMessage(???)
         ???
     }
   }
 
   def send(contact: Contact, message: Message): Try[SendEmailResult] = {
     contact match {
-      case Email(address) =>
-        EmailService.sendEmail(address, message)
-      case HangoutsChat(webhook) =>
+      case e: EmailAddress =>
+        ???
+      case HangoutsRoom(webhook) =>
         ???
     }
   }

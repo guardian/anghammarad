@@ -1,6 +1,5 @@
 package com.gu.anghammarad
 
-import com.amazonaws.services.simpleemail.model.SendEmailResult
 import com.gu.anghammarad.models._
 import scala.util.Try
 
@@ -36,7 +35,7 @@ object Anghammarad {
     }
   }
 
-  def send(contact: Contact, message: Message): Try[SendEmailResult] = {
+  def send(contact: Contact, message: Message): Try[Unit] = {
     contact match {
       case e: EmailAddress =>
         ???

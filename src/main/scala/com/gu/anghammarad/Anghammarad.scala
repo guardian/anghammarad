@@ -1,7 +1,7 @@
 package com.gu.anghammarad
 
+import com.amazonaws.services.simpleemail.model.SendEmailResult
 import com.gu.anghammarad.models._
-
 import scala.util.Try
 
 object Anghammarad {
@@ -33,10 +33,10 @@ object Anghammarad {
     }
   }
 
-  def send(contact: Contact, message: Message): Try[Unit] = {
+  def send(contact: Contact, message: Message): Try[SendEmailResult] = {
     contact match {
       case Email(address) =>
-        ???
+        EmailService.sendEmail(address, message)
       case HangoutsChat(webhook) =>
         ???
     }

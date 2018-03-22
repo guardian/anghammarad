@@ -15,6 +15,6 @@ deployments:
       bucket: deploy-tools-dist
       prefixStack: false
       functionNames:
-        anghammarad-
+      - anghammarad-
     dependencies:
     - cfn

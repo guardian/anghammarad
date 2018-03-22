@@ -6,6 +6,7 @@ import org.scalatest.{EitherValues, FreeSpec, Matchers}
 
 import scala.io.Source
 
+
 class SerializationTest extends FreeSpec with Matchers with EitherValues {
 
   "parseAllMappings" - {

@@ -1,0 +1,13 @@
+stacks:
+- deploy
+regions:
+- eu-west-1
+deployments:
+  anghammarad:
+    type: aws-lambda
+    parameters:
+      fileName: anghammarad.jar
+      bucket: deploy-tools-dist
+      prefixStack: false
+      functionNames:
+      - anghammarad-

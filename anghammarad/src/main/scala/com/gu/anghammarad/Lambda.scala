@@ -2,7 +2,7 @@ package com.gu.anghammarad
 
 import com.amazonaws.services.lambda.runtime.events.SNSEvent
 import com.amazonaws.services.lambda.runtime.{Context, RequestHandler}
-import com.gu.anghammarad.models.{Mapping, Notification, Serialization}
+import com.gu.anghammarad.models._
 
 
 class Lambda extends RequestHandler[SNSEvent, Unit] {

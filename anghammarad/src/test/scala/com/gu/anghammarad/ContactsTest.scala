@@ -1,9 +1,9 @@
 package com.gu.anghammarad
 
-import org.scalatest.{EitherValues, FreeSpec, Matchers}
-import Contacts._
+import com.gu.anghammarad.Contacts._
+import com.gu.anghammarad.models._
 import com.gu.anghammarad.testutils.TryValues
-import models._
+import org.scalatest.{FreeSpec, Matchers}
 
 
 class ContactsTest extends FreeSpec with Matchers with TryValues {

@@ -1,11 +1,13 @@
 package com.gu.anghammarad
 
-import com.amazonaws.auth.{AWSCredentialsProviderChain, EnvironmentVariableCredentialsProvider}
 import com.amazonaws.auth.profile.ProfileCredentialsProvider
+import com.amazonaws.auth.{AWSCredentialsProviderChain, EnvironmentVariableCredentialsProvider}
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.simpleemail.model.{Body, Content, Destination, SendEmailRequest, SendEmailResult, Message => AwsMessage}
 import com.amazonaws.services.simpleemail.{AmazonSimpleEmailService, AmazonSimpleEmailServiceClientBuilder}
+
 import scala.util.Try
+
 
 object EmailService {
 

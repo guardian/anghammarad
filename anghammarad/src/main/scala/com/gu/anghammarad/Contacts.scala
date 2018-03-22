@@ -1,9 +1,9 @@
 package com.gu.anghammarad
 
+import com.gu.anghammarad.AnghammaradException.Fail
 import com.gu.anghammarad.models._
 
-import scala.util.{Failure, Success, Try}
-import AnghammaradException.Fail
+import scala.util.{Success, Try}
 
 
 object Contacts {

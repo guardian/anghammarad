@@ -8,7 +8,7 @@ import com.vladsch.flexmark.html.HtmlRenderer
 import com.vladsch.flexmark.parser.Parser
 import com.vladsch.flexmark.util.options.MutableDataSet
 
-import collection.JavaConverters._
+import scala.collection.JavaConverters._
 
 
 object Messages {

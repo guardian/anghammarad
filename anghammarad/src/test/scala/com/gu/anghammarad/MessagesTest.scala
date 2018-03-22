@@ -1,7 +1,7 @@
 package com.gu.anghammarad
 
+import com.gu.anghammarad.Messages._
 import org.scalatest.{FreeSpec, Matchers}
-import Messages._
 
 
 class MessagesTest extends FreeSpec with Matchers {

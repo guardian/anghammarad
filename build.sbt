@@ -24,6 +24,7 @@ lazy val anghammarad = project
     riffRaffPackageType := assembly.value,
     riffRaffUploadArtifactBucket := Option("riffraff-artifact"),
     riffRaffUploadManifestBucket := Option("riffraff-builds"),
+    riffRaffManifestProjectName := "tools::anghammarad",
     libraryDependencies ++= dependencies,
     riffRaffArtifactResources += (file("cloudformation/anghammarad.template.yaml"), "cfn/cfn.yaml"),
     scalacOptions ++= compilerOptions

@@ -47,7 +47,7 @@ class ContactsTest extends FreeSpec with Matchers with TryValues {
       contactsForMessages(List(Email -> email), Nil).isFailure shouldEqual true
     }
 
-    "returns a failure if we could only find a contct for one channel" in {
+    "returns a failure if we could only find a contact for one channel" in {
       contactsForMessages(
         List(Email -> email, HangoutsChat -> hangoutMessage),
         List(Email -> emailAddress)

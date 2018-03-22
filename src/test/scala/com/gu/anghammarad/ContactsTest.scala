@@ -158,7 +158,6 @@ class ContactsTest extends FreeSpec with Matchers with TryValues {
         Mapping(List(Stack("stack"), Stage("PROD")), List(emailAddress))
       )
       resolveTargetContacts(targets, mappings).isFailure shouldEqual true
-      resolveTargetContacts(targets, mappings).isFailure shouldEqual true
     }
   }
 

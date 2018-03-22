@@ -13,7 +13,152 @@ class ContactsTest extends FreeSpec with Matchers with TryValues {
   val hangoutsRoom = HangoutsRoom("webhook")
 
   "resolveTargetContacts" - {
-    // TODO think about how this should work
+    "resolves an exact match" in {
+      val targets = List(App("app"))
+      val mappings = List(Mapping(
+        List(App("app")),
+        List(emailAddress)
+      ))
+      resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
+    }
+
+    "fails to resolve ambiguous exact matches" in {
+      val targets = List(App("app"))
+      val mappings = List(
+        Mapping(List(App("app")), List(emailAddress)),
+        Mapping(List(App("app")), List(hangoutsRoom))
+      )
+      resolveTargetContacts(targets, mappings).isFailure shouldEqual true
+    }
+
+    "finds multiple contacts for an exact match" in {
+      val targets = List(App("app"))
+      val mappings = List(Mapping(
+        List(App("app")),
+        List(emailAddress, hangoutsRoom)
+      ))
+      resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress, hangoutsRoom)
+    }
+
+    "finds exact match among other mappings" in {
+      val targets = List(App("app1"))
+      val mappings = List(
+        Mapping(List(App("app1")), List(emailAddress)),
+        Mapping(List(Stack("stack1"), App("app2")), List(hangoutsRoom))
+      )
+      resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
+    }
+
+    "chooses exact match over a partial match" in {
+      val targets = List(App("app1"))
+      val mappings = List(
+        Mapping(List(App("app1")), List(emailAddress)),
+        Mapping(List(Stack("stack1"), App("app1")), List(hangoutsRoom))
+      )
+      resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
+    }
+
+    "resolves a more complex exact match" in {
+      val targets = List(Stack("stack"), Stage("stage"), App("app"))
+      val mappings = List(Mapping(
+        List(Stack("stack"), Stage("stage"), App("app")),
+        List(emailAddress)
+      ))
+      resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
+    }
+
+    "chooses a complex exact match over a simple partial match" in {
+      val targets = List(Stack("stack"), Stage("stage"), App("app"))
+      val mappings = List(
+        Mapping(List(Stack("stack"), Stage("stage"), App("app")), List(emailAddress)),
+        Mapping(List(App("app")), List(hangoutsRoom))
+      )
+      resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
+    }
+
+    "resolves a partial match" in {
+      val targets = List(App("app"))
+      val mappings = List(
+        Mapping(List(Stack("stack"), App("app")), List(emailAddress))
+      )
+      resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
+    }
+
+    "resolves a complex partial match" in {
+      val targets = List(Stack("stack"), App("app"))
+      val mappings = List(
+        Mapping(List(Stack("stack"), App("app"), AwsAccount("123456789")), List(emailAddress))
+      )
+      resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
+    }
+
+    "fails to resolve from ambiguous partial matches" in {
+      val targets = List(Stack("stack"))
+      val mappings = List(
+        Mapping(List(Stack("stack"), App("app1")), List(emailAddress)),
+        Mapping(List(Stack("stack"), App("app2")), List(emailAddress))
+      )
+      resolveTargetContacts(targets, mappings).isFailure shouldEqual true
+    }
+
+    "fails to resolve from ambiguous complex partial matches" in {
+      val targets = List(Stack("stack"), Stage("PROD"))
+      val mappings = List(
+        Mapping(List(Stack("stack"), Stage("PROD"), App("app1")), List(emailAddress)),
+        Mapping(List(Stack("stack"), Stage("PROD"), App("app2")), List(emailAddress))
+      )
+      resolveTargetContacts(targets, mappings).isFailure shouldEqual true
+    }
+
+    "fails to resolve from ambiguous partial matches of different complexity (does not pick the closest match)" in {
+      val targets = List(Stack("stack"))
+      val mappings = List(
+        Mapping(List(Stack("stack"), App("app1")), List(emailAddress)),
+        Mapping(List(AwsAccount("123456789"), Stack("stack"), App("app2")), List(emailAddress))
+      )
+      resolveTargetContacts(targets, mappings).isFailure shouldEqual true
+    }
+
+    "cannot resolve from empty mappings" in {
+      val targets = List(Stack("stack"))
+      val mappings = Nil
+      resolveTargetContacts(targets, mappings).isFailure shouldEqual true
+    }
+
+    "fails to resolve a missing target" in {
+      val targets = List(AwsAccount("111111111"))
+      val mappings = List(
+        Mapping(List(Stack("stack"), App("app1")), List(emailAddress)),
+        Mapping(List(Stack("stack"), App("app2")), List(emailAddress)),
+        Mapping(List(AwsAccount("123456789")), List(emailAddress))
+      )
+      resolveTargetContacts(targets, mappings).isFailure shouldEqual true
+    }
+
+    "fails to resolve a partially missing target" in {
+      val targets = List(Stack("stack"), App("app1"))
+      val mappings = List(
+        Mapping(List(App("app1")), List(emailAddress))
+      )
+      resolveTargetContacts(targets, mappings).isFailure shouldEqual true
+    }
+
+    "fails to resolve a complex partially missing target" in {
+      val targets = List(Stack("stack"), Stage("PROD"), App("app1"))
+      val mappings = List(
+        Mapping(List(Stack("stack"), App("app1")), List(emailAddress))
+      )
+      resolveTargetContacts(targets, mappings).isFailure shouldEqual true
+    }
+
+    "fails to resolve partially missing target (doubly so when the partial matches are ambiguous)" in {
+      val targets = List(Stack("stack"), Stage("PROD"), App("app1"))
+      val mappings = List(
+        Mapping(List(Stack("stack"), App("app1")), List(emailAddress)),
+        Mapping(List(Stack("stack"), Stage("PROD")), List(emailAddress))
+      )
+      resolveTargetContacts(targets, mappings).isFailure shouldEqual true
+    }
   }
 
   "resolveContactsForChannels" - {

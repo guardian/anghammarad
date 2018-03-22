@@ -10,8 +10,24 @@ object Contacts {
   /**
     * Gets all available contacts for this target, from configuration.
     */
-  def resolveTargetContacts(target: List[Target], config: List[Mapping]): Try[List[Contact]] = {
-    ???
+  def resolveTargetContacts(targets: List[Target], mappings: List[Mapping]): Try[List[Contact]] = {
+    mappings.filter(_.targets == targets) match {
+      case Nil =>
+        mappings.filter { case Mapping(mappingTargets, _) =>
+          targets.toSet subsetOf mappingTargets.toSet
+        } match {
+          case Nil =>
+            Fail(s"No contacts found for $targets")
+          case exactMatch :: Nil =>
+            Success(exactMatch.contacts)
+          case _ =>
+            Fail(s"Cannot resolve contacts from ambiguous partial matches for $targets")
+        }
+      case exactMatch :: Nil =>
+        Success(exactMatch.contacts)
+      case _ =>
+        Fail(s"Found multiple exact matches while resolving contacts for $targets")
+    }
   }
 
   /**
@@ -46,9 +62,10 @@ object Contacts {
         }
       } yield message -> contact
     }
-    if (resolved.size < channelMessages.size)
+    if (resolved.size < channelMessages.size) {
       Fail(s"Could not find contacts for messages on the requested channels messages($channelMessages), contacts($channelContacts)")
-    else
+    } else {
       Success(resolved)
+    }
   }
 }

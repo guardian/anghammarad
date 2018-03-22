@@ -1,4 +1,4 @@
-package com.gu.anghammarad
+package com.gu.anghammarad.messages
 
 import com.gu.anghammarad.models._
 import com.vladsch.flexmark.ast.Node

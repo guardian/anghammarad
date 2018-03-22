@@ -1,6 +1,6 @@
 package com.gu.anghammarad
 
-import com.gu.anghammarad.Messages._
+import com.gu.anghammarad.messages.Messages._
 import org.scalatest.{FreeSpec, Matchers}
 
 

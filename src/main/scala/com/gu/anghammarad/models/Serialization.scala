@@ -19,7 +19,7 @@ object Serialization {
 
     allMappings.fold(
       err => Failure(err),
-      suc => Success(suc)
+      mappings => Success(mappings)
     )
   }
 
@@ -35,11 +35,11 @@ object Serialization {
 
   private[models] def parseTargets(jsonTargets: Json): List[Target] = {
     def parseTarget(key: String, value: String): Option[Target] = {
-      key.toLowerCase match {
-        case "stack" => Some(Stack(value))
-        case "stage" => Some(Stage(value))
-        case "app" => Some(App(value))
-        case "awsaccount" => Some(AwsAccount(value))
+      key match {
+        case "Stack" => Some(Stack(value))
+        case "Stage" => Some(Stage(value))
+        case "App" => Some(App(value))
+        case "AwsAccount" => Some(AwsAccount(value))
         case _ => None
       }
     }
@@ -55,7 +55,7 @@ object Serialization {
 
   private[models] def parseContacts(jsonContacts: Json): List[Contact] = {
     def parseContact(key: String, value: String): Option[Contact] = {
-      key.toLowerCase match {
+      key match {
         case "email" => Some(EmailAddress(value))
         case "hangouts" => Some(HangoutsRoom(value))
         case _ => None

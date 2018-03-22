@@ -2,11 +2,11 @@ package com.gu.anghammarad.models
 
 import io.circe.Json
 import io.circe.parser._
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.{EitherValues, FreeSpec, Matchers}
 
 import scala.io.Source
 
-class SerializationTest extends FreeSpec with Matchers {
+class SerializationTest extends FreeSpec with Matchers with EitherValues {
 
   "parseAllMappings" - {
 
@@ -31,20 +31,8 @@ class SerializationTest extends FreeSpec with Matchers {
     "will return a failure if the string is not valid json" in {
       val brokenJsonString =
         """{
-          |"emailDomain":"example.com",
+          |"emailDomain",
           |"mappings":[
-          |{
-          |"target":{"Stack":"stack1"},
-          |"contacts":{"email":"stack1.email","hangouts":"stack1.room"}
-          |},
-          |{
-          |"target":"Stack":"stack1","App":"app1"},
-          |"contacts":{"email":"app1.email","hangouts":"app1.room"}
-          |},
-          |{
-          |"target":{"AwsAccount":"123456789"},
-          |"contacts":{"email":"awsAccount.email"}
-          |}
           |]}""".stripMargin
 
       Serialization.parseAllMappings(brokenJsonString).isFailure shouldEqual true
@@ -55,17 +43,9 @@ class SerializationTest extends FreeSpec with Matchers {
     "will parse valid json into a complete mapping" in {
       val testJson = parse(
         """{"target":{"AwsAccount":"123456789"},"contacts":{"email":"awsAccount.email"}}"""
-      ).getOrElse(Json.Null)
+      ).right.value
 
-      Serialization.parseMapping(testJson).getOrElse(Json.Null) shouldEqual Mapping(List(AwsAccount("123456789")), List(EmailAddress("awsAccount.email")))
-    }
-
-    "will match regardless of case" in {
-      val testJson = parse(
-        """{"target":{"AwsAccount":"123456789"},"contacts":{"email":"awsAccount.email"}}"""
-      ).getOrElse(Json.Null)
-
-      Serialization.parseMapping(testJson).getOrElse(Json.Null) shouldEqual Mapping(List(AwsAccount("123456789")), List(EmailAddress("awsAccount.email")))
+      Serialization.parseMapping(testJson).right.value shouldEqual Mapping(List(AwsAccount("123456789")), List(EmailAddress("awsAccount.email")))
     }
   }
 
@@ -73,15 +53,7 @@ class SerializationTest extends FreeSpec with Matchers {
     "will correctly return the contacts" in {
       val testJson = parse(
         """{"email":"stack.email","hangouts":"stack.room"}"""
-      ).getOrElse(Json.Null)
-
-      Serialization.parseContacts(testJson) shouldEqual List(EmailAddress("stack.email"), HangoutsRoom("stack.room"))
-    }
-
-    "will match regardless of case" in {
-      val testJson = parse(
-        """{"email":"stack.email","Hangouts":"stack.room"}"""
-      ).getOrElse(Json.Null)
+      ).right.value
 
       Serialization.parseContacts(testJson) shouldEqual List(EmailAddress("stack.email"), HangoutsRoom("stack.room"))
     }
@@ -92,11 +64,10 @@ class SerializationTest extends FreeSpec with Matchers {
   }
 
   "parseTargets" - {
-    val testJson: Json = parse(
-      """{"stack":"stack-1","app":"app-1"}"""
-    ).getOrElse(Json.Null)
-
     "will correctly return the targets" in {
+      val testJson: Json = parse(
+        """{"Stack":"stack-1","App":"app-1"}"""
+      ).right.value
       Serialization.parseTargets(testJson) shouldEqual List(Stack("stack-1"), App("app-1"))
     }
 

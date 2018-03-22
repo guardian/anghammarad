@@ -11,5 +11,3 @@ deployments:
       prefixStack: false
       functionNames:
       - anghammarad-
-    dependencies:
-    - cfn

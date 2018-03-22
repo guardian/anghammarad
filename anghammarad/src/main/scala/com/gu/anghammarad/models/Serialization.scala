@@ -1,5 +1,7 @@
 package com.gu.anghammarad.models
 
+import com.amazonaws.services.lambda.runtime.events.SNSEvent
+import com.gu.anghammarad.AnghammaradException.Fail
 import com.gu.anghammarad.Enrichments._
 import io.circe.Decoder.Result
 import io.circe._
@@ -9,6 +11,51 @@ import scala.util.{Failure, Success, Try}
 
 
 object Serialization {
+
+    def parseAllNotifications(snsEvent: SNSEvent): Try[List[Notification]] = {
+      ???
+    }
+
+  private[models] def parseNotification(subject: String, content: Json): Try[Notification] = {
+    val hCursor = content.hcursor
+    val parsingResult = for {
+      sourceSystem <- hCursor.downField("sender").as[String]
+      rawTargets <- hCursor.downField("target").as[Json]
+      rawChannel <- hCursor.downField("channel").as[String]
+      rawActions <- hCursor.downField("actions").as[List[Json]]
+      message <- hCursor.downField("message").as[String]
+      channel <- parseChannel(rawChannel).toEither
+      targets = parseTargets(rawTargets)
+      actions <- rawActions.traverseT(parseAction).toEither
+    } yield Notification(sourceSystem, channel, targets, subject, message, actions)
+
+    parsingResult.fold(
+      err => Failure(err),
+      notification => Success(notification)
+    )
+  }
+
+  private[models] def parseChannel(channel: String): Try[RequestedChannel] = {
+    channel match {
+      case "email" => Success(Email)
+      case "hangouts" => Success(HangoutsChat)
+      case "all" => Success(All)
+      case _ => Fail(s"Cannot parse RequestedChannel")
+    }
+  }
+
+  private[models] def parseAction(json: Json): Try[Action] = {
+    val hCursor = json.hcursor
+    val parsingResult = for {
+      cta <- hCursor.downField("cta").as[String]
+      url <- hCursor.downField("url").as[String]
+    } yield Action(cta, url)
+
+    parsingResult.fold(
+      err => Failure(err),
+      action => Success(action)
+    )
+  }
 
   def parseAllMappings(jsonStr: String): Try[List[Mapping]] = {
     val allMappings = for {

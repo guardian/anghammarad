@@ -9,8 +9,55 @@ import scala.io.Source
 
 class SerializationTest extends FreeSpec with Matchers with EitherValues {
 
-  "parseAllMappings" - {
+  "parseNotification" - {
+    val validJsonString = Source.fromURL(getClass.getResource("/notification.json")).mkString
+    val testJson = parse(validJsonString).right.value
 
+    "will parse valid json into a complete notification" in {
+      val expectedResult = Notification(
+        "Terry Pratchett",
+        Email,
+        List(Stack("postal-service"), App("clacks-overhead")),
+        "GNU Terry Pratchett",
+        "Words are important. And when there is a critical mass of them, they change the nature of the universe.",
+        List(Action("keep that name moving in the Overhead", "http://www.gnuterrypratchett.com/"))
+      )
+
+      Serialization.parseNotification("GNU Terry Pratchett", testJson).get shouldEqual expectedResult
+    }
+  }
+
+  "parseChannel" - {
+    "will correct determine the channel" in {
+      Serialization.parseChannel("email").get shouldEqual Email
+      Serialization.parseChannel("hangouts").get  shouldEqual HangoutsChat
+      Serialization.parseChannel("all").get  shouldEqual All
+    }
+
+    "will return a failure if no match is found" in {
+      Serialization.parseChannel("unknown").isFailure shouldEqual true
+    }
+  }
+
+  "parseAction" - {
+    "will correct parse an action from valid json" in {
+      val testJson = parse(
+        """{"cta": "keep that name moving in the Overhead","url": "http://www.gnuterrypratchett.com/"}"""
+      ).right.value
+
+      Serialization.parseAction(testJson).get shouldEqual Action("keep that name moving in the Overhead", "http://www.gnuterrypratchett.com/")
+    }
+
+    "will return a failure if either the cta or the url is unavailable" in {
+      val testJson = parse(
+        """{"cta": "keep that name moving in the Overhead"}"""
+      ).right.value
+
+      Serialization.parseAction(testJson).isFailure shouldEqual true
+    }
+  }
+
+  "parseAllMappings" - {
     "will parse all mappings when given a valid string" in {
       val validJsonString = Source.fromURL(getClass.getResource("/config.json")).mkString
 

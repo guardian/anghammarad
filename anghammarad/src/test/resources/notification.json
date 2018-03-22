@@ -1,0 +1,15 @@
+{
+  "sender": "Terry Pratchett",
+  "target": {
+    "Stack": "postal-service",
+    "App": "clacks-overhead"
+  },
+  "channel": "email",
+  "actions": [
+    {
+      "cta": "keep that name moving in the Overhead",
+      "url": "http://www.gnuterrypratchett.com/"
+    }
+  ],
+  "message": "Words are important. And when there is a critical mass of them, they change the nature of the universe."
+}

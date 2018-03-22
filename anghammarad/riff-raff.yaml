@@ -8,9 +8,6 @@ deployments:
     app: anghammarad
     parameters:
       templatePath: cfn.yaml
-    templateParameters:
-      ArtifactBucket: deploy-tools-dist
-      ArtifactLocation:
   anghammarad:
     type: aws-lambda
     parameters:

@@ -7,23 +7,23 @@ import scala.util.{Failure, Try}
 
 object SendMessages {
 
-  def sendAll(toSend: List[(Contact, Message)]): Try[Unit] = {
+  def sendAll(toSend: List[(Message, Contact)]): Try[Unit] = {
     toSend.map {
-      case (EmailAddress(address), message: EmailMessage) =>
-        sendEmail(address, message)
-      case (HangoutsRoom(webhook), message: HangoutMessage) =>
-        sendHangoutsMessage(webhook, message)
+      case (message: EmailMessage, EmailAddress(address)) =>
+        sendEmail(message, address)
+      case (message: HangoutMessage, HangoutsRoom(webhook)) =>
+        sendHangoutsMessage(message, webhook)
       case _ =>
         Failure(???)
     }
     ???
   }
 
-  def sendEmail(address: String, emailMessage: EmailMessage): Try[Unit] = {
+  def sendEmail(emailMessage: EmailMessage, address: String): Try[Unit] = {
     ???
   }
 
-  def sendHangoutsMessage(webhook: String, hangoutMessage: HangoutMessage): Try[Unit] = {
+  def sendHangoutsMessage(hangoutMessage: HangoutMessage, webhook: String): Try[Unit] = {
     ???
   }
 }

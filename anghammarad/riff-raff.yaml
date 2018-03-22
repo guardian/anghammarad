@@ -3,11 +3,6 @@ stacks:
 regions:
 - eu-west-1
 deployments:
-  cfn:
-    type: cloud-formation
-    app: anghammarad
-    parameters:
-      templatePath: cfn.yaml
   anghammarad:
     type: aws-lambda
     parameters:

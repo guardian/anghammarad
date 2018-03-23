@@ -12,6 +12,38 @@ import scala.util.{Failure, Success, Try}
 
 
 object Serialization {
+  def parseConfig(config: String): Try[Configuration] = {
+    for {
+      emailDomain <- parseEmailDomain(config)
+      emailSender <- parseEmailSender(config)
+      mappings <- parseAllMappings(config)
+    } yield Configuration(emailDomain, emailSender, mappings)
+  }
+
+  private def parseEmailDomain(jsonStr: String): Try[String] = {
+    val emailDomain = for {
+      json <- parse(jsonStr)
+      sender <- json.hcursor.downField("emailDomain").as[String]
+    } yield sender
+
+    emailDomain.fold(
+      err => Failure(err),
+      mappings => Success(mappings)
+    )
+  }
+
+  private def parseEmailSender(jsonStr: String): Try[String] = {
+    val emailSender = for {
+      json <- parse(jsonStr)
+      sender <- json.hcursor.downField("emailSender").as[String]
+    } yield sender
+
+    emailSender.fold(
+      err => Failure(err),
+      mappings => Success(mappings)
+    )
+  }
+
   def parseNotification(snsEvent: SNSEvent): Try[Notification] = {
     val maybeSns = snsEvent.getRecords.asScala.toList match {
       case singleRecord :: Nil => Success(singleRecord.getSNS)

@@ -18,6 +18,12 @@ sealed trait Contact
 case class EmailAddress(address: String) extends Contact
 case class HangoutsRoom(webhook: String) extends Contact
 
+case class Configuration(
+  emailDomain: String,
+  emailSender: String,
+  mappings: List[Mapping]
+)
+
 case class Mapping(
   targets: List[Target],
   contacts: List[Contact]

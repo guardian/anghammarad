@@ -104,7 +104,8 @@ class SerializationTest extends FreeSpec with Matchers with EitherValues {
       val expectedResult = List(
         Mapping(List(Stack("stack1")), List(EmailAddress("stack1.email"), HangoutsRoom("stack1.room"))),
         Mapping(List(Stack("stack1"), App("app1")), List(EmailAddress("app1.email"), HangoutsRoom("app1.room"))),
-        Mapping(List(AwsAccount("123456789")), List(EmailAddress("awsAccount.email")))
+        Mapping(List(AwsAccount("123456789")), List(EmailAddress("awsAccount.email"))),
+        Mapping(List(Stack("postal-service"), App("clacks-overhead")), List(EmailAddress("discworld.email")))
       )
 
       Serialization.parseAllMappings(validJsonString).get shouldEqual expectedResult

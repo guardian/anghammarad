@@ -22,6 +22,10 @@ lazy val `client-lib` = project
   .dependsOn(common)
   .settings(
     name := "client-lib",
+    libraryDependencies ++= Seq(
+      "com.amazonaws" % "aws-java-sdk-sns" % awsSdkVersion,
+      "org.scalatest" %% "scalatest" % "3.0.5" % Test
+    ),
     scalacOptions ++= compilerOptions
   )
 

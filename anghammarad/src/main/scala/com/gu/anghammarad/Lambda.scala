@@ -4,8 +4,6 @@ import com.amazonaws.services.lambda.runtime.events.SNSEvent
 import com.amazonaws.services.lambda.runtime.{Context, RequestHandler}
 import com.gu.anghammarad.models._
 
-import scala.util.Try
-
 
 class Lambda extends RequestHandler[SNSEvent, Unit] {
   override def handleRequest(input: SNSEvent, context: Context): Unit = {
@@ -14,7 +12,7 @@ class Lambda extends RequestHandler[SNSEvent, Unit] {
     val result = for {
       config <- Config.loadConfig(stage)
       mappings <- Serialization.parseAllMappings(config)
-      notification <- Try(???)
+      notification <- Serialization.parseNotification(input)
       _ <- Anghammarad.run(notification, mappings)
     } yield ()
 

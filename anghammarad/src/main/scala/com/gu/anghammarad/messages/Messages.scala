@@ -36,12 +36,28 @@ object Messages {
   }
 
   def emailMessage(notification: Notification): EmailMessage = {
-    val md = mdParser.parse(notification.message)
+    val actionPrefix =
+      s"""
+         |---------------------
+         |
+       """.stripMargin
+
+    val htmlActions = notification.actions.map { action =>
+      s"[${action.cta}](${action.url})"
+    }.mkString("\n\n")
+    val plainTextActions = notification.actions.map { action =>
+      s"${action.cta} - ${action.url}"
+    }.mkString("\n\n")
+
+    val finalMarkdown = notification.message + actionPrefix + htmlActions
+    val finalPlanText = notification.message + actionPrefix + plainTextActions
+
+    val md = mdParser.parse(finalMarkdown)
     val html = emailContents(md)
 
     EmailMessage(
       notification.subject,
-      notification.message,
+      finalPlanText,
       html
     )
   }
@@ -52,6 +68,45 @@ object Messages {
   }
 
   def hangoutMessage(notification: Notification): HangoutMessage = {
-    ???
+    def textButtonJson(action: Action) =
+      s"""
+         |{
+         |  "textButton": {
+         |    "text": "${action.cta}",
+         |    "onClick": {
+         |      "openLink": {
+         |        "url": "${action.url}"
+         |      }
+         |    }
+         |  }
+         |}
+       """.stripMargin
+    val json =
+      s"""
+         |{
+         |  "cards": [
+         |    {
+         |      "sections": [
+         |        {
+         |          "header": "${notification.subject}",
+         |          "widgets": [
+         |            {
+         |              "textParagraph": {
+         |                "text": "${notification.message}"
+         |              }
+         |            }
+         |          ]
+         |        },
+         |        {
+         |          "widgets": [
+         |            ${notification.actions.map(textButtonJson).mkString(",")}
+         |          ]
+         |        }
+         |      ]
+         |    }
+         |  ]
+         |}
+       """.stripMargin
+    HangoutMessage(json)
   }
 }

@@ -1,6 +1,6 @@
 package com.gu.anghammarad.messages
 
-import com.gu.anghammarad.common.models._
+import com.gu.anghammarad.models._
 import com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension
 import com.vladsch.flexmark.ext.tables.TablesExtension
 import com.vladsch.flexmark.html.HtmlRenderer

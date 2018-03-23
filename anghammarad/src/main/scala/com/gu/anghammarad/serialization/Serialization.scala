@@ -3,7 +3,7 @@ package com.gu.anghammarad.serialization
 import com.amazonaws.services.lambda.runtime.events.SNSEvent
 import com.gu.anghammarad.AnghammaradException.Fail
 import com.gu.anghammarad.Enrichments._
-import com.gu.anghammarad.common.models._
+import com.gu.anghammarad.models._
 import io.circe.Decoder.Result
 import io.circe._
 import io.circe.parser._

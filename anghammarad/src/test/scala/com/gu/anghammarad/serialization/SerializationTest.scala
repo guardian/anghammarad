@@ -2,7 +2,7 @@ package com.gu.anghammarad.serialization
 
 import com.amazonaws.services.lambda.runtime.events.SNSEvent
 import com.amazonaws.services.lambda.runtime.events.SNSEvent.SNSRecord
-import com.gu.anghammarad.common.models._
+import com.gu.anghammarad.models._
 import io.circe.Json
 import io.circe.parser._
 import org.scalatest.{EitherValues, FreeSpec, Matchers}

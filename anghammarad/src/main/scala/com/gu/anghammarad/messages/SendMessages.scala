@@ -2,7 +2,7 @@ package com.gu.anghammarad.messages
 
 import com.gu.anghammarad.AnghammaradException.Fail
 import com.gu.anghammarad.Enrichments._
-import com.gu.anghammarad.common.models._
+import com.gu.anghammarad.models._
 
 import scala.util.Try
 

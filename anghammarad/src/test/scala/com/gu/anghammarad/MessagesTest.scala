@@ -1,6 +1,6 @@
 package com.gu.anghammarad
 
-import com.gu.anghammarad.common.models._
+import com.gu.anghammarad.models._
 import com.gu.anghammarad.messages.Messages._
 import com.gu.anghammarad.messages.{HangoutsService, Messages}
 import io.circe.parser._

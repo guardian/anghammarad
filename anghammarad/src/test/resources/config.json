@@ -1,5 +1,6 @@
 {
-  "emailDomain": "example.com",
+  "emailDomain": "@example.com",
+  "emailSender": "sender@example.com",
   "mappings": [
     {
       "target": {
@@ -26,6 +27,15 @@
       },
       "contacts": {
         "email": "awsAccount.email"
+      }
+    },
+    {
+      "target": {
+        "Stack": "postal-service",
+        "App": "clacks-overhead"
+      },
+      "contacts": {
+        "email": "discworld.email"
       }
     }
   ]

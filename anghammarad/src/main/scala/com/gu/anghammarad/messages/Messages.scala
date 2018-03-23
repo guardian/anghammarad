@@ -75,8 +75,7 @@ object Messages {
       .replace("<p>", "").replace("</p>", "<br>")
 
     val json =
-      s"""
-         |{
+      s"""{
          |  "cards": [
          |    {
          |      "sections": [
@@ -89,16 +88,7 @@ object Messages {
          |              }
          |            }
          |          ]
-         |        },
-         |        {
-         |          "widgets": [
-         |            {
-         |              "buttons": [
-         |                ${notification.actions.map(textButtonJson).mkString(",")}
-         |              ]
-         |            }
-         |          ]
-         |        }
+         |        }${buttonJson(notification.actions)}
          |      ]
          |    }
          |  ]
@@ -107,9 +97,25 @@ object Messages {
     HangoutMessage(json)
   }
 
+  private def buttonJson(actions: List[Action]): String = {
+    if (actions.isEmpty) {
+      ""
+    } else {
+      s""",
+         |{
+         |  "widgets": [
+         |    {
+         |      "buttons": [
+         |        ${actions.map(textButtonJson).mkString(",")}
+         |      ]
+         |    }
+         |  ]
+         |}""".stripMargin
+    }
+  }
+
   private def textButtonJson(action: Action): String = {
-    s"""
-       |{
+    s"""{
        |  "textButton": {
        |    "text": ${Json.fromString(action.cta).noSpaces},
        |    "onClick": {

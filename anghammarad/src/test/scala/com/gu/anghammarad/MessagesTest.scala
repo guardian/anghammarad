@@ -1,14 +1,15 @@
 package com.gu.anghammarad
 
-import com.gu.anghammarad.models._
 import com.gu.anghammarad.messages.Messages._
 import com.gu.anghammarad.messages.{HangoutsService, Messages}
+import com.gu.anghammarad.models._
 import io.circe.parser._
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.{EitherValues, FreeSpec, Matchers}
+
 import scala.util.{Failure, Success}
 
 
-class MessagesTest extends FreeSpec with Matchers {
+class MessagesTest extends FreeSpec with Matchers with EitherValues {
   "emailMessage" - {
     "plain text" - {
       "sets the subject" in {
@@ -99,6 +100,17 @@ class MessagesTest extends FreeSpec with Matchers {
           case Left(err) => throw err
         }
       }
+
+      "includes buttons for actions" in {
+        val message = hangoutMessage(notification)
+        val json = parse(message.cardJson).right.value
+        json.\\("textButton") should have length 2
+      }
+
+      "sets header as subject" in {
+        val message = hangoutMessage(notification)
+        message.cardJson should include(s""""header": "subject"""")
+      }
     }
 
     "if no actions are present" - {
@@ -113,6 +125,11 @@ class MessagesTest extends FreeSpec with Matchers {
         }
       }
 
+      "does not include buttons widgets at all" in {
+        val message = hangoutMessage(notification)
+        val json = parse(message.cardJson).right.value
+        json.\\("buttons") shouldBe empty
+      }
     }
   }
 

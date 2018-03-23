@@ -2,7 +2,6 @@ package com.gu.anghammarad
 
 import scala.util.{Success, Try}
 
-
 object Enrichments {
   implicit class RichList[A](as: List[A]) {
     def traverseT[B](f: A => Try[B]): Try[List[B]] = {

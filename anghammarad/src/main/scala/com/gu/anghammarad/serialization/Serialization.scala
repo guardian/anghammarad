@@ -1,15 +1,15 @@
-package com.gu.anghammarad.models
+package com.gu.anghammarad.serialization
 
 import com.amazonaws.services.lambda.runtime.events.SNSEvent
 import com.gu.anghammarad.AnghammaradException.Fail
 import com.gu.anghammarad.Enrichments._
+import com.gu.anghammarad.models._
 import io.circe.Decoder.Result
 import io.circe._
 import io.circe.parser._
 
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
-
 
 object Serialization {
   def parseConfig(config: String): Try[Configuration] = {
@@ -59,7 +59,7 @@ object Serialization {
     } yield notification
   }
 
-  private[models] def generateNotification(subject: String, content: Json): Try[Notification] = {
+  private[serialization] def generateNotification(subject: String, content: Json): Try[Notification] = {
     val hCursor = content.hcursor
     val parsingResult = for {
       sourceSystem <- hCursor.downField("sender").as[String]
@@ -78,7 +78,7 @@ object Serialization {
     )
   }
 
-  private[models] def parseChannel(channel: String): Try[RequestedChannel] = {
+  private[serialization] def parseChannel(channel: String): Try[RequestedChannel] = {
     channel match {
       case "email" => Success(Email)
       case "hangouts" => Success(HangoutsChat)
@@ -87,7 +87,7 @@ object Serialization {
     }
   }
 
-  private[models] def parseAction(json: Json): Try[Action] = {
+  private[serialization] def parseAction(json: Json): Try[Action] = {
     val hCursor = json.hcursor
     val parsingResult = for {
       cta <- hCursor.downField("cta").as[String]
@@ -113,7 +113,7 @@ object Serialization {
     )
   }
 
-  private[models] def parseMapping(json: Json): Result[Mapping] = {
+  private[serialization] def parseMapping(json: Json): Result[Mapping] = {
     val hCursor = json.hcursor
     for {
       rawTargets <- hCursor.downField("target").as[Json]
@@ -123,7 +123,7 @@ object Serialization {
     } yield Mapping(targets, contacts)
   }
 
-  private[models] def parseTargets(jsonTargets: Json): List[Target] = {
+  private[serialization] def parseTargets(jsonTargets: Json): List[Target] = {
     def parseTarget(key: String, value: String): Option[Target] = {
       key match {
         case "Stack" => Some(Stack(value))
@@ -143,7 +143,7 @@ object Serialization {
     }
   }
 
-  private[models] def parseContacts(jsonContacts: Json): List[Contact] = {
+  private[serialization] def parseContacts(jsonContacts: Json): List[Contact] = {
     def parseContact(key: String, value: String): Option[Contact] = {
       key match {
         case "email" => Some(EmailAddress(value))

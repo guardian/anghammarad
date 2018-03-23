@@ -4,7 +4,7 @@ import com.amazonaws.regions.Regions
 import com.amazonaws.services.simpleemail.model.{Body, Content, Destination, SendEmailRequest, Message => AwsMessage}
 import com.amazonaws.services.simpleemail.{AmazonSimpleEmailService, AmazonSimpleEmailServiceClientBuilder}
 import com.gu.anghammarad.models.EmailMessage
-import com.gu.anghammarad.{Config, models}
+import com.gu.anghammarad.Config
 
 import scala.util.Try
 
@@ -30,7 +30,7 @@ object EmailService {
       .withMessage(awsMessage)
   }
 
-  def sendEmail(recipientAddress: String, message: models.EmailMessage): Try[Unit] = {
+  def sendEmail(recipientAddress: String, message: EmailMessage): Try[Unit] = {
     Try(client.sendEmail(emailRequest(recipientAddress, message)))
   }
 }

@@ -1,6 +1,5 @@
 package com.gu.anghammarad.models
 
-
 sealed trait Target
 case class Stack(stack: String) extends Target
 case class Stage(stage: String) extends Target

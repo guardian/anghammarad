@@ -1,14 +1,14 @@
-package com.gu.anghammarad.models
+package com.gu.anghammarad.serialization
 
 import com.amazonaws.services.lambda.runtime.events.SNSEvent
 import com.amazonaws.services.lambda.runtime.events.SNSEvent.SNSRecord
+import com.gu.anghammarad.models._
 import io.circe.Json
 import io.circe.parser._
 import org.scalatest.{EitherValues, FreeSpec, Matchers}
 
 import scala.collection.JavaConverters._
 import scala.io.Source
-
 
 class SerializationTest extends FreeSpec with Matchers with EitherValues {
 

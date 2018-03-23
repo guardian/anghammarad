@@ -1,12 +1,12 @@
 package com.gu.anghammarad.messages
 
 import com.gu.anghammarad.models._
-import com.vladsch.flexmark.ast.Node
 import com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension
 import com.vladsch.flexmark.ext.tables.TablesExtension
 import com.vladsch.flexmark.html.HtmlRenderer
 import com.vladsch.flexmark.parser.Parser
 import com.vladsch.flexmark.util.options.MutableDataSet
+import io.circe.Json
 
 import scala.collection.JavaConverters._
 
@@ -36,51 +36,44 @@ object Messages {
   }
 
   def emailMessage(notification: Notification): EmailMessage = {
-    val actionPrefix =
-      s"""
-         |---------------------
-         |
-       """.stripMargin
+    val (markdown, plaintext) =
+      if (notification.actions.isEmpty) {
+        (notification.message, notification.message)
+      } else {
+        val actionPrefix =
+          s"""
+             |_____________________
+             |
+             |""".stripMargin
 
-    val htmlActions = notification.actions.map { action =>
-      s"[${action.cta}](${action.url})"
-    }.mkString("\n\n")
-    val plainTextActions = notification.actions.map { action =>
-      s"${action.cta} - ${action.url}"
-    }.mkString("\n\n")
+        val htmlActions = notification.actions.map { action =>
+          s"[${action.cta}](${action.url})"
+        }.mkString("\n\n")
+        val plainTextActions = notification.actions.map { action =>
+          s"${action.cta} - ${action.url}"
+        }.mkString("\n\n")
 
-    val finalMarkdown = notification.message + actionPrefix + htmlActions
-    val finalPlanText = notification.message + actionPrefix + plainTextActions
+        (notification.message + actionPrefix + htmlActions, notification.message + actionPrefix + plainTextActions)
+      }
 
-    val md = mdParser.parse(finalMarkdown)
-    val html = emailContents(md)
+    val md = mdParser.parse(markdown)
+    val html = mdRenderer.render(md)
 
     EmailMessage(
       notification.subject,
-      finalPlanText,
+      plaintext,
       html
     )
   }
 
-  def emailContents(markdown: Node): String = {
-    val html = mdRenderer.render(markdown)
-    html
-  }
-
   def hangoutMessage(notification: Notification): HangoutMessage = {
-    def textButtonJson(action: Action) =
-      s"""
-         |{
-         |  "textButton": {
-         |    "text": "${action.cta}",
-         |    "onClick": {
-         |      "openLink": {
-         |        "url": "${action.url}"
-         |      }
-         |    }
-         |  }
-         |}
-       """.stripMargin
+    val md = mdParser.parse(notification.message)
+    val html = mdRenderer.render(md)
+      // hangouts chat supports a subset of tags that differs from the flexmark-generated HTML
+      .replace("<strong>", "<b>").replace("</strong>", "</b>")
+      .replace("<em>", "<i>").replace("</em>", "</i>")
+      .replace("<p>", "").replace("</p>", "<br>")
+
     val json =
       s"""
          |{
@@ -88,25 +81,43 @@ object Messages {
          |    {
          |      "sections": [
          |        {
-         |          "header": "${notification.subject}",
+         |          "header": ${Json.fromString(notification.subject).noSpaces},
          |          "widgets": [
          |            {
          |              "textParagraph": {
-         |                "text": "${notification.message}"
+         |                "text": ${Json.fromString(html).noSpaces}
          |              }
          |            }
          |          ]
          |        },
          |        {
          |          "widgets": [
-         |            ${notification.actions.map(textButtonJson).mkString(",")}
+         |            {
+         |              "buttons": [
+         |                ${notification.actions.map(textButtonJson).mkString(",")}
+         |              ]
+         |            }
          |          ]
          |        }
          |      ]
          |    }
          |  ]
          |}
-       """.stripMargin
+         |""".stripMargin
     HangoutMessage(json)
   }
+
+  private def textButtonJson(action: Action): String =
+    s"""
+       |{
+       |  "textButton": {
+       |    "text": ${Json.fromString(action.cta).noSpaces},
+       |    "onClick": {
+       |      "openLink": {
+       |        "url": ${Json.fromString(action.url).noSpaces}
+       |      }
+       |    }
+       |  }
+       |}
+       |""".stripMargin
 }

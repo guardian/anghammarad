@@ -44,6 +44,7 @@ lazy val dependencies = Seq(
   "io.circe" %% "circe-core" % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,
   "io.circe" %% "circe-parser" % circeVersion,
+  "com.criteo.lolhttp" %% "lolhttp" % "0.9.2",
   "com.vladsch.flexmark" % "flexmark-all" % "0.32.18",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.8.0",
   "ch.qos.logback" %  "logback-classic" % "1.1.7",

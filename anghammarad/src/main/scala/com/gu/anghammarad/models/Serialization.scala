@@ -15,18 +15,19 @@ object Serialization {
   def parseNotification(snsEvent: SNSEvent): Try[Notification] = {
     val maybeSns = snsEvent.getRecords.asScala.toList match {
       case singleRecord :: Nil => Success(singleRecord.getSNS)
-      case _ => Fail(s"Found multiple notifications")
+      case _ => Fail(s"Found multiple SNSRecords")
     }
 
-    maybeSns.flatMap { sns =>
-      val subject = sns.getSubject
-      val message = sns.getMessage
-      val jsonMsg = parse(message).getOrElse(Json.Null)
-      parseNotification(subject, jsonMsg)
-    }
+    for {
+      sns <- maybeSns
+      subject = sns.getSubject
+      message = sns.getMessage
+      jsonMsg <- parse(message).toTry
+      notification <- generateNotification(subject, jsonMsg)
+    } yield notification
   }
 
-  private[models] def parseNotification(subject: String, content: Json): Try[Notification] = {
+  private[models] def generateNotification(subject: String, content: Json): Try[Notification] = {
     val hCursor = content.hcursor
     val parsingResult = for {
       sourceSystem <- hCursor.downField("sender").as[String]

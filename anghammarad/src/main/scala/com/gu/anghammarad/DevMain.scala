@@ -1,6 +1,6 @@
 package com.gu.anghammarad
 
-import com.gu.anghammarad.models._
+import com.gu.anghammarad.serialization.Serialization
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.util.Try

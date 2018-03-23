@@ -1,10 +1,9 @@
 package com.gu.anghammarad
 
 import com.gu.anghammarad.Contacts._
-import com.gu.anghammarad.models._
+import com.gu.anghammarad.common.models._
 import com.gu.anghammarad.testutils.TryValues
 import org.scalatest.{FreeSpec, Matchers}
-
 
 class ContactsTest extends FreeSpec with Matchers with TryValues {
   val email = EmailMessage("subject", "text", "html")

@@ -1,11 +1,10 @@
 package com.gu.anghammarad
 
+import com.gu.anghammarad.common.models._
 import com.gu.anghammarad.messages.Messages._
 import com.gu.anghammarad.messages.{HangoutsService, Messages}
-import com.gu.anghammarad.models.{Action, All, HangoutsChat, Notification}
 import io.circe.parser._
 import org.scalatest.{FreeSpec, Matchers}
-
 import scala.util.{Failure, Success}
 
 

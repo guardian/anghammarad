@@ -1,8 +1,7 @@
 package com.gu.anghammarad
 
+import com.gu.anghammarad.common.models.{Mapping, Notification}
 import com.gu.anghammarad.messages.{Messages, SendMessages}
-import com.gu.anghammarad.models._
-
 import scala.util.Try
 
 

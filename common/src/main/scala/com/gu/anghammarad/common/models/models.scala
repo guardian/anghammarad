@@ -1,5 +1,4 @@
-package com.gu.anghammarad.models
-
+package com.gu.anghammarad.common.models
 
 sealed trait Target
 case class Stack(stack: String) extends Target

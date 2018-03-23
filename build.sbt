@@ -9,15 +9,24 @@ lazy val root = project
   .in(file("."))
   .aggregate(`client-lib`, anghammarad)
 
+lazy val common = project
+  .settings(
+    name := "common",
+    libraryDependencies ++= commonDependencies,
+    scalacOptions ++= compilerOptions
+  )
+
 lazy val `client-lib` = project
+  .dependsOn(common)
   .settings(
     name := "client-lib",
-    libraryDependencies ++= dependencies,
+    libraryDependencies ++= commonDependencies,
     scalacOptions ++= compilerOptions
   )
 
 lazy val anghammarad = project
   .enablePlugins(JavaAppPackaging, RiffRaffArtifact)
+  .dependsOn(common)
   .settings(
     name := "anghammarad",
     assemblyJarName := s"${name.value}.jar",
@@ -25,7 +34,7 @@ lazy val anghammarad = project
     riffRaffUploadArtifactBucket := Option("riffraff-artifact"),
     riffRaffUploadManifestBucket := Option("riffraff-builds"),
     riffRaffManifestProjectName := "tools::anghammarad",
-    libraryDependencies ++= dependencies,
+    libraryDependencies ++= commonDependencies ++ anghammaradDependencies,
     riffRaffArtifactResources += (file("cloudformation/anghammarad.template.yaml"), "cfn/cfn.yaml"),
     scalacOptions ++= compilerOptions
   )
@@ -35,8 +44,11 @@ lazy val anghammarad = project
 val awsSdkVersion = "1.11.258"
 val circeVersion = "0.9.1"
 
-lazy val dependencies = Seq(
+lazy val commonDependencies = Seq(
   "com.amazonaws" % "aws-lambda-java-events" % "1.3.0",
+)
+
+lazy val anghammaradDependencies = Seq(
   "com.amazonaws" % "aws-lambda-java-core" % "1.1.0",
   "com.amazonaws" % "aws-java-sdk-lambda" % awsSdkVersion,
   "com.amazonaws" % "aws-java-sdk-ses" % awsSdkVersion,

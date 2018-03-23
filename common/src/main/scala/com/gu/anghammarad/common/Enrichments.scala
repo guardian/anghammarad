@@ -1,7 +1,6 @@
-package com.gu.anghammarad
+package com.gu.anghammarad.common
 
 import scala.util.{Success, Try}
-
 
 object Enrichments {
   implicit class RichList[A](as: List[A]) {

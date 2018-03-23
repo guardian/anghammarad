@@ -37,7 +37,7 @@ Resources:
             Action:
             - ses:SendEmail
             Resource: "*"
-      Handler: com.gu.anghammarad.Main::handleRequest
+      Handler: com.gu.anghammarad.Lambda::handleRequest
       Runtime: java8
       MemorySize: 512
       Timeout: 30

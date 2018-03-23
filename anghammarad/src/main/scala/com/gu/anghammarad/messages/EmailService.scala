@@ -14,7 +14,7 @@ object EmailService {
     .withCredentials(Config.credentialsProvider)
     .build()
 
-  def emailRequest(recipientAddress: String, message: EmailMessage): SendEmailRequest = {
+  def emailRequest(senderAddress: String, recipientAddress: String, message: EmailMessage): SendEmailRequest = {
     def buildContent(data: String) = new Content().withCharset("UTF-8").withData(data)
 
     val awsMessage = new AwsMessage()
@@ -26,11 +26,10 @@ object EmailService {
 
     new SendEmailRequest()
       .withDestination(new Destination().withToAddresses(recipientAddress))
-      .withSource("foo123@theguardian.com") //TODO read from environment variable or conf
+      .withSource(senderAddress)
       .withMessage(awsMessage)
   }
-
-  def sendEmail(recipientAddress: String, message: EmailMessage): Try[Unit] = {
-    Try(client.sendEmail(emailRequest(recipientAddress, message)))
+  def sendEmail(senderAddress: String, recipientAddress: String, message: EmailMessage): Try[Unit] = {
+    Try(client.sendEmail(emailRequest(senderAddress, recipientAddress, message)))
   }
 }

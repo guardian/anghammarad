@@ -21,7 +21,7 @@ object DevMain {
       config <- Config.loadConfig(stage)
       mappings <- Serialization.parseAllMappings(config)
       notification <- Try(???)
-      _ <- Anghammarad.run(notification, mappings)
+      _ <- Anghammarad.run(notification, ???)
     } yield ()
 
     result.fold(

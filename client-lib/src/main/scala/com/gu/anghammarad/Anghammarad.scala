@@ -1,11 +1,10 @@
 package com.gu.anghammarad
 
 import com.amazonaws.AmazonWebServiceRequest
-import com.amazonaws.auth.{AWSCredentialsProviderChain, EnvironmentVariableCredentialsProvider}
-import com.amazonaws.auth.profile.ProfileCredentialsProvider
+import com.amazonaws.auth.AWSCredentialsProviderChain
 import com.amazonaws.handlers.AsyncHandler
 import com.amazonaws.regions.Regions
-import com.amazonaws.services.sns.model.{PublishRequest, PublishResult}
+import com.amazonaws.services.sns.model.PublishRequest
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import com.gu.anghammarad.models._
 

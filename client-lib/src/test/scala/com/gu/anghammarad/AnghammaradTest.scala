@@ -1,7 +1,7 @@
 package com.gu.anghammarad
 
-import com.gu.anghammarad.models._
 import com.gu.anghammarad.Anghammarad._
+import com.gu.anghammarad.models._
 import org.scalatest.{FreeSpec, Matchers}
 
 

@@ -10,9 +10,9 @@ class Lambda extends RequestHandler[SNSEvent, Unit] {
 
     val result = for {
       config <- Config.loadConfig(stage)
-      mappings <- Serialization.parseAllMappings(config)
+      configuration <- Serialization.parseConfig(config)
       notification <- Serialization.parseNotification(input)
-      _ <- Anghammarad.run(notification, mappings)
+      _ <- Anghammarad.run(notification, configuration.mappings)
     } yield ()
 
     // send notification if result is a failure

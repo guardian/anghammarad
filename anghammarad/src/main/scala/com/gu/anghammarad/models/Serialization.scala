@@ -7,16 +7,27 @@ import io.circe.Decoder.Result
 import io.circe._
 import io.circe.parser._
 
+import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
 
 
 object Serialization {
-
-    def parseAllNotifications(snsEvent: SNSEvent): Try[List[Notification]] = {
-      ???
+  def parseNotification(snsEvent: SNSEvent): Try[Notification] = {
+    val maybeSns = snsEvent.getRecords.asScala.toList match {
+      case singleRecord :: Nil => Success(singleRecord.getSNS)
+      case _ => Fail(s"Found multiple SNSRecords")
     }
 
-  private[models] def parseNotification(subject: String, content: Json): Try[Notification] = {
+    for {
+      sns <- maybeSns
+      subject = sns.getSubject
+      message = sns.getMessage
+      jsonMsg <- parse(message).toTry
+      notification <- generateNotification(subject, jsonMsg)
+    } yield notification
+  }
+
+  private[models] def generateNotification(subject: String, content: Json): Try[Notification] = {
     val hCursor = content.hcursor
     val parsingResult = for {
       sourceSystem <- hCursor.downField("sender").as[String]

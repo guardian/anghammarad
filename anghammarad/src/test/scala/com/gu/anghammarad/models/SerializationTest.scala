@@ -1,29 +1,69 @@
 package com.gu.anghammarad.models
 
+import com.amazonaws.services.lambda.runtime.events.SNSEvent
+import com.amazonaws.services.lambda.runtime.events.SNSEvent.SNSRecord
 import io.circe.Json
 import io.circe.parser._
 import org.scalatest.{EitherValues, FreeSpec, Matchers}
 
+import scala.collection.JavaConverters._
 import scala.io.Source
 
 
 class SerializationTest extends FreeSpec with Matchers with EitherValues {
 
-  "parseNotification" - {
+  "Notification Serialization" - {
     val validJsonString = Source.fromURL(getClass.getResource("/notification.json")).mkString
-    val testJson = parse(validJsonString).right.value
+    val validJson = parse(validJsonString).right.value
 
-    "will parse valid json into a complete notification" in {
-      val expectedResult = Notification(
-        "Terry Pratchett",
-        Email,
-        List(Stack("postal-service"), App("clacks-overhead")),
-        "GNU Terry Pratchett",
-        "Words are important. And when there is a critical mass of them, they change the nature of the universe.",
-        List(Action("keep that name moving in the Overhead", "http://www.gnuterrypratchett.com/"))
-      )
+    val expectedResult = Notification(
+      "Terry Pratchett",
+      Email,
+      List(Stack("postal-service"), App("clacks-overhead")),
+      "GNU Terry Pratchett",
+      "Words are important. And when there is a critical mass of them, they change the nature of the universe.",
+      List(Action("keep that name moving in the Overhead", "http://www.gnuterrypratchett.com/"))
+    )
 
-      Serialization.parseNotification("GNU Terry Pratchett", testJson).get shouldEqual expectedResult
+    "parseNotification" - {
+      val testSNS = new SNSEvent.SNS()
+      val testRecord = new SNSRecord()
+      val testEvent = new SNSEvent()
+
+      testSNS.setSubject("GNU Terry Pratchett")
+      testSNS.setMessage(validJsonString)
+      testRecord.setSns(testSNS)
+
+      "will parse a SNSEvent into a complete notification" in {
+        val input = testEvent
+          input.setRecords(List(testRecord).asJava)
+        Serialization.parseNotification(testEvent).get shouldEqual expectedResult
+      }
+
+      "will fail if the SNSEvent is missing" in {
+        val input = testEvent
+        input.setRecords(List.empty.asJava)
+        Serialization.parseNotification(input).isFailure shouldEqual true
+      }
+
+      "will fail if there is more than one SNSEvent" in {
+        val input = testEvent
+        input.setRecords(List(testRecord, testRecord).asJava)
+        Serialization.parseNotification(input).isFailure shouldEqual true
+      }
+    }
+
+    "generateNotification" - {
+      "will parse a string and valid json into a complete notification" in {
+        Serialization.generateNotification("GNU Terry Pratchett", validJson).get shouldEqual expectedResult
+      }
+
+      "will return a failure if the json is missing any required information" in {
+        val testJson = parse(
+          """{"sender": "Terry Pratchett","target": {"Stack": "postal-service"}}"""
+        ).right.value
+        Serialization.generateNotification("GNU Terry Pratchett", testJson).isFailure shouldEqual true
+      }
     }
   }
 

@@ -8,10 +8,10 @@ import scala.util.Try
 
 
 object SendMessages {
-  def sendAll(toSend: List[(Message, Contact)]): Try[Unit] = {
+  def sendAll(config: Configuration, toSend: List[(Message, Contact)]): Try[Unit] = {
     toSend.traverseT {
       case (message: EmailMessage, EmailAddress(address)) =>
-        EmailService.sendEmail(address, message)
+        EmailService.sendEmail(config.emailSender, address, message)
       case (message: HangoutMessage, HangoutsRoom(webhook)) =>
         HangoutsService.sendHangoutsMessage(webhook, message)
       case (message, contact) =>

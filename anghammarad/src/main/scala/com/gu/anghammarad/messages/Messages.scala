@@ -107,7 +107,7 @@ object Messages {
     HangoutMessage(json)
   }
 
-  def textButtonJson(action: Action): String =
+  private def textButtonJson(action: Action): String =
     s"""
        |{
        |  "textButton": {

@@ -1,7 +1,6 @@
-package com.gu.anghammarad.common
+package com.gu.anghammarad
 
 import scala.util.{Failure, Try}
-
 
 class AnghammaradException private(message: String, causedBy: Option[Throwable])
   extends RuntimeException(message, causedBy.orNull)

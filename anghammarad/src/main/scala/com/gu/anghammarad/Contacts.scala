@@ -1,6 +1,6 @@
 package com.gu.anghammarad
 
-import com.gu.anghammarad.common.AnghammaradException.Fail
+import com.gu.anghammarad.AnghammaradException.Fail
 import com.gu.anghammarad.common.models.{Contact, Email, EmailAddress, HangoutsChat, HangoutsRoom, Mapping, Message, _}
 
 import scala.util.{Success, Try}

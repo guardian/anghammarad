@@ -1,4 +1,4 @@
-package com.gu.anghammarad.common
+package com.gu.anghammarad
 
 import scala.util.{Success, Try}
 

@@ -59,7 +59,7 @@ object Serialization {
     } yield notification
   }
 
-  private[serialization] def generateNotification(subject: String, content: Json): Try[Notification] = {
+  def generateNotification(subject: String, content: Json): Try[Notification] = {
     val hCursor = content.hcursor
     val parsingResult = for {
       sourceSystem <- hCursor.downField("sender").as[String]

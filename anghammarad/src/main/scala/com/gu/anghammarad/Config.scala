@@ -2,6 +2,7 @@ package com.gu.anghammarad
 
 import com.amazonaws.auth._
 import com.amazonaws.auth.profile.ProfileCredentialsProvider
+import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.{GetObjectRequest, S3ObjectInputStream}
 
@@ -18,6 +19,7 @@ object Config {
   private val s3Client = AmazonS3Client
     .builder
     .withCredentials(credentialsProvider)
+    .withRegion(Regions.EU_WEST_1)
     .build()
 
   private def fetchContent(request: GetObjectRequest): Try[S3ObjectInputStream] = {

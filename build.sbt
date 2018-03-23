@@ -7,6 +7,9 @@ scalaVersion in ThisBuild := "2.12.4"
 
 lazy val root = project
   .in(file("."))
+  .settings(
+    name := "anghammarad-root"
+  )
   .aggregate(`client-lib`, anghammarad)
 
 lazy val common = project
@@ -36,6 +39,17 @@ lazy val anghammarad = project
     riffRaffArtifactResources += (file("cloudformation/anghammarad.template.yaml"), "cfn/cfn.yaml"),
     scalacOptions ++= compilerOptions
   )
+
+lazy val dev = project
+  .in(file("dev"))
+  .settings(
+    name := "dev",
+    libraryDependencies ++= Seq(
+      "com.github.scopt" %% "scopt" % "3.7.0"
+    ),
+    scalacOptions ++= compilerOptions
+  )
+  .dependsOn(common, anghammarad)
 
 // Dependencies
 

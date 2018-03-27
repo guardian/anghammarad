@@ -9,6 +9,7 @@ val compilerOptions = Seq(
 
 organization in ThisBuild := "com.gu"
 scalaVersion in ThisBuild := "2.12.4"
+licenses in ThisBuild := Seq("Apache V2" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"))
 
 val awsSdkVersion = "1.11.258"
 val circeVersion = "0.9.1"
@@ -33,12 +34,20 @@ lazy val client = project
   .dependsOn(common)
   .settings(
     name := "client",
+    version := "0.0.1-SNAPSHOT",
     libraryDependencies ++= Seq(
       "com.amazonaws" % "aws-java-sdk-sns" % awsSdkVersion,
       "org.json" % "json" % "20180130",
       "org.scalatest" %% "scalatest" % "3.0.5" % Test
     ),
-    scalacOptions ++= compilerOptions
+    scalacOptions ++= compilerOptions,
+    publishTo := {
+      val nexus = "https://oss.sonatype.org/"
+      if (isSnapshot.value)
+        Some("snapshots" at nexus + "content/repositories/snapshots")
+      else
+        Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+    }
   )
 
 lazy val anghammarad = project

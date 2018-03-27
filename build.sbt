@@ -10,7 +10,7 @@ lazy val root = project
   .settings(
     name := "anghammarad-root"
   )
-  .aggregate(`client-lib`, anghammarad)
+  .aggregate(anghammarad, `client-lib`, common)
 
 lazy val common = project
   .settings(

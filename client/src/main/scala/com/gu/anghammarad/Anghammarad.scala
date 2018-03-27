@@ -17,14 +17,16 @@ object Anghammarad {
     * @param channel      The notification channel you'd like to use
     * @param target       Specify who should receive the message
     * @param actions      Specify Call To Action buttons that will be put at the end of an email / hangout message
+    * @param topicArn     ARN of Anghammarad's SNS topic (you will need to obtain this and put it in your app's config)
     * @param client       The SNS client that should be used to add your notification to the topic
     * @return             Future of the resulting SNS Message ID
     */
   def notify(subject: String, message: String, sourceSystem: String,
              channel: RequestedChannel, target: List[Target], actions: List[Action],
-             client: AmazonSNSAsync)
+             topicArn: String, client: AmazonSNSAsync)
             (implicit executionContext: ExecutionContext): Future[String] = {
     val request = new PublishRequest()
+      .withTopicArn(topicArn)
       .withSubject(subject)
       .withMessage(messageJson(message, sourceSystem, channel, target, actions))
     awsToScala(client.publishAsync)(request).map(_.getMessageId)

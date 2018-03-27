@@ -9,6 +9,9 @@ Parameters:
   ArtifactLocation:
     Description: S3 path to the Lambda's artifact
     Type: String
+  ConfigBucket:
+    Description: S3 bucket containing the configuration
+    Type: String
   Stage:
     Description: Application stage (e.g. PROD, CODE)
     Type: String
@@ -37,6 +40,11 @@ Resources:
             Action:
             - ses:SendEmail
             Resource: "*"
+      - Statement:
+          - Effect: Allow
+            Action:
+              - s3:GetObject
+            Resource: !Sub arn:aws:s3:::${ConfigBucket}/*
       Handler: com.gu.anghammarad.Lambda::handleRequest
       Runtime: java8
       MemorySize: 512

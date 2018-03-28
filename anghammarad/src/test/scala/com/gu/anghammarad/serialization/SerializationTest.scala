@@ -69,15 +69,15 @@ class SerializationTest extends FreeSpec with Matchers with EitherValues with Tr
     }
   }
 
-  "parseChannel" - {
+  "parseRequestedChannel" - {
     "will correct determine the channel" in {
-      Serialization.parseChannel("email").success shouldEqual Email
-      Serialization.parseChannel("hangouts").success  shouldEqual HangoutsChat
-      Serialization.parseChannel("all").success  shouldEqual All
+      Serialization.parseRequestedChannel("email").success shouldEqual Email
+      Serialization.parseRequestedChannel("hangouts").success  shouldEqual HangoutsChat
+      Serialization.parseRequestedChannel("all").success  shouldEqual All
     }
 
     "will return a failure if no match is found" in {
-      Serialization.parseChannel("unknown").isFailure shouldEqual true
+      Serialization.parseRequestedChannel("unknown").isFailure shouldEqual true
     }
   }
 
@@ -140,50 +140,74 @@ class SerializationTest extends FreeSpec with Matchers with EitherValues with Tr
     }
   }
 
-  "parseContacts" - {
+  "parseContact" - {
+    "will correct determine the channel" in {
+      Serialization.parseContact("email", "example.email").success shouldEqual EmailAddress("example.email")
+      Serialization.parseContact("hangouts", "example.room").success  shouldEqual HangoutsRoom("example.room")
+    }
+
+    "will return a failure if no match is found" in {
+      Serialization.parseContact("unknown", "unknown").isFailure shouldEqual true
+    }
+  }
+
+  "parseAllContacts" - {
     "will correctly return the contacts" in {
       val testJson = parse(
         """{"email":"stack.email","hangouts":"stack.room"}"""
       ).right.value
 
-      Serialization.parseContacts(testJson).success shouldEqual List(EmailAddress("stack.email"), HangoutsRoom("stack.room"))
+      Serialization.parseAllContacts(testJson).success shouldEqual List(EmailAddress("stack.email"), HangoutsRoom("stack.room"))
     }
 
     "will return a failure if it cannot parse the keys" in {
       val testJson = parse(
         """{"email":"stack.email","xhangouts":"stack.room"}"""
       ).right.value
-      Serialization.parseContacts(testJson).isFailure shouldEqual true
+      Serialization.parseAllContacts(testJson).isFailure shouldEqual true
     }
 
     "will return a failure if there are no contacts listed" in {
       val testJson = parse(
         """{}"""
       ).right.value
-      Serialization.parseContacts(testJson).isFailure shouldEqual true
+      Serialization.parseAllContacts(testJson).isFailure shouldEqual true
     }
   }
 
-  "parseTargets" - {
+  "parseTarget" - {
+    "will correct determine the target" in {
+      Serialization.parseTarget("Stack", "example-stack").success shouldEqual Stack("example-stack")
+      Serialization.parseTarget("Stage", "example-stage").success  shouldEqual Stage("example-stage")
+      Serialization.parseTarget("App", "example-app").success  shouldEqual App("example-app")
+      Serialization.parseTarget("AwsAccount", "example-account").success  shouldEqual AwsAccount("example-account")
+    }
+
+    "will return a failure if no match is found" in {
+      Serialization.parseTarget("unknown", "unknown").isFailure shouldEqual true
+    }
+  }
+
+  "parseAllTargets" - {
     "will correctly return the targets" in {
       val testJson: Json = parse(
         """{"Stack":"stack-1","App":"app-1"}"""
       ).right.value
-      Serialization.parseTargets(testJson).success shouldEqual List(Stack("stack-1"), App("app-1"))
+      Serialization.parseAllTargets(testJson).success shouldEqual List(Stack("stack-1"), App("app-1"))
     }
 
     "will return a failure if it cannot parse the keys" in {
       val testJson = parse(
         """{"Stack":"stack-1","xApp":"app-1"}"""
       ).right.value
-      Serialization.parseTargets(testJson).isFailure shouldEqual true
+      Serialization.parseAllTargets(testJson).isFailure shouldEqual true
     }
 
     "will return a failure if there are no targets listed" in {
       val testJson = parse(
         """{}"""
       ).right.value
-      Serialization.parseTargets(testJson).isFailure shouldEqual true
+      Serialization.parseAllTargets(testJson).isFailure shouldEqual true
     }
   }
 }

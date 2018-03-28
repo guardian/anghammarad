@@ -60,20 +60,20 @@ object Serialization {
       rawChannel <- hCursor.downField("channel").as[String]
       rawActions <- hCursor.downField("actions").as[List[Json]]
       message <- hCursor.downField("message").as[String]
-      channel <- parseChannel(rawChannel).toEither
-      targets <- parseTargets(rawTargets).toEither
+      channel <- parseRequestedChannel(rawChannel).toEither
+      targets <- parseAllTargets(rawTargets).toEither
       actions <- rawActions.traverseT(parseAction).toEither
     } yield Notification(sourceSystem, channel, targets, subject, message, actions)
 
     parsingResult.toTry
   }
 
-  private[serialization] def parseChannel(channel: String): Try[RequestedChannel] = {
+  private[serialization] def parseRequestedChannel(channel: String): Try[RequestedChannel] = {
     channel match {
       case "email" => Success(Email)
       case "hangouts" => Success(HangoutsChat)
       case "all" => Success(All)
-      case _ => Fail(s"Cannot parse RequestedChannel")
+      case _ => Fail(s"Parsing error: Unable to match RequestedChannel to known options")
     }
   }
 
@@ -102,14 +102,14 @@ object Serialization {
     val mappings = for {
       rawTargets <- hCursor.downField("target").as[Json]
       rawContacts <- hCursor.downField("contacts").as[Json]
-      targets <- parseTargets(rawTargets).toEither
-      contacts <- parseContacts(rawContacts).toEither
+      targets <- parseAllTargets(rawTargets).toEither
+      contacts <- parseAllContacts(rawContacts).toEither
     } yield Mapping(targets, contacts)
 
     mappings.toTry
   }
 
-  private def parseTarget(key: String, value: String): Try[Target] = {
+  private[serialization] def parseTarget(key: String, value: String): Try[Target] = {
     key match {
       case "Stack" => Success(Stack(value))
       case "Stage" => Success(Stage(value))
@@ -119,7 +119,7 @@ object Serialization {
     }
   }
 
-  private[serialization] def parseTargets(jsonTargets: Json): Try[List[Target]] = {
+  private[serialization] def parseAllTargets(jsonTargets: Json): Try[List[Target]] = {
     val c: HCursor = jsonTargets.hcursor
     val allTargets = for {
       key <- c.keys.map(k => k.toList).getOrElse(List.empty)
@@ -129,11 +129,11 @@ object Serialization {
 
     allTargets match {
       case _ :: _ => allTargets.traverseE(identity).toTry
-      case Nil => Fail(s"")
+      case Nil => Fail(s"Parsing error: List of targets is empty")
     }
   }
 
-  private def parseContact(key: String, value: String): Try[Contact] = {
+  private[serialization] def parseContact(key: String, value: String): Try[Contact] = {
     key match {
       case "email" => Success(EmailAddress(value))
       case "hangouts" => Success(HangoutsRoom(value))
@@ -141,7 +141,7 @@ object Serialization {
     }
   }
 
-  private[serialization] def parseContacts(jsonContacts: Json): Try[List[Contact]] = {
+  private[serialization] def parseAllContacts(jsonContacts: Json): Try[List[Contact]] = {
     val c: HCursor = jsonContacts.hcursor
     val allContacts = for {
       key <- c.keys.map(k => k.toList).getOrElse(List.empty)
@@ -151,7 +151,7 @@ object Serialization {
 
     allContacts match {
       case _ :: _ => allContacts.traverseE(identity).toTry
-      case Nil => Fail(s"")
+      case Nil => Fail(s"Parsing error: List of contacts is empty")
     }
   }
 }

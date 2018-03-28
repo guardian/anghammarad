@@ -1,7 +1,8 @@
 package com.gu.anghammarad
 
 import com.amazonaws.AmazonWebServiceRequest
-import com.amazonaws.auth.AWSCredentialsProviderChain
+import com.amazonaws.auth.profile.ProfileCredentialsProvider
+import com.amazonaws.auth.{AWSCredentialsProviderChain, EnvironmentVariableCredentialsProvider, InstanceProfileCredentialsProvider}
 import com.amazonaws.handlers.AsyncHandler
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
@@ -13,11 +14,22 @@ object AWS {
   /**
     * Use this to make an SNS client, or provide your own.
     */
-  def client(credentialsProvider: AWSCredentialsProviderChain): AmazonSNSAsync = {
+  def snsClient(credentialsProvider: AWSCredentialsProviderChain): AmazonSNSAsync = {
     AmazonSNSAsyncClientBuilder.standard()
       .withRegion(Regions.EU_WEST_1)
       .withCredentials(credentialsProvider)
       .build()
+  }
+
+  def credentialsProvider(): AWSCredentialsProviderChain = {
+    new AWSCredentialsProviderChain(
+      // EC2
+      InstanceProfileCredentialsProvider.getInstance(),
+      // Lambda
+      new EnvironmentVariableCredentialsProvider(),
+      // local
+      new ProfileCredentialsProvider("deployTools")
+    )
   }
 
   private class AwsAsyncPromiseHandler[R <: AmazonWebServiceRequest, T](promise: Promise[T]) extends AsyncHandler[R, T] {

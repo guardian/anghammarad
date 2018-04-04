@@ -11,6 +11,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object Anghammarad {
   /**
+    * Sends a notification using Anghammarad.
+    *
     * @param subject      Used for the subject in emails and the heading of hangouts chat notifications
     * @param message      The message body. Supports markdown, but support differs between notification channels
     * @param sourceSystem The system sending the notification (your system)
@@ -23,7 +25,8 @@ object Anghammarad {
     */
   def notify(subject: String, message: String, sourceSystem: String,
              channel: RequestedChannel, target: List[Target], actions: List[Action],
-             topicArn: String, client: AmazonSNSAsync)
+             topicArn: String,
+             client: AmazonSNSAsync = AWS.snsClient(AWS.credentialsProvider()))
             (implicit executionContext: ExecutionContext): Future[String] = {
     val request = new PublishRequest()
       .withTopicArn(topicArn)

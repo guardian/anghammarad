@@ -4,12 +4,11 @@ import com.amazonaws.services.lambda.runtime.events.SNSEvent
 import com.gu.anghammarad.AnghammaradException.Fail
 import com.gu.anghammarad.Enrichments._
 import com.gu.anghammarad.models._
-import io.circe.Decoder.Result
 import io.circe._
 import io.circe.parser._
 
 import scala.collection.JavaConverters._
-import scala.util.{Failure, Success, Try}
+import scala.util.{Success, Try}
 
 object Serialization {
   def parseConfig(config: String): Try[Configuration] = {
@@ -23,13 +22,10 @@ object Serialization {
   private def parseEmailDomain(jsonStr: String): Try[String] = {
     val emailDomain = for {
       json <- parse(jsonStr)
-      sender <- json.hcursor.downField("emailDomain").as[String]
-    } yield sender
+      domain <- json.hcursor.downField("emailDomain").as[String]
+    } yield domain
 
-    emailDomain.fold(
-      err => Failure(err),
-      mappings => Success(mappings)
-    )
+    emailDomain.toTry
   }
 
   private def parseEmailSender(jsonStr: String): Try[String] = {
@@ -38,10 +34,7 @@ object Serialization {
       sender <- json.hcursor.downField("emailSender").as[String]
     } yield sender
 
-    emailSender.fold(
-      err => Failure(err),
-      mappings => Success(mappings)
-    )
+    emailSender.toTry
   }
 
   def parseNotification(snsEvent: SNSEvent): Try[Notification] = {
@@ -67,23 +60,20 @@ object Serialization {
       rawChannel <- hCursor.downField("channel").as[String]
       rawActions <- hCursor.downField("actions").as[List[Json]]
       message <- hCursor.downField("message").as[String]
-      channel <- parseChannel(rawChannel).toEither
-      targets = parseTargets(rawTargets)
+      channel <- parseRequestedChannel(rawChannel).toEither
+      targets <- parseAllTargets(rawTargets).toEither
       actions <- rawActions.traverseT(parseAction).toEither
     } yield Notification(sourceSystem, channel, targets, subject, message, actions)
 
-    parsingResult.fold(
-      err => Failure(err),
-      notification => Success(notification)
-    )
+    parsingResult.toTry
   }
 
-  private[serialization] def parseChannel(channel: String): Try[RequestedChannel] = {
+  private[serialization] def parseRequestedChannel(channel: String): Try[RequestedChannel] = {
     channel match {
       case "email" => Success(Email)
       case "hangouts" => Success(HangoutsChat)
       case "all" => Success(All)
-      case _ => Fail(s"Cannot parse RequestedChannel")
+      case _ => Fail(s"Parsing error: Unable to match RequestedChannel to known options")
     }
   }
 
@@ -94,71 +84,74 @@ object Serialization {
       url <- hCursor.downField("url").as[String]
     } yield Action(cta, url)
 
-    parsingResult.fold(
-      err => Failure(err),
-      action => Success(action)
-    )
+    parsingResult.toTry
   }
 
   def parseAllMappings(jsonStr: String): Try[List[Mapping]] = {
     val allMappings = for {
       json <- parse(jsonStr)
       rawMappings <- json.hcursor.downField("mappings").as[List[Json]]
-      mappings <- rawMappings.traverseE(parseMapping)
+      mappings <- rawMappings.traverseT(parseMapping).toEither
     } yield mappings
 
-    allMappings.fold(
-      err => Failure(err),
-      mappings => Success(mappings)
-    )
+    allMappings.toTry
   }
 
-  private[serialization] def parseMapping(json: Json): Result[Mapping] = {
+  private[serialization] def parseMapping(json: Json): Try[Mapping] = {
     val hCursor = json.hcursor
-    for {
+    val mappings = for {
       rawTargets <- hCursor.downField("target").as[Json]
       rawContacts <- hCursor.downField("contacts").as[Json]
-      targets = parseTargets(rawTargets)
-      contacts = parseContacts(rawContacts)
+      targets <- parseAllTargets(rawTargets).toEither
+      contacts <- parseAllContacts(rawContacts).toEither
     } yield Mapping(targets, contacts)
+
+    mappings.toTry
   }
 
-  private[serialization] def parseTargets(jsonTargets: Json): List[Target] = {
-    def parseTarget(key: String, value: String): Option[Target] = {
-      key match {
-        case "Stack" => Some(Stack(value))
-        case "Stage" => Some(Stage(value))
-        case "App" => Some(App(value))
-        case "AwsAccount" => Some(AwsAccount(value))
-        case _ => None
-      }
+  private[serialization] def parseTarget(key: String, value: String): Try[Target] = {
+    key match {
+      case "Stack" => Success(Stack(value))
+      case "Stage" => Success(Stage(value))
+      case "App" => Success(App(value))
+      case "AwsAccount" => Success(AwsAccount(value))
+      case _ => Fail(s"Unable to match keys to known targets")
     }
+  }
 
+  private[serialization] def parseAllTargets(jsonTargets: Json): Try[List[Target]] = {
     val c: HCursor = jsonTargets.hcursor
-    // TODO: do we want to return an empty list, or throw a error here?
-    val keys: List[String] = c.keys.map(k => k.toList).getOrElse(List.empty)
-    keys.flatMap { key =>
-      val address = c.downField(key).as[String].getOrElse("")
-      parseTarget(key, address)
+    val allTargets = for {
+      key <- c.keys.map(k => k.toList).getOrElse(List.empty)
+      address <- c.downField(key).as[String].toOption
+      parsedTarget = parseTarget(key, address).toEither
+    } yield parsedTarget
+
+    allTargets match {
+      case _ :: _ => allTargets.traverseE(identity).toTry
+      case Nil => Fail(s"Parsing error: List of targets is empty")
     }
   }
 
-  private[serialization] def parseContacts(jsonContacts: Json): List[Contact] = {
-    def parseContact(key: String, value: String): Option[Contact] = {
-      key match {
-        case "email" => Some(EmailAddress(value))
-        case "hangouts" => Some(HangoutsRoom(value))
-        case _ => None
-      }
+  private[serialization] def parseContact(key: String, value: String): Try[Contact] = {
+    key match {
+      case "email" => Success(EmailAddress(value))
+      case "hangouts" => Success(HangoutsRoom(value))
+      case _ => Fail(s"Unable to match keys to known contact methods")
     }
+  }
 
+  private[serialization] def parseAllContacts(jsonContacts: Json): Try[List[Contact]] = {
     val c: HCursor = jsonContacts.hcursor
-    // TODO: do we want to return an empty list, or throw a error here?
-    val keys: List[String] = c.keys.map(k => k.toList).getOrElse(List.empty)
+    val allContacts = for {
+      key <- c.keys.map(k => k.toList).getOrElse(List.empty)
+      address <- c.downField(key).as[String].toOption
+      parsedContact = parseContact(key, address).toEither
+    } yield parsedContact
 
-    keys.flatMap { key =>
-      val address = c.downField(key).as[String].getOrElse("")
-      parseContact(key, address)
+    allContacts match {
+      case _ :: _ => allContacts.traverseE(identity).toTry
+      case Nil => Fail(s"Parsing error: List of contacts is empty")
     }
   }
 }

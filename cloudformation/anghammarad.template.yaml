@@ -19,6 +19,9 @@ Parameters:
     - PROD
     - CODE
     - DEV
+  AllowedAWSAccountIDs:
+    Description: List of whitelisted account ids
+    Type: CommaDelimitedList
 
 Mappings:
   Constants:
@@ -65,6 +68,20 @@ Resources:
     Type: AWS::SNS::Topic
     Properties:
       DisplayName: !Sub Anghammarad ${Stage} notification topic
+
+  NotificationTopicPolicy:
+    Type: "AWS::SNS::TopicPolicy"
+    Properties:
+      PolicyDocument:
+        Statement:
+        - Effect: Allow
+          Action:
+          - SNS:Publish
+          Principal:
+            AWS: !Ref AllowedAWSAccountIDs
+          Resource: "*"
+      Topics:
+      - !Ref NotificationTopic
 
 Outputs:
   TopicName:

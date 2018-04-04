@@ -30,7 +30,7 @@ class JsonTest extends FreeSpec with Matchers {
 
   "actionsJson" - {
     "produces correct JSON for an action" in {
-      actionsJson(Action("text", "https://example.com")) shouldEqual """{"cta":"text","url":"https://example.com"}"""
+      actionJson(List(Action("text", "https://example.com"))) shouldEqual """[{"cta":"text","url":"https://example.com"}]"""
     }
   }
 

@@ -17,7 +17,7 @@ object Json extends StrictLogging {
        |  "sender":${quoteJson(sourceSystem)},
        |  "channel":${quoteJson(channelStr)},
        |  "target": ${targetJson(targets)},
-       |  "actions": [ ${actions.map(actionsJson).mkString(",")} ]
+       |  "actions": ${actionJson(actions)}
        |}""".stripMargin
   }
 
@@ -36,7 +36,8 @@ object Json extends StrictLogging {
     s"{$kvpairs}"
   }
 
-  private[anghammarad] def actionsJson(action: Action): String = {
-    s"""{"cta":${quoteJson(action.cta)},"url":${quoteJson(action.url)}}"""
+  private[anghammarad] def actionJson(actions: List[Action]): String = {
+    def actionJsonString(action: Action) = s"""{"cta":${quoteJson(action.cta)},"url":${quoteJson(action.url)}}"""
+    "[" + actions.map(action => actionJsonString(action)).mkString(",") + "]"
   }
 }

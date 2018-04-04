@@ -12,15 +12,13 @@ object Json extends StrictLogging {
       case HangoutsChat => "hangouts"
       case All => "all"
     }
-    val x = s"""{
+    s"""{
        |  "message":${quoteJson(message)},
        |  "sender":${quoteJson(sourceSystem)},
        |  "channel":${quoteJson(channelStr)},
        |  "target": ${targetJson(targets)},
        |  "actions": [ ${actions.map(actionsJson).mkString(",")} ]
        |}""".stripMargin
-    logger.info(x)
-    x
   }
 
   private[anghammarad] def targetJson(targets: List[Target]): String = {

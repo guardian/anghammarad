@@ -8,23 +8,19 @@ import org.scalatest.{FreeSpec, Matchers}
 class JsonTest extends FreeSpec with Matchers {
   "targetJson" - {
     "produces valid JSON for a Stack" in {
-      targetJson(List(Stack("stack"))) shouldEqual """{"Stack":"stack"}"""
+      targetJson(Stack("stack")) shouldEqual """{"Stack":"stack"}"""
     }
 
     "produces valid JSON for a Stage" in {
-      targetJson(List(Stage("stage"))) shouldEqual """{"Stage":"stage"}"""
+      targetJson(Stage("stage")) shouldEqual """{"Stage":"stage"}"""
     }
 
     "produces valid JSON for an App" in {
-      targetJson(List(App("app"))) shouldEqual """{"App":"app"}"""
+      targetJson(App("app")) shouldEqual """{"App":"app"}"""
     }
 
     "produces valid JSON for an AwsAccount" in {
-      targetJson(List(AwsAccount("123456789"))) shouldEqual """{"AwsAccount":"123456789"}"""
-    }
-    "produces valid JSON for all" in {
-      targetJson(List(Stack("stack"), Stage("stage"), App("app"), AwsAccount("123456789"))) shouldEqual
-        """{"Stack":"stack","Stage":"stage","App":"app","AwsAccount":"123456789"}"""
+      targetJson(AwsAccount("123456789")) shouldEqual """{"AwsAccount":"123456789"}"""
     }
   }
 

@@ -32,11 +32,10 @@ lazy val common = project
 lazy val client = project
   .dependsOn(common)
   .settings(
-    name := "anghammarad-client",
+    name := "client",
     libraryDependencies ++= Seq(
       "com.amazonaws" % "aws-java-sdk-sns" % awsSdkVersion,
       "org.json" % "json" % "20180130",
-      "com.typesafe.scala-logging" %% "scala-logging" % "3.8.0",
       "org.scalatest" %% "scalatest" % "3.0.5" % Test
     ),
     scalacOptions ++= compilerOptions

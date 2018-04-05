@@ -41,13 +41,14 @@ lazy val client = project
       "org.scalatest" %% "scalatest" % "3.0.5" % Test
     ),
     scalacOptions ++= compilerOptions,
-    publishTo := {
-      val nexus = "https://oss.sonatype.org/"
-      if (isSnapshot.value)
-        Some("snapshots" at nexus + "content/repositories/snapshots")
-      else
-        Some("releases"  at nexus + "service/local/staging/deploy/maven2")
-    }
+    releasePublishArtifactsAction := PgpKeys.publishSigned.value,
+    scmInfo := Some(
+      ScmInfo(
+        url("https://github.com/guardian/anghammarad"),
+        "scm:git@github.com:guardian/anghammarad"
+      )
+    ),
+    publishTo := sonatypePublishTo.value
   )
 
 lazy val anghammarad = project

@@ -54,7 +54,8 @@ lazy val client = project
     ),
     scalacOptions ++= compilerOptions,
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
-    publishTo := sonatypePublishTo.value
+    publishTo := sonatypePublishTo.value,
+    releaseProcess += releaseStepCommandAndRemaining("sonatypeRelease")
   )
 
 lazy val anghammarad = project

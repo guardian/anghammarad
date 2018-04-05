@@ -8,8 +8,15 @@ val compilerOptions = Seq(
 )
 
 inThisBuild(Seq(
-  organization := "com.gu",
   scalaVersion := "2.12.4",
+  scalacOptions ++= Seq(
+    "-deprecation",
+    "-Xfatal-warnings",
+    "-encoding", "UTF-8",
+    "-target:jvm-1.8"
+  ),
+  // sonatype metadata
+  organization := "com.gu",
   licenses := Seq("Apache V2" -> url("http://www.apache.org/licenses/LICENSE-2.0.html")),
   scmInfo := Some(
     ScmInfo(
@@ -31,15 +38,13 @@ val circeVersion = "0.9.1"
 lazy val root = project
   .in(file("."))
   .settings(
-    name := "anghammarad-root",
-    scalacOptions ++= compilerOptions
+    name := "anghammarad-root"
   )
   .aggregate(anghammarad, client, common)
 
 lazy val common = project
   .settings(
-    name := "common",
-    scalacOptions ++= compilerOptions
+    name := "common"
   )
 
 lazy val client = project
@@ -52,7 +57,6 @@ lazy val client = project
       "com.typesafe.scala-logging" %% "scala-logging" % "3.8.0",
       "org.scalatest" %% "scalatest" % "3.0.5" % Test
     ),
-    scalacOptions ++= compilerOptions,
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
     publishTo := sonatypePublishTo.value,
     releaseProcess += releaseStepCommandAndRemaining("sonatypeRelease")
@@ -83,8 +87,7 @@ lazy val anghammarad = project
     riffRaffUploadArtifactBucket := Option("riffraff-artifact"),
     riffRaffUploadManifestBucket := Option("riffraff-builds"),
     riffRaffManifestProjectName := "tools::anghammarad",
-    riffRaffArtifactResources += (file("cloudformation/anghammarad.template.yaml"), "cfn/cfn.yaml"),
-    scalacOptions ++= compilerOptions
+    riffRaffArtifactResources += (file("cloudformation/anghammarad.template.yaml"), "cfn/cfn.yaml")
   )
 
 lazy val dev = project
@@ -92,7 +95,6 @@ lazy val dev = project
     name := "dev",
     libraryDependencies ++= Seq(
       "com.github.scopt" %% "scopt" % "3.7.0"
-    ),
-    scalacOptions ++= compilerOptions
+    )
   )
   .dependsOn(common, anghammarad)

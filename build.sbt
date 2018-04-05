@@ -7,15 +7,21 @@ val compilerOptions = Seq(
   "-target:jvm-1.8"
 )
 
-organization in ThisBuild := "com.gu"
-scalaVersion in ThisBuild := "2.12.4"
-licenses in ThisBuild := Seq("Apache V2" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"))
-scmInfo in ThisBuild := Some(
-  ScmInfo(
-    url("https://github.com/guardian/anghammarad"),
-    "scm:git@github.com:guardian/anghammarad"
+inThisBuild(Seq(
+  organization := "com.gu",
+  scalaVersion := "2.12.4",
+  licenses := Seq("Apache V2" -> url("http://www.apache.org/licenses/LICENSE-2.0.html")),
+  scmInfo := Some(
+    ScmInfo(
+      url("https://github.com/guardian/anghammarad"),
+      "scm:git@github.com:guardian/anghammarad"
+    )
+  ),
+  homepage := scmInfo.value.map(_.browseUrl),
+  developers := List(
+    Developer(id = "guardian", name = "Guardian", email = null, url = url("https://github.com/guardian"))
   )
-)
+))
 
 val awsSdkVersion = "1.11.258"
 val circeVersion = "0.9.1"

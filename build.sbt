@@ -10,6 +10,12 @@ val compilerOptions = Seq(
 organization in ThisBuild := "com.gu"
 scalaVersion in ThisBuild := "2.12.4"
 licenses in ThisBuild := Seq("Apache V2" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"))
+scmInfo in ThisBuild := Some(
+  ScmInfo(
+    url("https://github.com/guardian/anghammarad"),
+    "scm:git@github.com:guardian/anghammarad"
+  )
+)
 
 val awsSdkVersion = "1.11.258"
 val circeVersion = "0.9.1"
@@ -42,12 +48,6 @@ lazy val client = project
     ),
     scalacOptions ++= compilerOptions,
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
-    scmInfo := Some(
-      ScmInfo(
-        url("https://github.com/guardian/anghammarad"),
-        "scm:git@github.com:guardian/anghammarad"
-      )
-    ),
     publishTo := sonatypePublishTo.value
   )
 

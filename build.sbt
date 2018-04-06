@@ -40,7 +40,7 @@ lazy val root = project
   .settings(
     name := "anghammarad-root",
     // publish settings
-    releasePublishArtifactsAction := PgpKeys.publishSigned.value,
+    skip in publish := true,
     publishTo := sonatypePublishTo.value,
     releaseProcess += releaseStepCommandAndRemaining("sonatypeRelease")
   )
@@ -48,7 +48,10 @@ lazy val root = project
 
 lazy val common = project
   .settings(
-    name := "anghammarad-common"
+    name := "anghammarad-common",
+    // publish settings
+    releasePublishArtifactsAction := PgpKeys.publishSigned.value,
+    publishTo := sonatypePublishTo.value
   )
 
 lazy val client = project
@@ -60,7 +63,10 @@ lazy val client = project
       "org.json" % "json" % "20180130",
       "com.typesafe.scala-logging" %% "scala-logging" % "3.8.0",
       "org.scalatest" %% "scalatest" % "3.0.5" % Test
-    )
+    ),
+    // publish settings
+    releasePublishArtifactsAction := PgpKeys.publishSigned.value,
+    publishTo := sonatypePublishTo.value
   )
 
 lazy val anghammarad = project

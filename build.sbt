@@ -38,13 +38,17 @@ val circeVersion = "0.9.1"
 lazy val root = project
   .in(file("."))
   .settings(
-    name := "anghammarad-root"
+    name := "anghammarad-root",
+    // publish settings
+    releasePublishArtifactsAction := PgpKeys.publishSigned.value,
+    publishTo := sonatypePublishTo.value,
+    releaseProcess += releaseStepCommandAndRemaining("sonatypeRelease")
   )
   .aggregate(anghammarad, client, common)
 
 lazy val common = project
   .settings(
-    name := "common"
+    name := "anghammarad-common"
   )
 
 lazy val client = project
@@ -56,10 +60,7 @@ lazy val client = project
       "org.json" % "json" % "20180130",
       "com.typesafe.scala-logging" %% "scala-logging" % "3.8.0",
       "org.scalatest" %% "scalatest" % "3.0.5" % Test
-    ),
-    releasePublishArtifactsAction := PgpKeys.publishSigned.value,
-    publishTo := sonatypePublishTo.value,
-    releaseProcess += releaseStepCommandAndRemaining("sonatypeRelease")
+    )
   )
 
 lazy val anghammarad = project
@@ -82,6 +83,7 @@ lazy val anghammarad = project
       "ch.qos.logback" % "logback-classic" % "1.1.7",
       "org.scalatest" %% "scalatest" % "3.0.5" % Test
     ),
+    skip in publish := true,
     assemblyJarName := s"${name.value}.jar",
     riffRaffPackageType := assembly.value,
     riffRaffUploadArtifactBucket := Option("riffraff-artifact"),
@@ -95,6 +97,7 @@ lazy val dev = project
     name := "dev",
     libraryDependencies ++= Seq(
       "com.github.scopt" %% "scopt" % "3.7.0"
-    )
+    ),
+    skip in publish := true
   )
   .dependsOn(common, anghammarad)

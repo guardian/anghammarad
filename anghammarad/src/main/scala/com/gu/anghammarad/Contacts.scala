@@ -2,6 +2,7 @@ package com.gu.anghammarad
 
 import com.gu.anghammarad.AnghammaradException.Fail
 import com.gu.anghammarad.models.{Contact, Email, EmailAddress, HangoutsChat, HangoutsRoom, Mapping, Message, _}
+import com.gu.anghammarad.Targets._
 
 import scala.util.{Success, Try}
 
@@ -16,19 +17,39 @@ object Contacts {
     * App, Stack and AWS Account use a hierarchy, App > Stack > AwsAccount.
     * Stage treats PROD as the default and is required for a non-PROD match.
     */
-  def resolveTargetContacts(targets: List[Target], mappings: List[Mapping]): Try[List[Contact]] = {
+  def resolveTargetContacts(rawTargets: List[Target], rawMappings: List[Mapping]): Try[List[Contact]] = {
+    val targets = normaliseStages(rawTargets)
+    val mappings = rawMappings.map(mapping => mapping.copy(targets = normaliseStages(mapping.targets)))
+
     mappings.filter(_.targets.toSet == targets.toSet) match {
       case Nil =>
-        mappings.filter { case Mapping(mappingTargets, _) =>
+        val underSpecified = mappings.filter { case Mapping(mappingTargets, _) =>
           targets.toSet subsetOf mappingTargets.toSet
         } match {
           case Nil =>
             Fail(s"No contacts found for $targets")
           case exactMatch :: Nil =>
             Success(exactMatch.contacts)
-          case _ =>
+          case matches =>
             Fail(s"Cannot resolve contacts from ambiguous partial matches for $targets")
         }
+        val overSpecified = mappings.filter { case Mapping(mappingTargets, _) =>
+          mappingTargets.toSet subsetOf targets.toSet
+        } match {
+          case Nil =>
+            Fail(s"No contacts found for $targets")
+          case exactMatch :: Nil =>
+            Success(exactMatch.contacts)
+          case matches =>
+            val bestMatch = matches.sortBy { mapping =>
+              ( appMatches(mapping.targets, targets)
+              , stackMatches(mapping.targets, targets)
+              , awsAccountMatches(mapping.targets, targets)
+              )
+            }.lastOption
+            bestMatch.fold[Try[List[Contact]]](Fail(s"Cannot resolve contacts from ambiguous partial matches for $targets"))(mapping => Success(mapping.contacts))
+        }
+        underSpecified.recoverWith { case _ => overSpecified }
       case exactMatch :: Nil =>
         Success(exactMatch.contacts)
       case _ =>

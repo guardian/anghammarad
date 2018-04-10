@@ -82,17 +82,17 @@ class ContactsTest extends FreeSpec with Matchers with TryValues {
       }
 
       "resolves a more complex exact match" in {
-        val targets = List(Stack("stack"), Stage("stage"), App("app"))
+        val targets = List(AwsAccount("123456789"), Stack("stack"), App("app"))
         val mappings = List(
-          Mapping(List(Stack("stack"), Stage("stage"), App("app")), List(emailAddress))
+          Mapping(List(AwsAccount("123456789"), Stack("stack"), App("app")), List(emailAddress))
         )
         resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
       }
 
       "chooses a complex exact match over a simple partial match" in {
-        val targets = List(Stack("stack"), Stage("stage"), App("app"))
+        val targets = List(Stack("stack"), App("app"))
         val mappings = List(
-          Mapping(List(Stack("stack"), Stage("stage"), App("app")), List(emailAddress)),
+          Mapping(List(Stack("stack"), App("app")), List(emailAddress)),
           Mapping(List(App("app")), List(hangoutsRoom))
         )
         resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
@@ -125,6 +125,14 @@ class ContactsTest extends FreeSpec with Matchers with TryValues {
         resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
       }
 
+      "will not choose a mapping with a more specific requirement than has been targeted" in {
+        val targets = List(AwsAccount("123456789"), Stack("stack"))
+        val mappings = List(
+          Mapping(List(AwsAccount("123456789"), Stack("stack"), App("app")), List(emailAddress))
+        )
+        resolveTargetContacts(targets, mappings).isFailure shouldBe true
+      }
+
       "fails to resolve from ambiguous partial matches" in {
         val targets = List(Stack("stack"))
         val mappings = List(
@@ -138,7 +146,7 @@ class ContactsTest extends FreeSpec with Matchers with TryValues {
         val targets = List(Stack("stack"))
         val mappings = List(
           Mapping(List(AwsAccount("123456789"), Stack("stack")), List(emailAddress)),
-          Mapping(List(Stack("stack"), App("app2")), List(emailAddress))
+          Mapping(List(Stack("stack"), App("app2")), List(hangoutsRoom))
         )
         resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
       }
@@ -164,63 +172,79 @@ class ContactsTest extends FreeSpec with Matchers with TryValues {
 
     "when target is over-specified, uses hierarchy of targets to identify a match from less specific mappings" - {
       "app is most specific then both stack and Aws Account" - {
-        "chooses app over stack" in {
-          val targets = List(AwsAccount("123456789"), Stack("stack"), App("app1"))
+        "selects a targeted app" in {
+          val targets = List(AwsAccount("123456789"), Stack("stack"), App("app"))
           val mappings = List(
-            Mapping(List(App("app1")), List(emailAddress)),
+            Mapping(List(App("app")), List(emailAddress))
+          )
+          resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
+        }
+
+        "chooses app over stack" in {
+          val targets = List(AwsAccount("123456789"), Stack("stack"), App("app"))
+          val mappings = List(
+            Mapping(List(App("app")), List(emailAddress)),
             Mapping(List(Stack("stack")), List(hangoutsRoom))
           )
           resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
         }
 
         "chooses app over AWS account" in {
-          val targets = List(AwsAccount("123456789"), Stack("stack"), App("app1"))
+          val targets = List(AwsAccount("123456789"), Stack("stack"), App("app"))
           val mappings = List(
-            Mapping(List(App("app1")), List(emailAddress)),
+            Mapping(List(App("app")), List(emailAddress)),
             Mapping(List(AwsAccount("123456789")), List(hangoutsRoom))
           )
           resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
         }
 
         "chooses just app over a mapping with both stack and AWS account" in {
-          val targets = List(AwsAccount("123456789"), Stack("stack"), App("app1"))
+          val targets = List(AwsAccount("123456789"), Stack("stack"), App("app"))
           val mappings = List(
-            Mapping(List(App("app1")), List(emailAddress)),
+            Mapping(List(App("app")), List(emailAddress)),
             Mapping(List(Stack("stack"), AwsAccount("123456789")), List(hangoutsRoom))
           )
           resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
         }
 
         "chooses partial match with app over partial match with same number of less specific targets" in {
-          val targets = List(AwsAccount("123456789"), Stack("stack"), App("app1"))
+          val targets = List(AwsAccount("123456789"), Stack("stack"), App("app"))
           val mappings = List(
-            Mapping(List(App("app1"), Stack("stack")), List(emailAddress)),
+            Mapping(List(App("app"), Stack("stack")), List(emailAddress)),
             Mapping(List(Stack("stack"), AwsAccount("123456789")), List(hangoutsRoom))
           )
           resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
         }
 
         "does not resolve a partial app match if another target conflicts" in {
-          val targets = List(AwsAccount("123456789"), Stack("stack1"), App("app1"))
+          val targets = List(AwsAccount("123456789"), Stack("stack1"), App("app"))
           val mappings = List(
-            Mapping(List(Stack("stack2"), App("app1")), List(hangoutsRoom))
+            Mapping(List(Stack("stack2"), App("app")), List(hangoutsRoom))
           )
           resolveTargetContacts(targets, mappings).isFailure shouldBe true
         }
 
         "falls back to less specific partial match where app matches but other targets conflict" in {
-          val targets = List(AwsAccount("123456789"), Stack("stack1"), App("app1"))
+          val targets = List(AwsAccount("123456789"), Stack("stack1"), App("app"))
           val mappings = List(
             Mapping(List(Stack("stack1"), AwsAccount("123456789")), List(emailAddress)),
-            Mapping(List(Stack("stack2"), App("app1")), List(hangoutsRoom))
+            Mapping(List(Stack("stack2"), App("app")), List(hangoutsRoom))
           )
           resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
         }
       }
 
       "stack is more specific than account, less than app" - {
+        "selects a targeted stack" in {
+          val targets = List(AwsAccount("123456789"), Stack("stack"), App("app"))
+          val mappings = List(
+            Mapping(List(Stack("stack")), List(emailAddress))
+          )
+          resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
+        }
+
         "chooses stack over AWS account" in {
-          val targets = List(AwsAccount("123456789"), Stack("stack"), App("app1"))
+          val targets = List(AwsAccount("123456789"), Stack("stack"), App("app"))
           val mappings = List(
             Mapping(List(Stack("stack")), List(emailAddress)),
             Mapping(List(AwsAccount("123456789")), List(hangoutsRoom))
@@ -229,7 +253,7 @@ class ContactsTest extends FreeSpec with Matchers with TryValues {
         }
 
         "does not resolve a partial stack match if another target conflicts" in {
-          val targets = List(AwsAccount("123456789"), Stack("stack"), App("app1"))
+          val targets = List(AwsAccount("123456789"), Stack("stack"), App("app"))
           val mappings = List(
             Mapping(List(AwsAccount("111111111"), Stack("stack")), List(emailAddress))
           )
@@ -237,10 +261,10 @@ class ContactsTest extends FreeSpec with Matchers with TryValues {
         }
 
         "falls back to less specific partial match where stack matches but other targets conflict" in {
-          val targets = List(AwsAccount("123456789"), Stack("stack1"), App("app1"))
+          val targets = List(AwsAccount("123456789"), Stack("stack"), App("app"))
           val mappings = List(
-            Mapping(List(AwsAccount("123456789")), List(hangoutsRoom)),
-            Mapping(List(Stack("stack1"), AwsAccount("111111111")), List(emailAddress))
+            Mapping(List(AwsAccount("123456789")), List(emailAddress)),
+            Mapping(List(Stack("stack"), AwsAccount("111111111")), List(hangoutsRoom))
           )
           resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
         }
@@ -248,7 +272,7 @@ class ContactsTest extends FreeSpec with Matchers with TryValues {
 
       "AWS Account is less specific than app and stack" - {
         "does not resolve a partial AWS Account match if another target conflicts" in {
-          val targets = List(AwsAccount("123456789"), Stack("stack1"), App("app1"))
+          val targets = List(AwsAccount("123456789"), Stack("stack1"), App("app"))
           val mappings = List(
             Mapping(List(AwsAccount("123456789"), Stack("stack2")), List(emailAddress))
           )
@@ -257,8 +281,44 @@ class ContactsTest extends FreeSpec with Matchers with TryValues {
       }
     }
 
+    "if targets are both over and under specified against the mappings" - {
+      "will not choose a mapping with a more specific requirement than has been targeted" in {
+        val targets = List(AwsAccount("123456789"), Stack("stack"))
+        val mappings = List(
+          Mapping(List(Stack("stack")), List(emailAddress)),
+          Mapping(List(AwsAccount("123456789"), Stack("stack"), App("app")), List(hangoutsRoom))
+        )
+        resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
+      }
+
+      "chooses the better match where that mapping only lacks less specific targets" in {
+        val targets = List(Stack("stack"), App("app"))
+        val mappings = List(
+          Mapping(List(AwsAccount("123456789"), Stack("stack"), App("app")), List(emailAddress)),
+          Mapping(List(App("app")), List(hangoutsRoom))
+        )
+        resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
+      }
+    }
+
     "handles stage correctly" - {
       "empty stage is assumed to be PROD" - {
+        "resolves exact match with explicit stage" in {
+          val targets = List(Stack("stack"), App("app"), Stage("stage"))
+          val mappings = List(
+            Mapping(List(Stack("stack"), App("app"), Stage("stage")), List(emailAddress))
+          )
+          resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
+        }
+
+        "resolves exact match with implicit PROD stage" in {
+          val targets = List(Stack("stack"), App("app"))
+          val mappings = List(
+            Mapping(List(Stack("stack"), App("app")), List(emailAddress))
+          )
+          resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
+        }
+
         "over-specified partial match with empty stage in target matches empty stage in mapping" in {
           val targets = List(Stack("stack"), App("app"))
           val mappings = List(
@@ -331,23 +391,6 @@ class ContactsTest extends FreeSpec with Matchers with TryValues {
           resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
         }
       }
-    }
-
-    "fails to resolve a complex partially missing target" in {
-      val targets = List(Stack("stack"), Stage("PROD"), App("app1"))
-      val mappings = List(
-        Mapping(List(Stack("stack"), App("app1")), List(emailAddress))
-      )
-      resolveTargetContacts(targets, mappings).isFailure shouldEqual true
-    }
-
-    "fails to resolve partially missing target (doubly so when the partial matches are ambiguous)" in {
-      val targets = List(Stack("stack"), Stage("PROD"), App("app1"))
-      val mappings = List(
-        Mapping(List(Stack("stack"), App("app1")), List(emailAddress)),
-        Mapping(List(Stack("stack"), Stage("PROD")), List(emailAddress))
-      )
-      resolveTargetContacts(targets, mappings).isFailure shouldEqual true
     }
   }
 

@@ -125,10 +125,18 @@ class ContactsTest extends FreeSpec with Matchers with TryValues {
         resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
       }
 
-      "will not choose a mapping with a more specific requirement than has been targeted" in {
+      "will not choose a mapping with a more specific requirement than has been targeted (app)" in {
         val targets = List(AwsAccount("123456789"), Stack("stack"))
         val mappings = List(
           Mapping(List(AwsAccount("123456789"), Stack("stack"), App("app")), List(emailAddress))
+        )
+        resolveTargetContacts(targets, mappings).isFailure shouldBe true
+      }
+
+      "will not choose a mapping with a more specific requirement than has been targeted (stack)" in {
+        val targets = List(AwsAccount("123456789"))
+        val mappings = List(
+          Mapping(List(AwsAccount("123456789"), Stack("stack")), List(emailAddress))
         )
         resolveTargetContacts(targets, mappings).isFailure shouldBe true
       }
@@ -146,7 +154,7 @@ class ContactsTest extends FreeSpec with Matchers with TryValues {
         val targets = List(Stack("stack"))
         val mappings = List(
           Mapping(List(AwsAccount("123456789"), Stack("stack")), List(emailAddress)),
-          Mapping(List(Stack("stack"), App("app2")), List(hangoutsRoom))
+          Mapping(List(Stack("stack"), App("app")), List(hangoutsRoom))
         )
         resolveTargetContacts(targets, mappings).success shouldEqual List(emailAddress)
       }

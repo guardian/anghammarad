@@ -9,6 +9,12 @@ import scala.util.{Success, Try}
 object Contacts {
   /**
     * Gets all available contacts for this target, from configuration.
+    *
+    * The logic is complex, the tests are a good reference for the expected behaviour.
+    *
+    * Exact matches are prioritised, then we apply logic to route other messages correctly.
+    * App, Stack and AWS Account use a hierarchy, App > Stack > AwsAccount.
+    * Stage treats PROD as the default and is required for a non-PROD match.
     */
   def resolveTargetContacts(targets: List[Target], mappings: List[Mapping]): Try[List[Contact]] = {
     mappings.filter(_.targets.toSet == targets.toSet) match {

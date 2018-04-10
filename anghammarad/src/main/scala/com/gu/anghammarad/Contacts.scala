@@ -11,7 +11,7 @@ object Contacts {
     * Gets all available contacts for this target, from configuration.
     */
   def resolveTargetContacts(targets: List[Target], mappings: List[Mapping]): Try[List[Contact]] = {
-    mappings.filter(_.targets == targets) match {
+    mappings.filter(_.targets.toSet == targets.toSet) match {
       case Nil =>
         mappings.filter { case Mapping(mappingTargets, _) =>
           targets.toSet subsetOf mappingTargets.toSet

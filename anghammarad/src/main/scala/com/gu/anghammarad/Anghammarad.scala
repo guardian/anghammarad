@@ -1,12 +1,13 @@
 package com.gu.anghammarad
 
-import com.gu.anghammarad.models.{Configuration, Notification}
+import com.gu.anghammarad.models.{Configuration, Contact, Message, Notification}
 import com.gu.anghammarad.messages.{Messages, SendMessages}
+
 import scala.util.Try
 
 
 object Anghammarad {
-  def run(notification: Notification, config: Configuration): Try[Unit] = {
+  def run(notification: Notification, config: Configuration): Try[List[(Message, Contact)]] = {
     // resolve targets
     for {
       contacts <- Contacts.resolveTargetContacts(notification.target, config.mappings)
@@ -18,6 +19,6 @@ object Anghammarad {
       toSend <- Contacts.contactsForMessages(channelMessages, channelContacts)
       // send resolved notifications
       result <- SendMessages.sendAll(config, toSend)
-    } yield result
+    } yield toSend
   }
 }

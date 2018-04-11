@@ -2,12 +2,12 @@ package com.gu.anghammarad
 
 import com.gu.anghammarad.AnghammaradException.Fail
 import com.gu.anghammarad.ArgParser.argParser
-import com.gu.anghammarad.models.Notification
+import com.gu.anghammarad.models.{EmailAddress, HangoutsRoom, Notification}
 import com.gu.anghammarad.serialization.Serialization
 import io.circe.parser._
 import org.slf4j.{Logger, LoggerFactory}
 
-import scala.util.{Success, Try}
+import scala.util.{Failure, Success, Try}
 
 
 object Main {
@@ -23,21 +23,25 @@ object Main {
         logger.info(s"Loaded configuration from S3: ${devConfig.isSuccess}")
         logger.info(s"Config parsing succeeded: ${devMappings.isSuccess}")
 
-        val result = for {
+        val sentMessages = for {
           config <- Config.loadConfig(stage)
           configuration <- Serialization.parseConfig(config)
           notification <- notificationFromArguments(arguments)
-          _ <- Anghammarad.run(notification, configuration)
-        } yield ()
+          sent <- Anghammarad.run(notification, configuration)
+        } yield sent
 
-        result.fold(
-          { err =>
+        sentMessages match {
+          case Failure(err) =>
             logger.error("Failed to send notification", err)
-          },
-          _ =>
-            logger.info("Ok")
-        )
+          case Success(sent) =>
+            sent.map {
+              case (_, EmailAddress(email)) => s"Email: $email"
+              case (_, HangoutsRoom(webhook)) => s"Hangouts webhook: $webhook"
+            }
+            logger.info(s"sent notification ${sent.mkString(",")}")
+        }
       case None =>
+        // arguments were nto valid, help will have been printed
     }
   }
 

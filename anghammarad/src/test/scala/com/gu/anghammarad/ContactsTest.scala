@@ -2,8 +2,12 @@ package com.gu.anghammarad
 
 import com.gu.anghammarad.Contacts._
 import com.gu.anghammarad.models._
+import com.gu.anghammarad.serialization.Serialization
 import com.gu.anghammarad.testutils.TryValues
 import org.scalatest.{FreeSpec, Matchers}
+
+import scala.io.Source
+
 
 class ContactsTest extends FreeSpec with Matchers with TryValues {
   val email = EmailMessage("subject", "text", "html")
@@ -12,6 +16,43 @@ class ContactsTest extends FreeSpec with Matchers with TryValues {
   val hangoutsRoom = HangoutsRoom("webhook")
 
   "resolveTargetContacts" - {
+    // checks that contacts resolution still works in realistic scenarios
+    // implementation details are covered in the following tests
+    "integration tests with larger mappings" - {
+      val integrationConfigStr = Source.fromURL(getClass.getResource("/contacts-integration-fixture.json")).mkString
+      val mappings = Serialization.parseAllMappings(integrationConfigStr).success
+
+      "finds exact match among mappings" in {
+        val targets = List(AwsAccount("123456789"), App("app2"), Stack("stack2"))
+        resolveTargetContacts(targets, mappings).success shouldEqual List(EmailAddress("app2.email"))
+      }
+
+      "chooses correct match for sparsely-requested targets" in {
+        val targets = List(App("app2"))
+        resolveTargetContacts(targets, mappings).success shouldEqual List(EmailAddress("app2.email"))
+      }
+
+      "uses most specific match among multiple choices (matches mapping with stack and app, not the one with just app)" in {
+        val targets = List(AwsAccount("123456789"), Stack("stack2"), App("app1"), Stage("PROD"))
+        resolveTargetContacts(targets, mappings).success shouldEqual List(EmailAddress("stack2.app1.email"))
+      }
+
+      "chooses correct app match for specific target where app matches (even if stack and account are separately configured)" in {
+        val targets = List(AwsAccount("123456789"), Stack("stack1"), App("app1"), Stage("PROD"))
+        resolveTargetContacts(targets, mappings).success shouldEqual List(EmailAddress("app1.email"), HangoutsRoom("app1.channel"))
+      }
+
+      "chooses correct stack match for specific target if stack is configured but app is not" in {
+        val targets = List(AwsAccount("123456789"), Stack("stack1"), App("different-app"), Stage("PROD"))
+        resolveTargetContacts(targets, mappings).success shouldEqual List(EmailAddress("stack1.email"), HangoutsRoom("stack1.channel"))
+      }
+
+      "chooses correct AWS Account match for specific target if AWS Account is configured but stack and app are not" in {
+        val targets = List(AwsAccount("123456789"), Stack("different-stack"), App("different-app"), Stage("PROD"))
+        resolveTargetContacts(targets, mappings).success shouldEqual List(EmailAddress("123456789.email"))
+      }
+    }
+
     "cannot resolve from empty mappings" in {
       val targets = List(Stack("stack"))
       val mappings = Nil

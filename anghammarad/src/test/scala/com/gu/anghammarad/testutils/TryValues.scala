@@ -9,7 +9,7 @@ trait TryValues {
     def success: T = tried match {
       case Success(t) => t
       case Failure(err) =>
-        throw new TestFailedException("Could not get successful value from failed Try", err, 10)
+        throw new TestFailedException(s"Could not get successful value from failed Try (${err.getMessage})", err, 10)
     }
 
     def failure: Throwable = tried match {

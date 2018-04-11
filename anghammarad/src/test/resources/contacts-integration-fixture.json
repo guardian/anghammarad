@@ -1,0 +1,77 @@
+{
+  "emailDomain": "example.com",
+  "mappings": [
+    {
+      "target": {
+        "Stack": "stack1"
+      },
+      "contacts": {
+        "email": "stack1.email",
+        "hangouts": "stack1.channel"
+      }
+    },
+    {
+      "target": {
+        "AwsAccount": "stack2"
+      },
+      "contacts": {
+        "email": "stack2.email"
+      }
+    },
+    {
+      "target": {
+        "App": "app1"
+      },
+      "contacts": {
+        "email": "app1.email",
+        "hangouts": "app1.channel"
+      }
+    },
+    {
+      "target": {
+        "Stack": "stack2",
+        "App": "app1"
+      },
+      "contacts": {
+        "email": "stack2.app1.email"
+      }
+    },
+    {
+      "target": {
+        "AwsAccount": "123456789"
+      },
+      "contacts": {
+        "email": "123456789.email"
+      }
+    },
+    {
+      "target": {
+        "AwsAccount": "111111111"
+      },
+      "contacts": {
+        "email": "111111111.email"
+      }
+    },
+    {
+      "target": {
+        "AwsAccount": "123456789",
+        "Stack": "stack2",
+        "App": "app2"
+      },
+      "contacts": {
+        "email": "app2.email"
+      }
+    },
+    {
+      "target": {
+        "AwsAccount": "123456789",
+        "Stack": "stack2",
+        "App": "app2",
+        "Stage": "CODE"
+      },
+      "contacts": {
+        "email": "app2.CODE.email"
+      }
+    }
+  ]
+}

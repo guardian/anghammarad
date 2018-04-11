@@ -56,7 +56,7 @@ object Contacts {
     * Mapping has:
     *   Stack("stack"), App("app")
     *
-    * This is tricky because we wouldn't to match on the following
+    * This is tricky because we wouldn't want to match on the following
     *
     * Ask for:
     *   Stack("stack")

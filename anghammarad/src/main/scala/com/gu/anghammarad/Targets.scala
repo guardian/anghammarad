@@ -4,10 +4,14 @@ import com.gu.anghammarad.models._
 
 
 object Targets {
-  private val collectAwsAccount: PartialFunction[Target, AwsAccount] = { case a @ AwsAccount(_) => a }
-  private val collectStack: PartialFunction[Target, Stack] = { case s @ Stack(_) => s }
-  private val collectApp: PartialFunction[Target, App] = { case a @ App(_) => a }
-  private val collectStage: PartialFunction[Target, Stage] = { case s @ Stage(_) => s }
+  private val collectAwsAccount: PartialFunction[Target, AwsAccount] =
+    { case a @ AwsAccount(_) => a }
+  private val collectStack: PartialFunction[Target, Stack] =
+    { case s @ Stack(_) => s }
+  private val collectApp: PartialFunction[Target, App] =
+    { case a @ App(_) => a }
+  private val collectStage: PartialFunction[Target, Stage] =
+    { case s @ Stage(_) => s }
 
   def normaliseStages(targets: List[Target]): List[Target] = {
     if (includesStage(targets)) targets

@@ -145,4 +145,45 @@ class TargetsTest extends FreeSpec with Matchers {
       appMatches(List(App("app1"), App("app2")), List(App("app1"))) shouldBe true
     }
   }
+
+  "sortMappingsByTargets" - {
+    val expected = List(EmailAddress("expected"))
+    val unexpected = List(EmailAddress("unexpected"))
+
+    "matching app goes before matching stage and aws account" in {
+      val targets = List(App("app"), Stack("stack"), AwsAccount("123456789"))
+      val mappings = List(
+        Mapping(List(App("app")), expected),
+        Mapping(List(Stack("stack"), AwsAccount("123456789")), unexpected)
+      )
+      sortMappingsByTargets(targets, mappings).head.contacts shouldEqual expected
+    }
+
+    "non-matching app goes after matching stage and aws account" in {
+      val targets = List(App("app1"), Stack("stack"), AwsAccount("123456789"))
+      val mappings = List(
+        Mapping(List(App("app2")), unexpected),
+        Mapping(List(Stack("stack"), AwsAccount("123456789")), expected)
+      )
+      sortMappingsByTargets(targets, mappings).head.contacts shouldEqual expected
+    }
+
+    "matching stack goes before matching aws account" in {
+      val targets = List(Stack("stack"), AwsAccount("123456789"))
+      val mappings = List(
+        Mapping(List(Stack("stack")), expected),
+        Mapping(List(AwsAccount("123456789")), unexpected)
+      )
+      sortMappingsByTargets(targets, mappings).head.contacts shouldEqual expected
+    }
+
+    "non-matching stack goes after matching aws account" in {
+      val targets = List(Stack("stack1"), AwsAccount("123456789"))
+      val mappings = List(
+        Mapping(List(Stack("stack2")), unexpected),
+        Mapping(List(AwsAccount("123456789")), expected)
+      )
+      sortMappingsByTargets(targets, mappings).head.contacts shouldEqual expected
+    }
+  }
 }

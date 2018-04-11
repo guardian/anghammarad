@@ -15,7 +15,7 @@ object Contacts {
     *
     * Exact matches are prioritised, then we apply logic to route other messages correctly.
     * App, Stack and AWS Account use a hierarchy, App > Stack > AwsAccount.
-    * Stage treats PROD as the default and is required for a non-PROD match.
+    * Stage must match - it is considered to be PROD if omitted.
     */
   def resolveTargetContacts(rawTargets: List[Target], rawMappings: List[Mapping]): Try[List[Contact]] = {
     val targets = normaliseStages(rawTargets)
@@ -74,17 +74,14 @@ object Contacts {
       case Nil =>
         None
       case matches =>
-        matches.filter { case Mapping(mappingTargets, _) =>
+        val validMatches = matches.filter { case Mapping(mappingTargets, _) =>
           if (includesApp(mappingTargets)) appMatches(targets, mappingTargets)
           else if (includesStack(mappingTargets)) stackMatches(targets, mappingTargets)
           else if (includesAwsAccount(mappingTargets)) awsAccountMatches(targets, mappingTargets)
           else true
-        }.sortBy { mapping =>
-          ( appMatches(mapping.targets, targets)
-          , stackMatches(mapping.targets, targets)
-          , awsAccountMatches(mapping.targets, targets)
-          )
-        }.lastOption.map(_.contacts)
+        }
+        sortMappingsByTargets(targets, validMatches)
+          .headOption.map(_.contacts)
     }
   }
 
@@ -108,12 +105,8 @@ object Contacts {
       case Nil =>
         None
       case matches =>
-        matches.sortBy { mapping =>
-          ( appMatches(mapping.targets, targets)
-          , stackMatches(mapping.targets, targets)
-          , awsAccountMatches(mapping.targets, targets)
-          )
-        }.lastOption.map(_.contacts)
+        sortMappingsByTargets(targets, matches)
+          .headOption.map(_.contacts)
     }
   }
 

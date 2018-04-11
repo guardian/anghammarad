@@ -53,4 +53,13 @@ object Targets {
     val stages2 = targets2.collect(collectApp).toSet
     (stages1 intersect stages2).nonEmpty
   }
+
+  def sortMappingsByTargets(targets: List[Target], mappings: List[Mapping]): List[Mapping] = {
+    mappings.sortBy { mapping =>
+      ( appMatches(mapping.targets, targets)
+      , stackMatches(mapping.targets, targets)
+      , awsAccountMatches(mapping.targets, targets)
+      )
+    }.reverse
+  }
 }

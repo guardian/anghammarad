@@ -41,7 +41,7 @@ object Main {
             logger.info(s"sent notification ${sent.mkString(",")}")
         }
       case None =>
-        // arguments were nto valid, help will have been printed
+        // arguments were not valid, help will have been printed
     }
   }
 

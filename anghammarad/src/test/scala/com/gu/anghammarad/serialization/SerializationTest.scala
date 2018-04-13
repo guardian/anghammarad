@@ -74,6 +74,8 @@ class SerializationTest extends FreeSpec with Matchers with EitherValues with Tr
       Serialization.parseRequestedChannel("email").success shouldEqual Email
       Serialization.parseRequestedChannel("hangouts").success  shouldEqual HangoutsChat
       Serialization.parseRequestedChannel("all").success  shouldEqual All
+      Serialization.parseRequestedChannel("prefer email").success  shouldEqual Preferred(Email)
+      Serialization.parseRequestedChannel("prefer hangouts").success  shouldEqual Preferred(HangoutsChat)
     }
 
     "will return a failure if no match is found" in {

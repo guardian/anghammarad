@@ -73,6 +73,8 @@ object Serialization {
       case "email" => Success(Email)
       case "hangouts" => Success(HangoutsChat)
       case "all" => Success(All)
+      case "prefer email" => Success(Preferred(Email))
+      case "prefer hangouts" => Success(Preferred(HangoutsChat))
       case _ => Fail(s"Parsing error: Unable to match RequestedChannel to known options")
     }
   }

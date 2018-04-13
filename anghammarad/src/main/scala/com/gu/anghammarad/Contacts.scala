@@ -1,8 +1,9 @@
 package com.gu.anghammarad
 
 import com.gu.anghammarad.AnghammaradException.Fail
-import com.gu.anghammarad.models.{Contact, Email, EmailAddress, HangoutsChat, HangoutsRoom, Mapping, Message, _}
+import com.gu.anghammarad.models.{Channel, Contact, Email, EmailAddress, HangoutsChat, HangoutsRoom, Mapping, Message, _}
 import com.gu.anghammarad.Targets._
+import com.gu.anghammarad.messages.Messages.{emailMessage, hangoutMessage}
 
 import scala.util.{Success, Try}
 
@@ -113,39 +114,69 @@ object Contacts {
   /**
     * Attempts to find contacts for each requested channel.
     */
-  def resolveContactsForChannels(contacts: List[Contact], requestedChannel: RequestedChannel): List[(Channel, Contact)] = {
-    requestedChannel match {
-      case Email =>
-        contacts.collect {
-          case ea: EmailAddress => Email -> ea
-        }
-      case HangoutsChat =>
-        contacts.collect {
-          case hr: HangoutsRoom => HangoutsChat -> hr
-        }
-      case All =>
-        contacts.collect {
-          case ea: EmailAddress => Email -> ea
-          case hr: HangoutsRoom => HangoutsChat -> hr
-        }
+  def resolveContactsForChannels(contacts: List[Contact], requestedChannel: RequestedChannel): Try[List[(Channel, Contact)]] = {
+    val emails = contacts.collect {
+      case ea: EmailAddress => Email -> ea
     }
+    val webhooks = contacts.collect {
+      case hr: HangoutsRoom => HangoutsChat -> hr
+    }
+    val resolved = requestedChannel match {
+      case Email =>
+        emails
+      case HangoutsChat =>
+        webhooks
+      case All =>
+        emails ++ webhooks
+      case Preferred(Email) =>
+        if (emails.nonEmpty) emails
+        else webhooks
+      case Preferred(HangoutsChat) =>
+        if (webhooks.nonEmpty) webhooks
+        else emails
+    }
+    if (resolved.isEmpty) Fail(s"Could not find any contacts for requested channel, $requestedChannel")
+    else Success(resolved)
   }
 
   /**
     * Finds a contact (from provided available targets) for each message.
     */
-  def contactsForMessages(channelMessages: List[(Channel, Message)], channelContacts: List[(Channel, Contact)]): Try[List[(Message, Contact)]] = {
-    val resolved = channelMessages.flatMap { case (messageChannel, message) =>
-      for {
-        (_, contact) <- channelContacts.find { case (contactChannel, _) =>
-          contactChannel == messageChannel
-        }
-      } yield message -> contact
+  def contactsForMessage(requestedChannel: RequestedChannel, channelContacts: List[(Channel, Contact)]): Try[List[(Channel, Contact)]] = {
+    val emailContacts = channelContacts.filter { case (channel, _) =>
+      channel == Email
     }
-    if (resolved.size < channelMessages.size) {
-      Fail(s"Could not find contacts for messages on the requested channels messages($channelMessages), contacts($channelContacts)")
+    val hangoutsContacts = channelContacts.filter { case (channel, _) =>
+      channel == HangoutsChat
+    }
+    val resolvedContacts = requestedChannel match {
+      case Email =>
+        emailContacts
+      case HangoutsChat =>
+        hangoutsContacts
+      case All =>
+        emailContacts ++ hangoutsContacts
+      case Preferred(Email) =>
+        if (emailContacts.nonEmpty) emailContacts
+        else hangoutsContacts
+      case Preferred(HangoutsChat) =>
+        if (hangoutsContacts.nonEmpty) hangoutsContacts
+        else emailContacts
+    }
+
+    if (resolvedContacts.isEmpty) {
+      Fail(s"Could not find contacts for messages on the requested channels $requestedChannel, contacts($channelContacts)")
     } else {
-      Success(resolved)
+      Success(resolvedContacts)
+    }
+  }
+
+  def createMessages(notification: Notification, addressees: List[(Channel, Contact)]): List[(Message, Contact)] = {
+    addressees.map {
+      case (Email, contact) =>
+        emailMessage(notification) -> contact
+      case (HangoutsChat, contact) =>
+        hangoutMessage(notification) -> contact
     }
   }
 }

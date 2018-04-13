@@ -134,7 +134,7 @@ class MessagesTest extends FreeSpec with Matchers with EitherValues {
   }
 
   def testNotification(subject: String, message: String, actions: Action*): Notification = {
-    Notification("test", All, Nil, subject, message, actions.toList)
+    Notification(subject, message, actions.toList, Nil, All, "test")
   }
 
   /**
@@ -148,9 +148,12 @@ class MessagesTest extends FreeSpec with Matchers with EitherValues {
     */
   "test end-to-end hangouts message" ignore {
     val notification = Notification(
-      "Testing", HangoutsChat, Nil, "Subject",
+      "Subject",
       "Mentions don't work in card messages yet.\nMessage *with* some **styles**!",
-      List(Action("CTA", "https://example.com/"), Action("Another CTA", "https://example.com/"))
+      List(Action("CTA", "https://example.com/"), Action("Another CTA", "https://example.com/")),
+      Nil,
+      HangoutsChat,
+      "Testing"
     )
     val message = Messages.hangoutMessage(notification)
     // println(message.cardJson)

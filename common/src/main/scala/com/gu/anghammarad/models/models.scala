@@ -40,12 +40,12 @@ case class HangoutMessage(
 ) extends Message
 
 case class Notification(
-  sourceSystem: String,
-  channel: RequestedChannel,
-  target: List[Target],
   subject: String,
   message: String,
-  actions: List[Action]
+  actions: List[Action],
+  target: List[Target],
+  channel: RequestedChannel,
+  sourceSystem: String
 )
 
 case class Action(

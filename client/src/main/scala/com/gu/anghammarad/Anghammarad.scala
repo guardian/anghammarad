@@ -21,7 +21,7 @@ object Anghammarad {
     * @param channel      The notification channel you'd like to use
     * @param sourceSystem The system sending the notification (your system)
     * @param topicArn     ARN of Anghammarad's SNS topic (you will need to obtain this and put it in your app's config)
-    * @param client       The SNS client that should be used to add your notification to the topic
+    * @param client       The SNS client used to add your notification to the topic (if omitted, a default is used)
     * @return             Future containing the resulting SNS Message ID
     */
   def notify(subject: String, message: String, actions: List[Action], target: List[Target], channel: RequestedChannel,
@@ -36,6 +36,7 @@ object Anghammarad {
 
   /**
     * Sends a notification using Anghammarad.
+    * This uses a default SNS client with a default implementation of the credentials provider.
     *
     * @param notification The notification to send
     * @param topicArn     ARN of Anghammarad's SNS topic (you will need to obtain this and put it in your app's config)
@@ -55,7 +56,7 @@ object Anghammarad {
     *
     * @param notification The notification to send
     * @param topicArn     ARN of Anghammarad's SNS topic (you will need to obtain this and put it in your app's config)
-    * @param client       The SNS client that should be used to add your notification to the topic
+    * @param client       The SNS client used to add your notification to the topic
     * @return             Future containing the resulting SNS Message ID
     */
   def notify(notification: Notification, topicArn: String, client: AmazonSNSAsync)

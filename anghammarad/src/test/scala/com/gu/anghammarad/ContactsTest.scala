@@ -468,7 +468,7 @@ class ContactsTest extends FreeSpec with Matchers with TryValues {
       resolveContactsForChannels(List(emailAddress, hangoutsRoom), Preferred(Email)).success shouldEqual List(Email -> emailAddress)
     }
 
-    "if email is preferred and absent, returns webhhok" in {
+    "if email is preferred and absent, returns webhook" in {
       resolveContactsForChannels(List(hangoutsRoom), Preferred(Email)).success shouldEqual List(HangoutsChat -> hangoutsRoom)
     }
 

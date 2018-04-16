@@ -8,6 +8,7 @@ case class AwsAccount(awsAccount: String) extends Target
 
 sealed trait RequestedChannel
 case object All extends RequestedChannel
+case class Preferred(preferredChannel: Channel) extends RequestedChannel
 
 sealed trait Channel
 case object Email extends Channel with RequestedChannel

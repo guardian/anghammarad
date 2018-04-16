@@ -11,6 +11,8 @@ object Json extends StrictLogging {
       case Email => "email"
       case HangoutsChat => "hangouts"
       case All => "all"
+      case Preferred(Email) => "prefer email"
+      case Preferred(HangoutsChat) => "prefer hangouts"
     }
     s"""{
        |  "message":${quoteJson(message)},
@@ -23,16 +25,13 @@ object Json extends StrictLogging {
 
   private[anghammarad] def targetJson(targets: List[Target]): String = {
     def targetJsonString(key: String, value: String) = s""""$key":${quoteJson(value)}"""
-    val kvpairs = targets.map (target => {
-      target match {
-        case Stack(stack) => targetJsonString("Stack", stack)
-        case Stage(stage) => targetJsonString("Stage", stage)
-        case App(app) => targetJsonString("App", app)
-        case AwsAccount(awsAccount) => targetJsonString("AwsAccount", awsAccount)
-        case _ => ""
-      }
-    }
-    ).mkString(",")
+    val kvpairs = targets.map {
+      case Stack(stack) => targetJsonString("Stack", stack)
+      case Stage(stage) => targetJsonString("Stage", stage)
+      case App(app) => targetJsonString("App", app)
+      case AwsAccount(awsAccount) => targetJsonString("AwsAccount", awsAccount)
+      case _ => ""
+    }.mkString(",")
     s"{$kvpairs}"
   }
 

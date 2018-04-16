@@ -444,59 +444,69 @@ class ContactsTest extends FreeSpec with Matchers with TryValues {
   }
 
   "resolveContactsForChannels" - {
-    "if no contacts are provided, finds no channels" in {
-      resolveContactsForChannels(Nil, All) shouldEqual Nil
+    "if no contacts are provided, fails because it cannot find any channels" in {
+      resolveContactsForChannels(Nil, All).isFailure shouldBe true
     }
 
-    "does not find a contact from a different channel" in {
-      resolveContactsForChannels(List(emailAddress), HangoutsChat) shouldEqual Nil
+    "fails if a requested channel is not available" in {
+      resolveContactsForChannels(List(emailAddress), HangoutsChat).isFailure shouldBe true
     }
 
     "finds a contact from a relevant channel" in {
-      resolveContactsForChannels(List(emailAddress), Email) shouldEqual List(Email -> emailAddress)
+      resolveContactsForChannels(List(emailAddress), Email).success shouldEqual List(Email -> emailAddress)
     }
 
     "if multiple channels are requested, returns as many as it can" in {
-      resolveContactsForChannels(List(emailAddress), All) shouldEqual List(Email -> emailAddress)
+      resolveContactsForChannels(List(emailAddress), All).success shouldEqual List(Email -> emailAddress)
     }
 
     "returns all matching contacts when All is requested" in {
-      resolveContactsForChannels(List(emailAddress, hangoutsRoom), All) shouldEqual List(Email -> emailAddress, HangoutsChat -> hangoutsRoom)
+      resolveContactsForChannels(List(emailAddress, hangoutsRoom), All).success shouldEqual List(Email -> emailAddress, HangoutsChat -> hangoutsRoom)
+    }
+
+    "if email is preferred and present, returns email" in {
+      resolveContactsForChannels(List(emailAddress, hangoutsRoom), Preferred(Email)).success shouldEqual List(Email -> emailAddress)
+    }
+
+    "if email is preferred and absent, returns webhook" in {
+      resolveContactsForChannels(List(hangoutsRoom), Preferred(Email)).success shouldEqual List(HangoutsChat -> hangoutsRoom)
+    }
+
+    "if hangouts is preferred and present, returns webhook" in {
+      resolveContactsForChannels(List(emailAddress, hangoutsRoom), Preferred(HangoutsChat)).success shouldEqual List(HangoutsChat -> hangoutsRoom)
+    }
+
+    "if webhook is preferred and absent, returns email" in {
+      resolveContactsForChannels(List(emailAddress), Preferred(HangoutsChat)).success shouldEqual List(Email -> emailAddress)
     }
   }
 
-  "contactsForMessages" - {
-    "returns an empty list if there were no contacts and no messages" in {
-      contactsForMessages(Nil, Nil).success shouldEqual Nil
+  "contactsForMessage" - {
+    "if there were no contacts and no messages it fails to find contacts and fails" in {
+      contactsForMessage(All, Nil).isFailure shouldEqual true
     }
 
     "returns a failure if we could not find a contact for a message" in {
-      contactsForMessages(List(Email -> email), Nil).isFailure shouldEqual true
+      contactsForMessage(Email, Nil).isFailure shouldEqual true
     }
 
-    "returns a failure if we could only find a contact for one channel" in {
-      contactsForMessages(
-        List(Email -> email, HangoutsChat -> hangoutMessage),
-        List(Email -> emailAddress)
-      ).isFailure shouldEqual true
+    "returns a failure if the requested channel is not available" in {
+      val result = contactsForMessage(HangoutsChat, List(Email -> emailAddress))
+      result.isFailure shouldEqual true
     }
 
     "returns the contact for a message, if present" in {
-      val result = contactsForMessages(List(Email -> email), List(Email -> emailAddress)).success
-      result shouldEqual List(email -> emailAddress)
+      contactsForMessage(Email, List(Email -> emailAddress)).success shouldEqual List(Email -> emailAddress)
     }
 
     "returns the contact for the correct channel, if multiple are present" in {
-      val result = contactsForMessages(List(Email -> email), List(HangoutsChat -> hangoutsRoom, Email -> emailAddress)).success
-      result shouldEqual List(email -> emailAddress)
+      val result = contactsForMessage(Email, List(HangoutsChat -> hangoutsRoom, Email -> emailAddress)).success
+      result shouldEqual List(Email -> emailAddress)
     }
 
     "matches multiple messages with their contacts" in {
-      val result = contactsForMessages(
-        List(Email -> email, HangoutsChat -> hangoutMessage),
-        List(HangoutsChat -> hangoutsRoom, Email -> emailAddress)
-      ).success
-      result shouldEqual List(email -> emailAddress, hangoutMessage -> hangoutsRoom)
+      val result = contactsForMessage(All, List(HangoutsChat -> hangoutsRoom, Email -> emailAddress)).success
+      result shouldEqual List(Email -> emailAddress, HangoutsChat -> hangoutsRoom)
     }
   }
 }

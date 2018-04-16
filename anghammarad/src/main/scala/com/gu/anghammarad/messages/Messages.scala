@@ -17,24 +17,6 @@ object Messages {
   private[anghammarad] val mdParser = Parser.builder(mdOptions).build
   private[anghammarad] val mdRenderer = HtmlRenderer.builder(mdOptions).build()
 
-  def channelMessages(notification: Notification): List[(Channel, Message)] = {
-    notification.channel match {
-      case Email =>
-        List(
-          Email -> emailMessage(notification)
-        )
-      case HangoutsChat =>
-        List(
-          HangoutsChat -> hangoutMessage(notification)
-        )
-      case All =>
-        List(
-          Email -> emailMessage(notification),
-          HangoutsChat -> hangoutMessage(notification)
-        )
-    }
-  }
-
   def emailMessage(notification: Notification): EmailMessage = {
     val (markdown, plaintext) =
       if (notification.actions.isEmpty) {

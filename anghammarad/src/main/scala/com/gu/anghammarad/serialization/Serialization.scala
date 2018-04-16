@@ -63,7 +63,7 @@ object Serialization {
       channel <- parseRequestedChannel(rawChannel).toEither
       targets <- parseAllTargets(rawTargets).toEither
       actions <- rawActions.traverseT(parseAction).toEither
-    } yield Notification(sourceSystem, channel, targets, subject, message, actions)
+    } yield Notification(subject, message, actions, targets, channel, sourceSystem)
 
     parsingResult.toTry
   }

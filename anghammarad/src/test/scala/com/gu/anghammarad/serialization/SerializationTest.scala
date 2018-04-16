@@ -19,12 +19,12 @@ class SerializationTest extends FreeSpec with Matchers with EitherValues with Tr
     val validJson = parse(validJsonString).right.value
 
     val expectedResult = Notification(
-      "Terry Pratchett",
-      Email,
-      List(Stack("postal-service"), App("clacks-overhead")),
       "GNU Terry Pratchett",
       "Words are important. And when there is a critical mass of them, they change the nature of the universe.",
-      List(Action("keep that name moving in the Overhead", "http://www.gnuterrypratchett.com/"))
+      List(Action("keep that name moving in the Overhead", "http://www.gnuterrypratchett.com/")),
+      List(Stack("postal-service"), App("clacks-overhead")),
+      Email,
+      "Terry Pratchett"
     )
 
     "parseNotification" - {

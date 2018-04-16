@@ -29,17 +29,19 @@ object ArgParser {
               val message = Source.fromFile(file, "UTF-8").mkString
               j.copy(json = message)
             case _ => throw new RuntimeException("Arguments error")
-          },
+          }
+          .text("file containing JSON message"),
         opt[String]('j', "json")
           .action {
             case (message, j: Json) =>
               j.copy(json = message)
             case _ => throw new RuntimeException("Arguments error")
           }
+          .text("the raw JSON describing a message")
       )
     cmd("fields")
       .action { (_, _) =>
-        Specified("", None, Nil, "", "", Nil)
+        Specified("", "", Nil, Nil, None, "")
       }
       .text("specify fields directly")
       .children(
@@ -57,6 +59,13 @@ object ArgParser {
             case _ => throw new RuntimeException("Arguments error")
           }
           text "Specify email as the channel",
+        opt[Unit]("prefer-email")
+          .action {
+            case (_, fields: Specified) =>
+              fields.copy(channel = Some(Preferred(Email)))
+            case _ => throw new RuntimeException("Arguments error")
+          }
+          text "Specify email as the preferred channel",
         opt[Unit]("hangouts")
           .action {
             case (_, fields: Specified) =>
@@ -64,6 +73,13 @@ object ArgParser {
             case _ => throw new RuntimeException("Arguments error")
           }
           text "Specify hangouts chat as the channel",
+        opt[Unit]("prefer-hangouts")
+          .action {
+            case (_, fields: Specified) =>
+              fields.copy(channel = Some(Preferred(HangoutsChat)))
+            case _ => throw new RuntimeException("Arguments error")
+          }
+          text "Specify hangouts chat as the preferred channel",
         opt[Unit]("all")
           .action {
             case (_, fields: Specified) =>
@@ -144,10 +160,10 @@ case class Json(
   json: String
 ) extends Arguments
 case class Specified(
-  source: String,
-  channel: Option[RequestedChannel],
-  targets: List[Target],
   subject: String,
   message: String,
-  actions: List[Action]
+  actions: List[Action],
+  targets: List[Target],
+  channel: Option[RequestedChannel],
+  source: String
 ) extends Arguments

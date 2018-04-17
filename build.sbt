@@ -44,7 +44,7 @@ lazy val root = project
     publishTo := sonatypePublishTo.value,
     releaseProcess += releaseStepCommandAndRemaining("sonatypeRelease")
   )
-  .aggregate(anghammarad, client, common)
+  .aggregate(anghammarad, client, common, dev)
 
 lazy val common = project
   .settings(

@@ -24,9 +24,9 @@ object Main {
         logger.info(s"Config parsing succeeded: ${devMappings.isSuccess}")
 
         val sentMessages = for {
+          notification <- notificationFromArguments(arguments)
           config <- Config.loadConfig(stage)
           configuration <- Serialization.parseConfig(config)
-          notification <- notificationFromArguments(arguments)
           sent <- Anghammarad.run(notification, configuration)
         } yield sent
 
@@ -52,11 +52,12 @@ object Main {
           json <- parse(jsonStr).toTry
           notification <- Serialization.generateNotification(subject, json)
         } yield notification
-      case Specified(source, Some(channel), targets, subject, message, actions) =>
-        Success(Notification(source, channel, targets, subject, message, actions))
+      case Specified(subject, message, actions, targets, Some(channel), source) =>
+        Success(Notification(subject, message, actions, targets, channel, source))
       case s: Specified =>
         Fail("No channel provided")
       case InitialArgs =>
+        argParser.showUsageAsError()
         Fail("No arguments provided, cannot make a notification")
     }
   }

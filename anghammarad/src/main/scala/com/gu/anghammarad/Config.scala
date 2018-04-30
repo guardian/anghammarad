@@ -37,8 +37,8 @@ object Config {
   def getStage(): String = Option(System.getenv("Stage")).getOrElse("DEV")
 
   def loadConfig(stage: String): Try[String] = {
-    val bucket = s"anghammarad-configuration/$stage"
-    val key = s"anghammarad-config.json"
+    val bucket = s"anghammarad-configuration"
+    val key = s"$stage/anghammarad-config.json"
 
     val request = new GetObjectRequest(bucket, key)
     fetchString(request)

@@ -9,9 +9,8 @@ import scala.util.{Failure, Success}
 
 class Lambda extends RequestHandler[SNSEvent, Unit] {
   override def handleRequest(input: SNSEvent, context: Context): Unit = {
-    val stage = Config.getStage()
-
     val sentMessages = for {
+      stage <- Config.getStage()
       config <- Config.loadConfig(stage)
       configuration <- Serialization.parseConfig(config)
       notification <- Serialization.parseNotification(input)

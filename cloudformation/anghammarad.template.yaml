@@ -59,6 +59,9 @@ Resources:
           Type: SNS
           Properties:
             Topic: !Ref NotificationTopic
+      Environment:
+        Variables:
+          Stage: !Ref Stage
       Tags:
         Stack: !FindInMap [ Constants, Stack, Value ]
         App: !FindInMap [ Constants, App, Value ]

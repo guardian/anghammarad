@@ -42,6 +42,11 @@ class ContactsTest extends FreeSpec with Matchers with TryValues {
         resolveTargetContacts(targets, mappings).success shouldEqual List(EmailAddress("app1.email"), HangoutsRoom("app1.channel"))
       }
 
+      "matches stack from more specific target" in {
+        val targets = List(AwsAccount("foo"), Stack("stack1"), App("foo"), Stage("PROD"))
+        resolveTargetContacts(targets, mappings).success shouldEqual List(EmailAddress("stack1.email"), HangoutsRoom("stack1.channel"))
+      }
+
       "chooses correct stack match for specific target if stack is configured but app is not" in {
         val targets = List(AwsAccount("123456789"), Stack("stack1"), App("different-app"), Stage("PROD"))
         resolveTargetContacts(targets, mappings).success shouldEqual List(EmailAddress("stack1.email"), HangoutsRoom("stack1.channel"))

@@ -16,7 +16,7 @@ object Main {
 
     argParser.parse(args, InitialArgs) match {
       case Some(arguments) =>
-        val stage = Config.getStage()
+        val stage = "DEV"
         val devConfig = Config.loadConfig(stage)
         val devMappings = Serialization.parseAllMappings(devConfig.getOrElse(""))
 

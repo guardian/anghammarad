@@ -5,9 +5,10 @@ import com.amazonaws.auth.profile.ProfileCredentialsProvider
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.{GetObjectRequest, S3ObjectInputStream}
+import com.gu.anghammarad.AnghammaradException.Fail
 
 import scala.io.Source
-import scala.util.Try
+import scala.util.{Success, Try}
 
 
 object Config {
@@ -34,7 +35,12 @@ object Config {
     } yield contentString
   }
 
-  def getStage(): String = Option(System.getenv("Stage")).getOrElse("DEV")
+  def getStage(): Try[String] = {
+    Option(System.getenv("Stage")) match {
+      case Some(stage) => Success(stage)
+      case None => Fail("Could nto find environment variable, 'Stage'")
+    }
+  }
 
   def loadConfig(stage: String): Try[String] = {
     val bucket = s"anghammarad-configuration"

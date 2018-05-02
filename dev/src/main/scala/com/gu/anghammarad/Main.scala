@@ -16,15 +16,9 @@ object Main {
 
     argParser.parse(args, InitialArgs) match {
       case Some(arguments) =>
-        val stage = "DEV"
-        val devConfig = Config.loadConfig(stage)
-        val devMappings = Serialization.parseAllMappings(devConfig.getOrElse(""))
-
-        logger.info(s"Loaded configuration from S3: ${devConfig.isSuccess}")
-        logger.info(s"Config parsing succeeded: ${devMappings.isSuccess}")
-
         val sentMessages = for {
           notification <- notificationFromArguments(arguments)
+          stage <- stageFromArguments(arguments)
           config <- Config.loadConfig(stage)
           configuration <- Serialization.parseConfig(config)
           sent <- Anghammarad.run(notification, configuration)
@@ -47,18 +41,30 @@ object Main {
 
   def notificationFromArguments(args: Arguments): Try[Notification] = {
     args match {
-      case Json(subject, jsonStr) =>
+      case Json(subject, jsonStr, _) =>
         for {
           json <- parse(jsonStr).toTry
           notification <- Serialization.generateNotification(subject, json)
         } yield notification
-      case Specified(subject, message, actions, targets, Some(channel), source) =>
+      case Specified(subject, message, actions, targets, Some(channel), source, _) =>
         Success(Notification(subject, message, actions, targets, channel, source))
       case s: Specified =>
         Fail("No channel provided")
       case InitialArgs =>
         argParser.showUsageAsError()
         Fail("No arguments provided, cannot make a notification")
+    }
+  }
+
+  def stageFromArguments(args: Arguments): Try[String] = {
+    args match {
+      case Json(_, _, configStage) =>
+        Success(configStage)
+      case Specified(_, _, _, _, _, _, configStage) =>
+        Success(configStage)
+      case InitialArgs =>
+        argParser.showUsageAsError()
+        Fail("No arguments provided, cannot obtain a configuration stage")
     }
   }
 }

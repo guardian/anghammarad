@@ -12,7 +12,7 @@ object ArgParser {
   val argParser: OptionParser[Arguments] = new OptionParser[Arguments]("anghammarad") {
     cmd("json")
       .action { (_, _) =>
-        Json("", "")
+        Json("", "", Arguments.defaultStage)
       }
       .text("provide a JSON message to mimic SNS")
       .children(
@@ -37,11 +37,19 @@ object ArgParser {
               j.copy(json = message)
             case _ => throw new RuntimeException("Arguments error")
           }
-          .text("the raw JSON describing a message")
+          .text("the raw JSON describing a message"),
+        opt[String]("config-stage")
+          .optional()
+          .action {
+            case (configStage, j: Json) =>
+              j.copy(configStage = configStage)
+            case _ => throw new RuntimeException("Arguments error")
+          }
+          .text("Which stage's config to use (defaults to DEV, recommended)")
       )
     cmd("fields")
       .action { (_, _) =>
-        Specified("", "", Nil, Nil, None, "")
+        Specified("", "", Nil, Nil, None, "", Arguments.defaultStage)
       }
       .text("specify fields directly")
       .children(
@@ -112,7 +120,7 @@ object ArgParser {
               fields.copy(targets = resolvedTargets)
             case _ => throw new RuntimeException("Arguments error")
           }
-          text "Specify all services as channels",
+          text "Specify targets (Stack, Stage, App, AwsAccount) e.g. App=test,Stack=stack",
         opt[String]("subject")
           .action {
             case (subject, fields: Specified) =>
@@ -146,7 +154,15 @@ object ArgParser {
               fields.copy(actions = actions.toList)
             case _ => throw new RuntimeException("Arguments error")
           }
-          text "CTAs in the form text|url",
+          text "comma separated CTAs in the form text|url",
+        opt[String]("config-stage")
+          .optional()
+          .action {
+            case (configStage, fields: Specified) =>
+              fields.copy(configStage = configStage)
+            case _ => throw new RuntimeException("Arguments error")
+          }
+          .text("Which stage's config to use (defaults to DEV, recommended)")
       )
   }
 
@@ -157,7 +173,8 @@ trait Arguments
 case object InitialArgs extends Arguments
 case class Json(
   subject: String,
-  json: String
+  json: String,
+  configStage: String
 ) extends Arguments
 case class Specified(
   subject: String,
@@ -165,5 +182,9 @@ case class Specified(
   actions: List[Action],
   targets: List[Target],
   channel: Option[RequestedChannel],
-  source: String
+  source: String,
+  configStage: String
 ) extends Arguments
+object Arguments {
+  val defaultStage = "DEV"
+}

@@ -33,6 +33,11 @@ class MessagesTest extends FreeSpec with Matchers with EitherValues {
           val notification = testNotification("subject", "message")
           emailMessage(notification).plainText should include("message")
         }
+
+        "includes the Anghammarad notice with source system" in {
+          val notification = testNotification("subject", "message")
+          emailMessage(notification).plainText should (include(notification.sourceSystem) and include("Anghammarad"))
+        }
       }
 
       "if actions are not present" - {
@@ -44,7 +49,12 @@ class MessagesTest extends FreeSpec with Matchers with EitherValues {
 
         "uses the given message" in {
           val notification = testNotification("subject", "message")
-          emailMessage(notification).plainText shouldEqual "message"
+          emailMessage(notification).plainText should startWith("message")
+        }
+
+        "includes the Anghammarad notice with source system" in {
+          val notification = testNotification("subject", "message")
+          emailMessage(notification).plainText should (include(notification.sourceSystem) and include("Anghammarad"))
         }
       }
     }
@@ -66,6 +76,11 @@ class MessagesTest extends FreeSpec with Matchers with EitherValues {
           val notification = testNotification("subject", "message")
           emailMessage(notification).html should include("message")
         }
+
+        "includes the Anghammarad notice with source system" in {
+          val notification = testNotification("subject", "message")
+          emailMessage(notification).html should (include(notification.sourceSystem) and include("Anghammarad"))
+        }
       }
 
       "if actions are not present" - {
@@ -83,6 +98,11 @@ class MessagesTest extends FreeSpec with Matchers with EitherValues {
         "converts markdown to HTML" in {
           val notification = testNotification("subject", "*em* **strong**")
           emailMessage(notification).html should (include("<em>em</em>") and include("<strong>strong</strong>"))
+        }
+
+        "includes the Anghammarad notice with source system" in {
+          val notification = testNotification("subject", "message")
+          emailMessage(notification).html should (include(notification.sourceSystem) and include("Anghammarad"))
         }
       }
     }
@@ -111,6 +131,11 @@ class MessagesTest extends FreeSpec with Matchers with EitherValues {
         val message = hangoutMessage(notification)
         message.cardJson should include(s""""header": "subject"""")
       }
+
+      "includes the Anghammarad notice with source system" in {
+        val message = hangoutMessage(notification)
+        message.cardJson should (include(notification.sourceSystem) and include("Anghammarad"))
+      }
     }
 
     "if no actions are present" - {
@@ -129,6 +154,11 @@ class MessagesTest extends FreeSpec with Matchers with EitherValues {
         val message = hangoutMessage(notification)
         val json = parse(message.cardJson).right.value
         json.\\("buttons") shouldBe empty
+      }
+
+      "includes the Anghammarad notice with source system" in {
+        val message = hangoutMessage(notification)
+        message.cardJson should (include(notification.sourceSystem) and include("Anghammarad"))
       }
     }
   }

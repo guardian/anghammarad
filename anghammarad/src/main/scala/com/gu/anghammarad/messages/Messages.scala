@@ -38,19 +38,22 @@ object Messages {
         (notification.message + actionPrefix + htmlActions, notification.message + actionPrefix + plainTextActions)
       }
 
-    val md = mdParser.parse(markdown)
-    val html = mdRenderer.render(md)
+    val markdownWithNotice = markdown + anghammaradNotice(notification)
+    val plaintextWithNotice = plaintext + anghammaradNotice(notification)
+
+    val html = mdRenderer.render(mdParser.parse(markdownWithNotice))
 
     EmailMessage(
       notification.subject,
-      plaintext,
+      plaintextWithNotice,
       html
     )
   }
 
   def hangoutMessage(notification: Notification): HangoutMessage = {
-    val md = mdParser.parse(notification.message)
-    val html = mdRenderer.render(md)
+    val messageWithAnghammaradNotice = notification.message ++ anghammaradNotice(notification)
+
+    val html = mdRenderer.render(mdParser.parse(messageWithAnghammaradNotice))
       // hangouts chat supports a subset of tags that differs from the flexmark-generated HTML
       .replace("<strong>", "<b>").replace("</strong>", "</b>")
       .replace("<em>", "<i>").replace("</em>", "</i>")
@@ -107,6 +110,13 @@ object Messages {
        |    }
        |  }
        |}
+       |""".stripMargin
+  }
+
+  private def anghammaradNotice(notification: Notification): String = {
+    s"""
+       |
+       |This message was sent by ${notification.sourceSystem} via [Anghammarad](https://github.com/guardian/anghammarad).
        |""".stripMargin
   }
 }

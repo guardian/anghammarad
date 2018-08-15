@@ -9,6 +9,7 @@ val compilerOptions = Seq(
 
 inThisBuild(Seq(
   scalaVersion := "2.12.4",
+  crossScalaVersions := Seq("2.11.12", scalaVersion.value),
   scalacOptions ++= Seq(
     "-deprecation",
     "-Xfatal-warnings",
@@ -50,6 +51,7 @@ lazy val common = project
   .settings(
     name := "anghammarad-common",
     // publish settings
+    releaseCrossBuild := true,
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
     publishTo := sonatypePublishTo.value
   )
@@ -65,6 +67,7 @@ lazy val client = project
       "org.scalatest" %% "scalatest" % "3.0.5" % Test
     ),
     // publish settings
+    releaseCrossBuild := true,
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
     publishTo := sonatypePublishTo.value
   )

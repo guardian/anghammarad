@@ -7,8 +7,8 @@ import com.gu.anghammarad.serialization.Serialization
 import io.circe.parser._
 import org.slf4j.{Logger, LoggerFactory}
 
+import cats.syntax.either._
 import scala.util.{Failure, Success, Try}
-
 
 object Main {
   def main(args: Array[String]): Unit = {

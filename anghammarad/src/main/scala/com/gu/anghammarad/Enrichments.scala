@@ -1,6 +1,8 @@
 package com.gu.anghammarad
 
-import scala.util.{Success, Try}
+import cats.syntax.either._
+
+import scala.util.{Failure, Success, Try}
 
 object Enrichments {
   implicit class RichList[A](as: List[A]) {
@@ -20,6 +22,13 @@ object Enrichments {
           bs <- acc
         } yield b :: bs
       }
+    }
+  }
+
+  implicit class RichTry[A](underlying: Try[A]) {
+    def toEither: Either[Throwable, A] = underlying match {
+      case Failure(e) => Left(e)
+      case Success(a) => Right(a)
     }
   }
 }

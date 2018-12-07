@@ -1,5 +1,6 @@
 package com.gu.anghammarad.serialization
 
+import cats.syntax.either._
 import com.amazonaws.services.lambda.runtime.events.SNSEvent
 import com.gu.anghammarad.AnghammaradException.Fail
 import com.gu.anghammarad.Enrichments._

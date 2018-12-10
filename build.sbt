@@ -41,6 +41,7 @@ lazy val root = project
   .settings(
     name := "anghammarad-root",
     // publish settings
+    releaseCrossBuild := true,
     skip in publish := true,
     publishTo := sonatypePublishTo.value,
     releaseProcess += releaseStepCommandAndRemaining("sonatypeRelease")
@@ -51,7 +52,6 @@ lazy val common = project
   .settings(
     name := "anghammarad-common",
     // publish settings
-    releaseCrossBuild := true,
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
     publishTo := sonatypePublishTo.value
   )
@@ -67,7 +67,6 @@ lazy val client = project
       "org.scalatest" %% "scalatest" % "3.0.5" % Test
     ),
     // publish settings
-    releaseCrossBuild := true,
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
     publishTo := sonatypePublishTo.value
   )

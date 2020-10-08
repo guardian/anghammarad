@@ -1,17 +1,18 @@
 import { SNS } from "aws-sdk";
 
-interface Action {
+export interface Action {
   cta: string;
   url: string;
 }
 
-type Target = Stack | Stage | App | AwsAccount;
+export interface Target {
+  Stack?: string,
+  Stage?: string,
+  App?: string,
+  AwsAccount?: string
+}
 
-type Stack = string;
-type Stage = string;
-type App = string;
-type AwsAccount = string;
-
+// TODO: Implement this
 interface RequestedChannel {}
 
 export interface NotifyParams {

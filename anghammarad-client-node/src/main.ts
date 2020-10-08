@@ -9,13 +9,13 @@ export class Anghammarad {
     this.client = client;
   }
 
-  messageJson(params): string {
+  messageJson(params: NotifyParams): string {
     return JSON.stringify({
       message: params.message,
       sender: params.sourceSystem,
-      channel: params.channelStr,
-      target: params.targets,
-      actions: params.action,
+      channel: params.channel,
+      target: params.target,
+      actions: params.actions,
     });
   }
 

@@ -1,4 +1,4 @@
-import * as SNS from "aws-sdk/clients/sns";
+import SNS from "aws-sdk/clients/sns";
 import {
   CredentialProviderChain,
   EC2MetadataCredentials,

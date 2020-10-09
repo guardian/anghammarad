@@ -1,13 +1,19 @@
 {
-  "name": "anghammarad",
+  "name": "@guardian/anghammarad",
   "version": "1.0.0",
   "description": "Notification service for the Guardian's dev teams",
   "main": "dist/src/main.js",
+  "types": "dist/src/main.d.ts",
   "repository": "https://github.com/guardian/anghammarad.git",
   "author": "Guardian",
   "license": "MIT",
   "scripts": {
-    "test": "jest"
+    "test": "jest ./test/*",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test",
+    "preversion": "npm test",
+    "postversion": "git push && git push --tags",
+    "build": "tsc"
   },
   "devDependencies": {
     "@types/jest": "^26.0.14",

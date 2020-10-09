@@ -32,3 +32,5 @@ export class Anghammarad {
     return request.MessageId;
   }
 }
+
+export * from "./interfaces";

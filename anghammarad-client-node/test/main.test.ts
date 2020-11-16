@@ -17,50 +17,50 @@ describe("The messageJson function", () => {
   };
 
   it("sets message as provided", () => {
-    expect(client.messageJson(defaultParams)).toContain(`"message":"message"`);
+    expect(JSON.parse(client.messageJson(defaultParams))).toMatchObject({message: "message"});
   });
 
   it("sets sender as provided", () =>{
-    expect(client.messageJson(defaultParams)).toContain(`"sender":"source"`)
+    expect(JSON.parse(client.messageJson(defaultParams))).toMatchObject({sender: "source"})
   })
 
   describe("represents channel correctly", () => {
     it("for 'All'", () => {
-      expect(client.messageJson(defaultParams)).toContain(`"channel":"all"`)
+      expect(JSON.parse(client.messageJson(defaultParams))).toMatchObject({channel: "all"})
     })
 
     it("for 'Email'", () => {
-      expect(client.messageJson({...defaultParams, channel: RequestedChannel.Email})).toContain(`"channel":"email"`)
+      expect(JSON.parse(client.messageJson({...defaultParams, channel: RequestedChannel.Email}))).toMatchObject({channel: "email"})
     })
 
     it("for 'Hangouts'", () => {
-      expect(client.messageJson({...defaultParams, channel: RequestedChannel.HangoutsChat})).toContain(`"channel":"hangouts"`)
+      expect(JSON.parse(client.messageJson({...defaultParams, channel: RequestedChannel.HangoutsChat}))).toMatchObject({channel:"hangouts"})
     })
 
     it("for 'Prefer Email'", () => {
-      expect(client.messageJson({...defaultParams, channel: RequestedChannel.PreferEmail})).toContain(`"channel":"prefer email"`)
+      expect(JSON.parse(client.messageJson({...defaultParams, channel: RequestedChannel.PreferEmail}))).toMatchObject({channel:"prefer email"})
     })
 
     it("for 'Prefer Hangouts'", () => {
-      expect(client.messageJson({...defaultParams, channel: RequestedChannel.PreferHangouts})).toContain(`"channel":"prefer hangouts"`)
+      expect(JSON.parse(client.messageJson({...defaultParams, channel: RequestedChannel.PreferHangouts}))).toMatchObject({channel:"prefer hangouts"})
     })
   })
 
   it("includes target", () => {
-    const result = client.messageJson({...defaultParams, target: {Stack: "stack-name", App: "app-name"}})
-    expect(result).toContain(`"Stack":"stack-name"`)
-    expect(result).toContain(`"App":"app-name"`)
+    const result = JSON.parse(client.messageJson({...defaultParams, target: {Stack: "stack-name", App: "app-name"}}))
+    expect(result).toMatchObject({target:{Stack:"stack-name", App: "app-name"}})
   })
 
   it("includes actions", () => {
-    const result = client.messageJson({...defaultParams, actions: [{cta: "cta1", url: "url1"}, {cta: "cta2", url: "url2"}]})
-    expect(result).toContain(`"cta":"cta1"`)
-    expect(result).toContain(`"url":"url1"`)
-    expect(result).toContain(`"cta":"cta2"`)
-    expect(result).toContain(`"url":"url2"`)
+    const result = JSON.parse(client.messageJson({...defaultParams, actions: [{cta: "cta1", url: "url1"}, {cta: "cta2", url: "url2"}]}))
+    expect(result).toMatchObject({actions: [{cta: "cta1", url: "url1"}, {cta: "cta2", url: "url2"}]})
+  })
+
+  it("produces valid JSON when quotes are contained in the data", () => {
+    expect(() => JSON.parse(client.messageJson({...defaultParams, message: `Message with "quotes"`}))).not.toThrow()
   })
 
   it("properly escapes input", () => {
-    expect(client.messageJson({...defaultParams, message: `Message with "quotes"`})).toContain(`\"`)
+    expect(JSON.parse(client.messageJson({...defaultParams, message: `Message with "quotes"`}))).toMatchObject({message: `Message with "quotes"`})
   })
 })

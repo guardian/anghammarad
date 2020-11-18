@@ -10,6 +10,8 @@ Notification service for the Guardian's dev teams.
 
 ## Usage
 
+### Scala Client
+
 The current version of Anghammard's client is `1.0.4`.
 
 [Changelist](CHANGES.md)
@@ -32,7 +34,11 @@ Anghammarad.notify( ... )
 
 Details about the function's arguments are available in the javadoc.
 
-## Releasing the client
+### Node Client
+
+Follow the instructions in the [node client README](./anghammarad-client-node/README.md)
+
+## Releasing the Scala client
 
 You will need:
 
@@ -50,3 +56,7 @@ sbt release
 The sbt-release plugin will suggest the next version number, but consider
 what the next version number should be by considering the change against
 [the semantic versioning guidelines](https://semver.org/).
+
+## Releasing the Node client
+
+Follow the instructions in the [node client README](./anghammarad-client-node/README.md)

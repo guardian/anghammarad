@@ -36,7 +36,7 @@ Details about the function's arguments are available in the javadoc.
 
 ### Node Client
 
-Follow the instructions in the [node client README](./anghammarad-client-node/README.md)
+Follow the instructions in the [node client README](./anghammarad-client-node/README.md).
 
 ## Releasing the Scala client
 

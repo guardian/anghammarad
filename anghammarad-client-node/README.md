@@ -21,45 +21,39 @@ client.notify({ ...parameters });
 For example
 
 ```js
-import {
-  Anghammarad,
-  RequestedChannel,
-} from "@guardian/anghammarad";
+import { Anghammarad, RequestedChannel } from '@guardian/anghammarad';
 
 const client = new Anghammarad();
 
 client.notify({
-    subject: "Hello",
-    message: "Hi there, something has happened which we'd like to tell you about",
-    actions: [{url: "https://example.com"}],
-    target: {Stack: "my-stack", Stage: "CODE", App: "my-app"},
-    channel: RequestedChannel.Email,
-    sourceSystem: "my-monitoring-tool",
-    topicArn: "arn:aws:123"
-})
+  subject: 'Hello',
+  message: "Hi there, something has happened which we'd like to tell you about",
+  actions: [{ url: 'https://example.com' }],
+  target: { Stack: 'my-stack', Stage: 'CODE', App: 'my-app' },
+  channel: RequestedChannel.Email,
+  sourceSystem: 'my-monitoring-tool',
+  topicArn: 'arn:aws:123',
+});
 ```
 
 Or providing the optional SNS client ([more details](#sns-client))
 
 ```js
-import {
-  Anghammarad,
-  RequestedChannel,
-} from "@guardian/anghammarad";
-import { credentialsProvider, snsClient } from "./aws";
+import { Anghammarad, RequestedChannel } from '@guardian/anghammarad';
+import { credentialsProvider, snsClient } from './aws';
 
 const client = new Anghammarad();
 
 client.notify({
-    subject: "Hello",
-    message: "Hi there, something has happened which we'd like to tell you about",
-    actions: [{url: "https://example.com"}],
-    target: {Stack: "my-stack", Stage: "CODE", App: "my-app"},
-    channel: RequestedChannel.Email,
-    sourceSystem: "my-monitoring-tool",
-    topicArn: "arn:aws:123",
-    client: snsClient(credentialsProvider())
-})
+  subject: 'Hello',
+  message: "Hi there, something has happened which we'd like to tell you about",
+  actions: [{ url: 'https://example.com' }],
+  target: { Stack: 'my-stack', Stage: 'CODE', App: 'my-app' },
+  channel: RequestedChannel.Email,
+  sourceSystem: 'my-monitoring-tool',
+  topicArn: 'arn:aws:123',
+  client: snsClient(credentialsProvider()),
+});
 ```
 
 ### Parameters
@@ -73,7 +67,7 @@ client.notify({
 | channel      | One of the accepted channel types                                              | Y        | "prefer hangouts"                                                |
 | sourceSystem | The name of the process sending the alert                                      | Y        | "my app"                                                         |
 | topicArn     | The ARN of the topic to which the message should be send                       | Y        | "arn:aws:..."                                                    |
-| client       | An optional SNS client to send the message with.                                | N        | https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SNS.html |
+| client       | An optional SNS client to send the message with.                               | N        | https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SNS.html |
 
 ### Channels
 
@@ -107,25 +101,22 @@ client.notify({
 
 ```js
 // Custom client for Anghammarad client
-import {
-  Anghammarad,
-  RequestedChannel,
-} from "@guardian/anghammarad";
-import { credentialsProvider, snsClient } from "./aws";
+import { Anghammarad, RequestedChannel } from '@guardian/anghammarad';
+import { credentialsProvider, snsClient } from './aws';
 
 const client = new Anghammarad(snsClient(credentialsProvider()));
 
 client.notify({
-    subject: "Hello",
-    message: "Hi there, something has happened which we'd like to tell you about",
-    actions: [{url: "https://example.com"}],
-    target: {Stack: "my-stack", Stage: "CODE", App: "my-app"},
-    channel: RequestedChannel.Email,
-    sourceSystem: "my-monitoring-tool",
-    topicArn: "arn:aws:123"
-})
+  subject: 'Hello',
+  message: "Hi there, something has happened which we'd like to tell you about",
+  actions: [{ url: 'https://example.com' }],
+  target: { Stack: 'my-stack', Stage: 'CODE', App: 'my-app' },
+  channel: RequestedChannel.Email,
+  sourceSystem: 'my-monitoring-tool',
+  topicArn: 'arn:aws:123',
+});
 ```
 
 ## Releasing the client
 
-The client is published to npm as `@guardian/anghammarad`. You must have an `npm` account with 2fa enabled and be part of the `guardian` organisation. You can then run `yarn publish` to publish the library, enterring your OTP when prompted.
+The client is published to npm as `@guardian/anghammarad`. You must have an `npm` account with 2fa enabled and be part of the `guardian` organisation. You can then run `npm version <patch|minor|major>` followed by `npm publish` to publish the library, enterring your OTP when prompted (issues have been encountered running `yarn publish` in the past so npm is recommended).

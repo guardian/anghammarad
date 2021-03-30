@@ -12,7 +12,7 @@ Notification service for the Guardian's dev teams.
 
 ### Scala Client
 
-The current version of Anghammard's client is `1.0.4`.
+To find the latest version of Anghammard's client, see [here](https://github.com/guardian/anghammarad/releases).
 
 [Changelist](CHANGES.md)
 

@@ -34,6 +34,19 @@ Anghammarad.notify( ... )
 
 Details about the function's arguments are available in the javadoc.
 
+### Mappings
+
+You can find Anghammarad's latest mappings of AWS account to email address in S3. You will need Janus credentials for the deploy tools account to access this.
+
+### Required AWS permissions 
+
+To use Anghammarad your project will need AWS IAM permissions to publish to an SNS topic. This change in your project's cloudformation will be a AWS::IAM::Policy
+and it will require the sns:Publish action. Here is an [example](https://github.com/guardian/security-hq/blob/f2486009cd115eb6b8af8bae42fd8421e03a4e6c/cloudformation/watched-account.template.yaml#L194).
+
+### Testing your notification
+
+A test [google group](https://groups.google.com/a/guardian.co.uk/g/anghammarad.test.alerts) has been created, so that you can test your notification. 
+
 ### Node Client
 
 Follow the instructions in the [node client README](./anghammarad-client-node/README.md).

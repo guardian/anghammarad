@@ -36,7 +36,7 @@ Details about the function's arguments are available in the javadoc.
 
 ### Mappings
 
-You can find Anghammarad's latest mappings of AWS account to email address in S3. You will need Janus credentials for the deploy tools account to access this.
+You can find Anghammarad's latest mappings of AWS account to email address in Anghammarad's config, which are kept in S3. You will need Janus credentials for the deploy tools account to access this.
 
 ### Required AWS permissions 
 
@@ -45,7 +45,7 @@ and it will require the sns:Publish action. Here is an [example](https://github.
 
 ### Testing your notification
 
-A test [google group](https://groups.google.com/a/guardian.co.uk/g/anghammarad.test.alerts) has been created, so that you can test your notification. 
+A test [google group](https://groups.google.com/a/guardian.co.uk/g/anghammarad.test.alerts) has been created, so that you can test your notification. The stack for this is called "testing-alerts". You can also find this in the Anghammarad config in S3.
 
 ### Node Client
 

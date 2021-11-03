@@ -43,7 +43,12 @@ lazy val root = project
     // publish settings
     releaseCrossBuild := true,
     skip in publish := true,
-    publishTo := sonatypePublishTo.value,
+    publishTo := Some(
+      if (isSnapshot.value)
+        Opts.resolver.sonatypeSnapshots
+      else
+        Opts.resolver.sonatypeStaging
+    ),
     releaseProcess += releaseStepCommandAndRemaining("sonatypeRelease")
   )
   .aggregate(anghammarad, client, common, dev)
@@ -53,7 +58,12 @@ lazy val common = project
     name := "anghammarad-common",
     // publish settings
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
-    publishTo := sonatypePublishTo.value
+    publishTo := Some(
+      if (isSnapshot.value)
+        Opts.resolver.sonatypeSnapshots
+      else
+       Opts.resolver.sonatypeStaging
+    ),
   )
 
 lazy val client = project
@@ -68,7 +78,12 @@ lazy val client = project
     ),
     // publish settings
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
-    publishTo := sonatypePublishTo.value
+    publishTo := Some(
+      if (isSnapshot.value)
+        Opts.resolver.sonatypeSnapshots
+      else
+        Opts.resolver.sonatypeStaging
+    ),
   )
 
 lazy val anghammarad = project

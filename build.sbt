@@ -73,8 +73,8 @@ lazy val client = project
     libraryDependencies ++= Seq(
       "com.amazonaws" % "aws-java-sdk-sns" % awsSdkVersion,
       "org.json" % "json" % "20180130",
-      "com.typesafe.scala-logging" %% "scala-logging" % "3.8.0",
-      "org.scalatest" %% "scalatest" % "3.0.5" % Test
+      "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4",
+      "org.scalatest" %% "scalatest" % "3.2.9" % Test
     ),
     // publish settings
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
@@ -100,11 +100,11 @@ lazy val anghammarad = project
       "io.circe" %% "circe-core" % circeVersion,
       "io.circe" %% "circe-generic" % circeVersion,
       "io.circe" %% "circe-parser" % circeVersion,
-      "com.criteo.lolhttp" %% "lolhttp" % "0.9.2",
+      "org.scalaj" %% "scalaj-http" % "2.4.2",
       "com.vladsch.flexmark" % "flexmark-all" % "0.50.50",
       "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4",
       "ch.qos.logback" % "logback-classic" % "1.2.6",
-      "org.scalatest" %% "scalatest_2.13" % "3.0.5" % Test
+      "org.scalatest" %% "scalatest" % "3.2.9" % Test
     ),
     skip in publish := true,
     assemblyJarName := s"${name.value}.jar",

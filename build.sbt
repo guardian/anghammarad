@@ -9,7 +9,7 @@ val compilerOptions = Seq(
 
 inThisBuild(Seq(
   scalaVersion := "2.13.2",
-  crossScalaVersions := Seq("2.12.4", scalaVersion.value),
+  crossScalaVersions := Seq("2.11.8", "2.12.4", scalaVersion.value),
   scalacOptions ++= Seq(
     "-deprecation",
     "-Xfatal-warnings",
@@ -100,7 +100,7 @@ lazy val anghammarad = project
       "io.circe" %% "circe-core" % circeVersion,
       "io.circe" %% "circe-generic" % circeVersion,
       "io.circe" %% "circe-parser" % circeVersion,
-      "org.scalaj" %% "scalaj-http" % "2.4.2",
+      "com.softwaremill.sttp.client3" %% "core" % "3.3.16",
       "com.vladsch.flexmark" % "flexmark-all" % "0.50.50",
       "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4",
       "ch.qos.logback" % "logback-classic" % "1.2.6",

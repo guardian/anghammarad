@@ -8,7 +8,8 @@ import com.gu.anghammarad.models._
 import io.circe._
 import io.circe.parser._
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters
+import scala.jdk.CollectionConverters.ListHasAsScala
 import scala.util.{Success, Try}
 
 object Serialization {

@@ -2,20 +2,31 @@ package com.gu.anghammarad.messages
 
 import com.gu.anghammarad.AnghammaradException.Fail
 import com.gu.anghammarad.models.HangoutMessage
-import scalaj.http.{Http, HttpResponse}
+
 import scala.util.{Success, Try}
+import sttp.client3._
 
 object HangoutsService {
-  def sendHangoutsMessage(webhook: String, message: HangoutMessage): Try[Unit] = {
-    val response: HttpResponse[String] = Http(webhook.stripPrefix("https://chat.googleapis.com"))
-      .postData(message.cardJson)
-      .timeout(connTimeoutMs = 2000, readTimeoutMs = 5000)
-      .proxy("chat.googleapis.com", 443)
-      .asString
-    val status = response.code
-    if(status == 200)
+
+  def postMessage(webhook: String, message: String): Identity[Response[Either[String, String]]] = {
+    val backend = HttpURLConnectionBackend()
+    basicRequest
+      .body(message)
+      .post(uri"$webhook")
+      .send(backend)
+  }
+
+  def checkResponse(response: Identity[Response[Either[String,String]]]): Try[Unit] = {
+    if (response.isSuccess)
       Success(())
     else
-      Fail(s"Got $status from chat.googleapis.com, could not send message: $response")
+      Fail(s"Unable to send message. Received response code of: ${response.statusText}.")
+  }
+
+  def sendHangoutsMessage(webhook: String, message: HangoutMessage): Try[Unit] = {
+    for {
+      response <- Try {postMessage(webhook, message.cardJson)}
+      successOrFailure <- checkResponse(response)
+    } yield successOrFailure
   }
 }

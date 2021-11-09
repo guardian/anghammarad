@@ -1,10 +1,11 @@
 package com.gu.anghammarad
 
 import com.gu.anghammarad.models._
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 
-class TargetsTest extends FreeSpec with Matchers {
+class TargetsTest extends AnyFreeSpec with Matchers {
   import com.gu.anghammarad.Targets._
 
   "normaliseStages" - {

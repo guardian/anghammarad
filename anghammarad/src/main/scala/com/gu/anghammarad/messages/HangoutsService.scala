@@ -8,7 +8,7 @@ import sttp.client3._
 
 object HangoutsService {
 
-  def postMessage(webhook: String, message: String): Identity[Response[Either[String, String]]] = {
+  def postMessage(webhook: String, message: String): Response[Either[String, String]] = {
     val backend = HttpURLConnectionBackend()
     basicRequest
       .body(message)
@@ -16,7 +16,7 @@ object HangoutsService {
       .send(backend)
   }
 
-  def checkResponse(response: Identity[Response[Either[String,String]]]): Try[Unit] = {
+  def checkResponse(response: Response[Either[String,String]]): Try[Unit] = {
     if (response.isSuccess)
       Success(())
     else

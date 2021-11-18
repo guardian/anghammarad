@@ -78,12 +78,7 @@ lazy val client = project
     ),
     // publish settings
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
-    publishTo := Some(
-      if (isSnapshot.value)
-        Opts.resolver.sonatypeSnapshots
-      else
-        Opts.resolver.sonatypeStaging
-    ),
+    publishTo := sonatypePublishTo.value,
   )
 
 lazy val anghammarad = project

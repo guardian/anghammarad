@@ -10,7 +10,8 @@ import org.scalatest.matchers.should.Matchers
 import com.gu.anghammarad.testutils.TryValues
 import org.scalatest.EitherValues
 
-import scala.jdk.CollectionConverters.SeqHasAsJava
+import scala.jdk.CollectionConverters._
+import scala.collection.compat._
 import scala.io.Source
 
 

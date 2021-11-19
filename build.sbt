@@ -32,7 +32,7 @@ inThisBuild(Seq(
 ))
 
 val awsSdkVersion = "1.11.759"
-val circeVersion = "0.14.1"
+val circeVersion = "0.12.0-M3"
 
 //Projects
 
@@ -72,11 +72,12 @@ lazy val client = project
   )
 
 lazy val anghammarad = project
-  .enablePlugins(JavaAppPackaging, RiffRaffArtifact)
+  .enablePlugins(JavaAppPackaging, RiffRaffArtifact, ScalafixPlugin)
   .dependsOn(common)
   .settings(
     name := "anghammarad",
     libraryDependencies ++= Seq(
+      "org.scala-lang.modules" %% "scala-collection-compat" % "2.6.0",
       "com.amazonaws" % "aws-lambda-java-events" % "3.10.0",
       "com.amazonaws" % "aws-lambda-java-core" % "1.2.1",
       "com.amazonaws" % "aws-java-sdk-lambda" % awsSdkVersion,

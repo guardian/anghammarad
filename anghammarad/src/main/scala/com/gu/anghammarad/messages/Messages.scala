@@ -7,9 +7,8 @@ import com.vladsch.flexmark.html.HtmlRenderer
 import com.vladsch.flexmark.parser.Parser
 import com.vladsch.flexmark.util.data.MutableDataSet
 import io.circe.Json
-
 import scala.jdk.CollectionConverters._
-
+import scala.collection.compat._
 
 object Messages {
   private[anghammarad] val mdOptions = new MutableDataSet()

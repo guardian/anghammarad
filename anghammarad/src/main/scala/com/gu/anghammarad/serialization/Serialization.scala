@@ -7,10 +7,10 @@ import com.gu.anghammarad.Enrichments._
 import com.gu.anghammarad.models._
 import io.circe._
 import io.circe.parser._
-
-import scala.jdk.CollectionConverters
-import scala.jdk.CollectionConverters.ListHasAsScala
 import scala.util.{Success, Try}
+import scala.jdk.CollectionConverters._
+import scala.collection.compat._
+
 
 object Serialization {
   def parseConfig(config: String): Try[Configuration] = {

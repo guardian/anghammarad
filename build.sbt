@@ -8,8 +8,8 @@ val compilerOptions = Seq(
 )
 
 inThisBuild(Seq(
-  scalaVersion := "2.12.4",
-  crossScalaVersions := Seq("2.11.12", scalaVersion.value),
+  scalaVersion := "2.13.2",
+  crossScalaVersions := Seq("2.11.8", "2.12.4", scalaVersion.value),
   scalacOptions ++= Seq(
     "-deprecation",
     "-Xfatal-warnings",
@@ -18,7 +18,7 @@ inThisBuild(Seq(
   ),
   // sonatype metadata
   organization := "com.gu",
-  licenses := Seq("Apache V2" -> url("http://www.apache.org/licenses/LICENSE-2.0.html")),
+  licenses := Seq("Apache V2" -> url("https://www.apache.org/licenses/LICENSE-2.0.html")),
   scmInfo := Some(
     ScmInfo(
       url("https://github.com/guardian/anghammarad"),
@@ -31,8 +31,8 @@ inThisBuild(Seq(
   )
 ))
 
-val awsSdkVersion = "1.11.258"
-val circeVersion = "0.9.1"
+val awsSdkVersion = "1.11.759"
+val circeVersion = "0.12.0-M3"
 
 //Projects
 
@@ -53,7 +53,7 @@ lazy val common = project
     name := "anghammarad-common",
     // publish settings
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
-    publishTo := sonatypePublishTo.value
+    publishTo := sonatypePublishTo.value,
   )
 
 lazy val client = project
@@ -63,22 +63,23 @@ lazy val client = project
     libraryDependencies ++= Seq(
       "com.amazonaws" % "aws-java-sdk-sns" % awsSdkVersion,
       "org.json" % "json" % "20180130",
-      "com.typesafe.scala-logging" %% "scala-logging" % "3.8.0",
-      "org.scalatest" %% "scalatest" % "3.0.5" % Test
+      "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4",
+      "org.scalatest" %% "scalatest" % "3.2.9" % Test
     ),
     // publish settings
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
-    publishTo := sonatypePublishTo.value
+    publishTo := sonatypePublishTo.value,
   )
 
 lazy val anghammarad = project
-  .enablePlugins(JavaAppPackaging, RiffRaffArtifact)
+  .enablePlugins(JavaAppPackaging, RiffRaffArtifact, ScalafixPlugin)
   .dependsOn(common)
   .settings(
     name := "anghammarad",
     libraryDependencies ++= Seq(
-      "com.amazonaws" % "aws-lambda-java-events" % "1.3.0",
-      "com.amazonaws" % "aws-lambda-java-core" % "1.1.0",
+      "org.scala-lang.modules" %% "scala-collection-compat" % "2.6.0",
+      "com.amazonaws" % "aws-lambda-java-events" % "3.10.0",
+      "com.amazonaws" % "aws-lambda-java-core" % "1.2.1",
       "com.amazonaws" % "aws-java-sdk-lambda" % awsSdkVersion,
       "com.amazonaws" % "aws-java-sdk-ses" % awsSdkVersion,
       "com.amazonaws" % "aws-java-sdk-s3" % awsSdkVersion,
@@ -86,10 +87,10 @@ lazy val anghammarad = project
       "io.circe" %% "circe-generic" % circeVersion,
       "io.circe" %% "circe-parser" % circeVersion,
       "com.softwaremill.sttp.client3" %% "core" % "3.3.16",
-      "com.vladsch.flexmark" % "flexmark-all" % "0.32.18",
-      "com.typesafe.scala-logging" %% "scala-logging" % "3.8.0",
-      "ch.qos.logback" % "logback-classic" % "1.1.7",
-      "org.scalatest" %% "scalatest" % "3.0.5" % Test
+      "com.vladsch.flexmark" % "flexmark-all" % "0.50.50",
+      "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4",
+      "ch.qos.logback" % "logback-classic" % "1.2.6",
+      "org.scalatest" %% "scalatest" % "3.2.9" % Test
     ),
     skip in publish := true,
     assemblyJarName := s"${name.value}.jar",
@@ -104,7 +105,7 @@ lazy val dev = project
   .settings(
     name := "dev",
     libraryDependencies ++= Seq(
-      "com.github.scopt" %% "scopt" % "3.7.0"
+      "com.github.scopt" %% "scopt" % "4.0.1"
     ),
     skip in publish := true
   )

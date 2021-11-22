@@ -5,18 +5,21 @@ import com.amazonaws.services.lambda.runtime.events.SNSEvent.SNSRecord
 import com.gu.anghammarad.models._
 import io.circe.Json
 import io.circe.parser._
-import org.scalatest.{EitherValues, FreeSpec, Matchers}
-
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 import com.gu.anghammarad.testutils.TryValues
+import org.scalatest.EitherValues
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
+import scala.collection.compat._
 import scala.io.Source
 
-class SerializationTest extends FreeSpec with Matchers with EitherValues with TryValues {
+
+class SerializationTest extends AnyFreeSpec with Matchers with EitherValues with TryValues {
 
   "Notification Serialization" - {
     val validJsonString = Source.fromURL(getClass.getResource("/notification.json")).mkString
-    val validJson = parse(validJsonString).right.value
+    val validJson = parse(validJsonString).value
 
     val expectedResult = Notification(
       "GNU Terry Pratchett",
@@ -63,7 +66,7 @@ class SerializationTest extends FreeSpec with Matchers with EitherValues with Tr
       "will return a failure if the json is missing any required information" in {
         val testJson = parse(
           """{"sender": "Terry Pratchett","target": {"Stack": "postal-service"}}"""
-        ).right.value
+        ).value
         Serialization.generateNotification("GNU Terry Pratchett", testJson).isFailure shouldEqual true
       }
     }
@@ -87,7 +90,7 @@ class SerializationTest extends FreeSpec with Matchers with EitherValues with Tr
     "will correct parse an action from valid json" in {
       val testJson = parse(
         """{"cta": "keep that name moving in the Overhead","url": "http://www.gnuterrypratchett.com/"}"""
-      ).right.value
+      ).value
 
       Serialization.parseAction(testJson).success shouldEqual Action("keep that name moving in the Overhead", "http://www.gnuterrypratchett.com/")
     }
@@ -95,7 +98,7 @@ class SerializationTest extends FreeSpec with Matchers with EitherValues with Tr
     "will return a failure if either the cta or the url is unavailable" in {
       val testJson = parse(
         """{"cta": "keep that name moving in the Overhead"}"""
-      ).right.value
+      ).value
 
       Serialization.parseAction(testJson).isFailure shouldEqual true
     }
@@ -136,7 +139,7 @@ class SerializationTest extends FreeSpec with Matchers with EitherValues with Tr
     "will parse valid json into a complete mapping" in {
       val testJson = parse(
         """{"target":{"AwsAccount":"123456789"},"contacts":{"email":"awsAccount.email"}}"""
-      ).right.value
+      ).value
 
       Serialization.parseMapping(testJson).success shouldEqual Mapping(List(AwsAccount("123456789")), List(EmailAddress("awsAccount.email")))
     }
@@ -157,7 +160,7 @@ class SerializationTest extends FreeSpec with Matchers with EitherValues with Tr
     "will correctly return the contacts" in {
       val testJson = parse(
         """{"email":"stack.email","hangouts":"stack.room"}"""
-      ).right.value
+      ).value
 
       Serialization.parseAllContacts(testJson).success shouldEqual List(EmailAddress("stack.email"), HangoutsRoom("stack.room"))
     }
@@ -165,14 +168,14 @@ class SerializationTest extends FreeSpec with Matchers with EitherValues with Tr
     "will return a failure if it cannot parse the keys" in {
       val testJson = parse(
         """{"email":"stack.email","xhangouts":"stack.room"}"""
-      ).right.value
+      ).value
       Serialization.parseAllContacts(testJson).isFailure shouldEqual true
     }
 
     "will return a failure if there are no contacts listed" in {
       val testJson = parse(
         """{}"""
-      ).right.value
+      ).value
       Serialization.parseAllContacts(testJson).isFailure shouldEqual true
     }
   }
@@ -194,21 +197,21 @@ class SerializationTest extends FreeSpec with Matchers with EitherValues with Tr
     "will correctly return the targets" in {
       val testJson: Json = parse(
         """{"Stack":"stack-1","App":"app-1"}"""
-      ).right.value
+      ).value
       Serialization.parseAllTargets(testJson).success shouldEqual List(Stack("stack-1"), App("app-1"))
     }
 
     "will return a failure if it cannot parse the keys" in {
       val testJson = parse(
         """{"Stack":"stack-1","xApp":"app-1"}"""
-      ).right.value
+      ).value
       Serialization.parseAllTargets(testJson).isFailure shouldEqual true
     }
 
     "will return a failure if there are no targets listed" in {
       val testJson = parse(
         """{}"""
-      ).right.value
+      ).value
       Serialization.parseAllTargets(testJson).isFailure shouldEqual true
     }
   }

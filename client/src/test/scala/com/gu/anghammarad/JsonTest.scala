@@ -2,10 +2,11 @@ package com.gu.anghammarad
 
 import com.gu.anghammarad.Json._
 import com.gu.anghammarad.models._
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.freespec.AnyFreeSpec
 
 
-class JsonTest extends FreeSpec with Matchers {
+class JsonTest extends AnyFreeSpec with Matchers {
   "targetJson" - {
     "produces valid JSON for a Stack" in {
       targetJson(List(Stack("stack"))) shouldEqual """{"Stack":"stack"}"""

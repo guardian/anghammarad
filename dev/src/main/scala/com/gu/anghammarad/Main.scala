@@ -51,7 +51,7 @@ object Main {
       case s: Specified =>
         Fail("No channel provided")
       case InitialArgs =>
-        argParser.showUsageAsError()
+        argParser.showUsageOnError
         Fail("No arguments provided, cannot make a notification")
     }
   }
@@ -63,7 +63,7 @@ object Main {
       case Specified(_, _, _, _, _, _, configStage) =>
         Success(configStage)
       case InitialArgs =>
-        argParser.showUsageAsError()
+        argParser.showUsageOnError
         Fail("No arguments provided, cannot obtain a configuration stage")
     }
   }

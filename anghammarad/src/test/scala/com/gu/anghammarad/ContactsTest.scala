@@ -4,12 +4,13 @@ import com.gu.anghammarad.Contacts._
 import com.gu.anghammarad.models._
 import com.gu.anghammarad.serialization.Serialization
 import com.gu.anghammarad.testutils.TryValues
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 import scala.io.Source
 
 
-class ContactsTest extends FreeSpec with Matchers with TryValues {
+class ContactsTest extends AnyFreeSpec with Matchers with TryValues {
   val email = EmailMessage("subject", "text", "html")
   val emailAddress = EmailAddress("test@example.com")
   val hangoutMessage = HangoutMessage("json")

@@ -44,6 +44,7 @@ lazy val root = project
     releaseCrossBuild := true,
     skip in publish := true,
     publishTo := sonatypePublishTo.value,
+    releasePublishArtifactsAction := PgpKeys.publishSigned.value,
     releaseProcess += releaseStepCommandAndRemaining("sonatypeRelease")
   )
   .aggregate(anghammarad, client, common, dev)

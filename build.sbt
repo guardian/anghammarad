@@ -42,7 +42,7 @@ lazy val root = project
     name := "anghammarad-root",
     // publish settings
     releaseCrossBuild := true,
-    skip in publish := true,
+    publish / skip := true,
     publishTo := sonatypePublishTo.value,
     releaseProcess += releaseStepCommandAndRemaining("sonatypeRelease")
   )
@@ -92,7 +92,7 @@ lazy val anghammarad = project
       "ch.qos.logback" % "logback-classic" % "1.2.6",
       "org.scalatest" %% "scalatest" % "3.2.9" % Test
     ),
-    skip in publish := true,
+    publish / skip := true,
     assemblyJarName := s"${name.value}.jar",
     riffRaffPackageType := assembly.value,
     riffRaffUploadArtifactBucket := Option("riffraff-artifact"),

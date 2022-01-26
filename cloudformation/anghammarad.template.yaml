@@ -20,7 +20,7 @@ Parameters:
     - CODE
     - DEV
   AllowedAWSAccountIDs:
-    Description: List of whitelisted account ids
+    Description: List of AWS account IDs to grant SNS Publish permission to
     Type: CommaDelimitedList
 
 Mappings:

@@ -33,6 +33,7 @@ inThisBuild(Seq(
 
 val awsSdkVersion = "1.11.759"
 val circeVersion = "0.12.0-M3"
+val flexmarkVersion = "0.50.50"
 
 //Projects
 
@@ -87,7 +88,10 @@ lazy val anghammarad = project
       "io.circe" %% "circe-generic" % circeVersion,
       "io.circe" %% "circe-parser" % circeVersion,
       "com.softwaremill.sttp.client3" %% "core" % "3.3.16",
-      "com.vladsch.flexmark" % "flexmark-all" % "0.50.50",
+      "com.vladsch.flexmark" % "flexmark" % flexmarkVersion,
+      "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % flexmarkVersion,
+      "com.vladsch.flexmark" % "flexmark-ext-tables" % flexmarkVersion,
+      "com.vladsch.flexmark" % "flexmark-util" % flexmarkVersion,
       "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4",
       "ch.qos.logback" % "logback-classic" % "1.2.6",
       "org.scalatest" %% "scalatest" % "3.2.9" % Test

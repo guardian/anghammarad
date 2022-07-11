@@ -16,21 +16,19 @@ object Contacts {
     *
     * Exact matches are prioritised, then we apply logic to route other messages correctly.
     * App, Stack and AWS Account use a hierarchy, App > Stack > AwsAccount.
-    * Stage must match - it is considered to be PROD if omitted.
+    *
+    * If there are multiple matches then stage is used as a tiebreaker.
+    * If stage is not sent by the source system then we assume a notification should be sent to the PROD mapping (note
+    * that for legacy reasons mappings which omit stage are assumed to be PROD).
     */
-  def resolveTargetContacts(rawTargets: List[Target], rawMappings: List[Mapping]): Try[List[Contact]] = {
-    val targets = normaliseStages(rawTargets)
-    val mappings = rawMappings.map(mapping => mapping.copy(targets = normaliseStages(mapping.targets)))
-
-    for {
-      exactMatches <- findExactMatches(targets, mappings)
-      underSpecifiedMatches = findUnderSpecifiedMatches(targets, mappings)
-      overSpecifiedMatches = findOverSpecifiedMatches(targets, mappings)
-      contacts <- exactMatches.orElse(underSpecifiedMatches).orElse(overSpecifiedMatches).fold[Try[List[Contact]]] {
-        Fail(s"Could not find matching contacts for $targets")
-      }(Success(_))
-    } yield contacts
-  }
+  def resolveTargetContacts(targets: List[Target], mappings: List[Mapping]): Try[List[Contact]] = for {
+    exactMatches <- findExactMatches(targets, mappings)
+    underSpecifiedMatches = findUnderSpecifiedMatches(targets, mappings)
+    overSpecifiedMatches = findOverSpecifiedMatches(targets, mappings)
+    contacts <- exactMatches.orElse(underSpecifiedMatches).orElse(overSpecifiedMatches).fold[Try[List[Contact]]] {
+      Fail(s"Could not find matching contacts for $targets")
+    }(Success(_))
+  } yield contacts
 
   /**
     * Check for a mapping that exactly matches the target.

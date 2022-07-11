@@ -407,16 +407,6 @@ class ContactsTest extends AnyFreeSpec with Matchers with TryValues {
         }
       }
 
-      "if a non-empty non-PROD stage is targeted, mappings without that stage will not be matched" - {
-        "fails to match if there is no matching non-PROD stage" in {
-          val targets = List(Stack("stack"), Stage("stage"))
-          val mappings = List(
-            Mapping(List(Stack("stack")), List(emailAddress))
-          )
-          resolveTargetContacts(targets, mappings).isFailure shouldBe true
-        }
-      }
-
       "if a stage is targeted, matches exact mappings for that stage" - {
         "fails to match if there is no matching non-PROD stage" in {
           val targets = List(Stack("stack"), Stage("stage"))

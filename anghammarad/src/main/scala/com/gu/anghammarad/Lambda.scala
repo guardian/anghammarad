@@ -9,18 +9,22 @@ import scala.util.{Failure, Success}
 
 class Lambda extends RequestHandler[SNSEvent, Unit] {
   override def handleRequest(input: SNSEvent, context: Context): Unit = {
+
+    val parseNotification = Serialization.parseNotification(input)
+
     val sentMessages = for {
       stage <- Config.getStage()
       config <- Config.loadConfig(stage)
       configuration <- Serialization.parseConfig(config)
-      notification <- Serialization.parseNotification(input)
+      notification <- parseNotification
       sent <- Anghammarad.run(notification, configuration)
     } yield sent
 
     // send notification if result is a failure
     sentMessages match {
       case Failure(err) =>
-        context.getLogger.log(s"Failed to send message ${err.getMessage}")
+        context.getLogger.log(s"Failed to send message ${err.getMessage}. " +
+          s"Notification details: ${parseNotification.getOrElse("Could not parse notification")}")
         throw err
       case Success(sent) =>
         sent.map {

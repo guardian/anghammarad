@@ -8,17 +8,6 @@ import org.scalatest.matchers.should.Matchers
 class TargetsTest extends AnyFreeSpec with Matchers {
   import com.gu.anghammarad.Targets._
 
-  "normaliseStages" - {
-    "adds PROD stage to a list of targets that does not include stage" in {
-      normaliseStages(List(AwsAccount("123456789"), App("app"))) should contain(Stage("PROD"))
-    }
-
-    "does not change a list of targets that already includes a stage" in {
-      val targets = List(Stage("stage"), AwsAccount("123456789"), App("app"))
-      normaliseStages(targets) shouldEqual targets
-    }
-  }
-
   "includesAwsAccount" - {
     "returns false if AwsAccount is enquired about and not present" in {
       includesAwsAccount(List(App("app"))) shouldBe false
@@ -186,5 +175,24 @@ class TargetsTest extends AnyFreeSpec with Matchers {
       )
       sortMappingsByTargets(targets, mappings).head.contacts shouldEqual expected
     }
+
+    "PROD stage in mappings determines priority if two otherwise equivalent matches are found" in {
+      val targets = List(App("app"))
+      val mappings = List(
+        Mapping(List(App("app"), Stage("PROD")), expected),
+        Mapping(List(App("app"), Stage("CODE")), unexpected),
+      )
+      sortMappingsByTargets(targets, mappings).head.contacts shouldEqual expected
+    }
+
+    "Lack of stage in mappings gets priority over a specific CODE mapping if two otherwise equivalent matches are found" in {
+      val targets = List(App("app"))
+      val mappings = List(
+        Mapping(List(App("app")), expected),
+        Mapping(List(App("app"), Stage("CODE")), unexpected),
+      )
+      sortMappingsByTargets(targets, mappings).head.contacts shouldEqual expected
+    }
+
   }
 }

@@ -13,11 +13,6 @@ object Targets {
   private val collectStage: PartialFunction[Target, Stage] =
     { case s @ Stage(_) => s }
 
-  def normaliseStages(targets: List[Target]): List[Target] = {
-    if (includesStage(targets)) targets
-    else Stage("PROD") :: targets
-  }
-
   def includesAwsAccount(targets: List[Target]): Boolean = {
     targets.collect(collectAwsAccount).nonEmpty
   }
@@ -41,26 +36,37 @@ object Targets {
   }
 
   def awsAccountMatches(targets1: List[Target], targets2: List[Target]): Boolean = {
-    val stages1 = targets1.collect(collectAwsAccount).toSet
-    val stages2 = targets2.collect(collectAwsAccount).toSet
-    (stages1 intersect stages2).nonEmpty
+    val awsAccounts1 = targets1.collect(collectAwsAccount).toSet
+    val awsAccounts2 = targets2.collect(collectAwsAccount).toSet
+    (awsAccounts1 intersect awsAccounts2).nonEmpty
   }
 
   def stackMatches(targets1: List[Target], targets2: List[Target]): Boolean = {
-    val stages1 = targets1.collect(collectStack).toSet
-    val stages2 = targets2.collect(collectStack).toSet
-    (stages1 intersect stages2).nonEmpty
+    val stacks1 = targets1.collect(collectStack).toSet
+    val stacks2 = targets2.collect(collectStack).toSet
+    (stacks1 intersect stacks2).nonEmpty
   }
 
   def appMatches(targets1: List[Target], targets2: List[Target]): Boolean = {
-    val stages1 = targets1.collect(collectApp).toSet
-    val stages2 = targets2.collect(collectApp).toSet
-    (stages1 intersect stages2).nonEmpty
+    val apps1 = targets1.collect(collectApp).toSet
+    val apps2 = targets2.collect(collectApp).toSet
+    (apps1 intersect apps2).nonEmpty
+  }
+
+  def shouldDefaultBasedOnStage(targets1: List[Target], targets2: List[Target]): Boolean = {
+    val prodOrStagelessMapping = targets1.collect(collectStage).toSet.contains(Stage("PROD")) || !includesStage(targets1)
+    prodOrStagelessMapping && !includesStage(targets2)
   }
 
   def sortMappingsByTargets(targets: List[Target], mappings: List[Mapping]): List[Mapping] = {
     mappings.sortBy { mapping =>
-      ( appMatches(mapping.targets, targets)
+      ( appMatches(mapping.targets, targets) && stageMatches(mapping.targets, targets)
+      , stackMatches(mapping.targets, targets) && stageMatches(mapping.targets, targets)
+      , awsAccountMatches(mapping.targets, targets) && stageMatches(mapping.targets, targets)
+      , appMatches(mapping.targets, targets) && shouldDefaultBasedOnStage(mapping.targets, targets)
+      , stackMatches(mapping.targets, targets) && shouldDefaultBasedOnStage(mapping.targets, targets)
+      , awsAccountMatches(mapping.targets, targets) && shouldDefaultBasedOnStage(mapping.targets, targets)
+      , appMatches(mapping.targets, targets)
       , stackMatches(mapping.targets, targets)
       , awsAccountMatches(mapping.targets, targets)
       )

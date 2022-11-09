@@ -3,18 +3,16 @@ import com.gu.riffraff.artifact.RiffRaffArtifact.autoImport.{riffRaffArtifactRes
 val compilerOptions = Seq(
   "-deprecation",
   "-Xfatal-warnings",
-  "-encoding", "UTF-8",
-  "-target:jvm-1.8"
+  "-encoding", "UTF-8"
 )
 
 inThisBuild(Seq(
-  scalaVersion := "2.13.2",
-  crossScalaVersions := Seq("2.11.8", "2.12.4", scalaVersion.value),
+  scalaVersion := "2.13.10",
+  crossScalaVersions := Seq("2.12.17", scalaVersion.value),
   scalacOptions ++= Seq(
     "-deprecation",
     "-Xfatal-warnings",
-    "-encoding", "UTF-8",
-    "-target:jvm-1.8"
+    "-encoding", "UTF-8"
   ),
   // sonatype metadata
   organization := "com.gu",

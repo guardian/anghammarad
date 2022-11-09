@@ -111,6 +111,6 @@ lazy val dev = project
     libraryDependencies ++= Seq(
       "com.github.scopt" %% "scopt" % "4.0.1"
     ),
-    skip in publish := true
+    publish / skip := true
   )
   .dependsOn(common, anghammarad)

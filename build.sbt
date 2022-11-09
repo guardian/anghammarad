@@ -99,6 +99,12 @@ lazy val anghammarad = project
     ),
     publish / skip := true,
     assemblyJarName := s"${name.value}.jar",
+    assembly / assemblyMergeStrategy := {
+      case "module-info.class" => MergeStrategy.discard // See: https://stackoverflow.com/a/55557287
+      case x =>
+        val oldStrategy = (assemblyMergeStrategy in assembly).value
+        oldStrategy(x)
+    },
     riffRaffPackageType := assembly.value,
     riffRaffUploadArtifactBucket := Option("riffraff-artifact"),
     riffRaffUploadManifestBucket := Option("riffraff-builds"),

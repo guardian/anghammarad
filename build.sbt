@@ -3,16 +3,18 @@ import com.gu.riffraff.artifact.RiffRaffArtifact.autoImport.{riffRaffArtifactRes
 val compilerOptions = Seq(
   "-deprecation",
   "-Xfatal-warnings",
-  "-encoding", "UTF-8"
+  "-encoding", "UTF-8",
+  "-target:jvm-1.8"
 )
 
 inThisBuild(Seq(
-  scalaVersion := "2.13.10",
-  crossScalaVersions := Seq("2.12.17", scalaVersion.value),
+  scalaVersion := "2.13.2",
+  crossScalaVersions := Seq("2.11.8", "2.12.4", scalaVersion.value),
   scalacOptions ++= Seq(
     "-deprecation",
     "-Xfatal-warnings",
-    "-encoding", "UTF-8"
+    "-encoding", "UTF-8",
+    "-target:jvm-1.8"
   ),
   // sonatype metadata
   organization := "com.gu",
@@ -29,12 +31,9 @@ inThisBuild(Seq(
   )
 ))
 
-val awsSdkVersion = "1.12.338"
-val circeVersion = "0.14.1"
+val awsSdkVersion = "1.11.759"
+val circeVersion = "0.12.0-M3"
 val flexmarkVersion = "0.50.50"
-val scalaTestVersion = "3.2.14"
-val scalaLoggingVersion = "3.9.5"
-
 
 //Projects
 
@@ -65,8 +64,8 @@ lazy val client = project
     libraryDependencies ++= Seq(
       "com.amazonaws" % "aws-java-sdk-sns" % awsSdkVersion,
       "org.json" % "json" % "20180130",
-      "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
-      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
+      "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4",
+      "org.scalatest" %% "scalatest" % "3.2.9" % Test
     ),
     // publish settings
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
@@ -88,23 +87,17 @@ lazy val anghammarad = project
       "io.circe" %% "circe-core" % circeVersion,
       "io.circe" %% "circe-generic" % circeVersion,
       "io.circe" %% "circe-parser" % circeVersion,
-      "com.softwaremill.sttp.client3" %% "core" % "3.8.3",
+      "com.softwaremill.sttp.client3" %% "core" % "3.3.16",
       "com.vladsch.flexmark" % "flexmark" % flexmarkVersion,
       "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % flexmarkVersion,
       "com.vladsch.flexmark" % "flexmark-ext-tables" % flexmarkVersion,
       "com.vladsch.flexmark" % "flexmark-util" % flexmarkVersion,
-      "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
-      "ch.qos.logback" % "logback-classic" % "1.4.4",
-      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
+      "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4",
+      "ch.qos.logback" % "logback-classic" % "1.2.6",
+      "org.scalatest" %% "scalatest" % "3.2.9" % Test
     ),
     publish / skip := true,
     assemblyJarName := s"${name.value}.jar",
-    assembly / assemblyMergeStrategy := {
-      case "module-info.class" => MergeStrategy.discard // See: https://stackoverflow.com/a/55557287
-      case x =>
-        val oldStrategy = (assemblyMergeStrategy in assembly).value
-        oldStrategy(x)
-    },
     riffRaffPackageType := assembly.value,
     riffRaffUploadArtifactBucket := Option("riffraff-artifact"),
     riffRaffUploadManifestBucket := Option("riffraff-builds"),
@@ -118,6 +111,6 @@ lazy val dev = project
     libraryDependencies ++= Seq(
       "com.github.scopt" %% "scopt" % "4.0.1"
     ),
-    publish / skip := true
+    skip in publish := true
   )
   .dependsOn(common, anghammarad)

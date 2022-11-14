@@ -47,6 +47,14 @@ and it will require the sns:Publish action. Here is an [example](https://github.
 
 A test [google group](https://groups.google.com/a/guardian.co.uk/g/anghammarad.test.alerts) has been created, so that you can test your notification. The stack for this is called "testing-alerts". You can also find this in the Anghammarad config in S3.
 
+You can try out the `CODE` deployment before promoting to `PROD`, by obtaining "Deploy Tools" developer credentials from Janus and running:
+
+```shell
+sbt "project dev" "run fields --config-stage CODE --targets Stack=testing-alerts --subject my_test_message --message testing --source test_user --email"
+```
+
+This will send a message to the test group indicated above.
+
 ### Node Client
 
 Follow the instructions in the [node client README](./anghammarad-client-node/README.md).

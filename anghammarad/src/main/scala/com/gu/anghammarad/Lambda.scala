@@ -17,7 +17,7 @@ class Lambda extends RequestHandler[SNSEvent, Unit] {
       config <- Config.loadConfig(stage)
       configuration <- Serialization.parseConfig(config)
       notification <- parseNotification
-      sent <- Anghammarad.run(notification, configuration)
+      sent <- AnghammaradService.run(notification, configuration)
     } yield sent
 
     // send notification if result is a failure

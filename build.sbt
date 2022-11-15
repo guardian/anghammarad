@@ -120,4 +120,4 @@ lazy val dev = project
     ),
     publish / skip := true
   )
-  .dependsOn(common, anghammarad)
+  .dependsOn(common, anghammarad, client)

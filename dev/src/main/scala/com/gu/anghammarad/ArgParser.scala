@@ -12,20 +12,20 @@ object ArgParser {
   val argParser: OptionParser[Arguments] = new OptionParser[Arguments]("anghammarad") {
     cmd("json")
       .action { (_, _) =>
-        Json("", "", Arguments.defaultStage)
+        JsonArgs("", "", Arguments.defaultStage)
       }
       .text("provide a JSON message to mimic SNS")
       .children(
         arg[String]("subject")
           .action {
-            case (subject, j: Json) =>
+            case (subject, j: JsonArgs) =>
               j.copy(subject = subject)
             case _ => throw new RuntimeException("Arguments error")
           }
           .text("Subject for the message"),
         opt[File]('f', "file")
           .action {
-            case (file, j: Json) =>
+            case (file, j: JsonArgs) =>
               val message = Source.fromFile(file, "UTF-8").mkString
               j.copy(json = message)
             case _ => throw new RuntimeException("Arguments error")
@@ -33,7 +33,7 @@ object ArgParser {
           .text("file containing JSON message"),
         opt[String]('j', "json")
           .action {
-            case (message, j: Json) =>
+            case (message, j: JsonArgs) =>
               j.copy(json = message)
             case _ => throw new RuntimeException("Arguments error")
           }
@@ -41,7 +41,7 @@ object ArgParser {
         opt[String]("config-stage")
           .optional()
           .action {
-            case (configStage, j: Json) =>
+            case (configStage, j: JsonArgs) =>
               j.copy(configStage = configStage)
             case _ => throw new RuntimeException("Arguments error")
           }
@@ -49,7 +49,7 @@ object ArgParser {
       )
     cmd("fields")
       .action { (_, _) =>
-        Specified("", "", Nil, Nil, None, "", Arguments.defaultStage)
+        Specified("", "", Nil, Nil, None, "", Arguments.defaultStage, None)
       }
       .text("specify fields directly")
       .children(
@@ -162,7 +162,15 @@ object ArgParser {
               fields.copy(configStage = configStage)
             case _ => throw new RuntimeException("Arguments error")
           }
-          .text("Which stage's config to use (defaults to DEV, recommended)")
+          .text("Which stage's config to use (defaults to DEV, recommended)"),
+        opt[String]("use-topic")
+          .optional()
+          .action {
+            case (useTopic, fields: Specified) =>
+              fields.copy(useTopic = Some(useTopic))
+            case _ => throw new RuntimeException("Arguments error")
+          }
+          text "Send message using client (will publish to SNS topic)",
       )
   }
 
@@ -171,7 +179,7 @@ object ArgParser {
 
 trait Arguments
 case object InitialArgs extends Arguments
-case class Json(
+case class JsonArgs(
   subject: String,
   json: String,
   configStage: String
@@ -183,7 +191,8 @@ case class Specified(
   targets: List[Target],
   channel: Option[RequestedChannel],
   source: String,
-  configStage: String
+  configStage: String,
+  useTopic: Option[String]
 ) extends Arguments
 object Arguments {
   val defaultStage = "DEV"

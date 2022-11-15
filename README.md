@@ -47,13 +47,26 @@ and it will require the sns:Publish action. Here is an [example](https://github.
 
 A test [google group](https://groups.google.com/a/guardian.co.uk/g/anghammarad.test.alerts) has been created, so that you can test your notification. The stack for this is called "testing-alerts". You can also find this in the Anghammarad config in S3.
 
-You can try out the `CODE` deployment before promoting to `PROD`, by obtaining "Deploy Tools" developer credentials from Janus and running:
+You can try out your local changes by obtaining "Deploy Tools" developer credentials from Janus and running:
 
 ```shell
 sbt "project dev" "run fields --config-stage CODE --targets Stack=testing-alerts --subject my_test_message --message testing --source test_user --email"
 ```
 
-This will send a message to the test group indicated above.
+This will use `AnghammaradService.run` to send a message to the test group indicated above.
+
+If you need to invoke the Lambda function (for example to test IAM permissions), in `CODE` or `PROD` you can also publish a message to one of Anghammarad's SNS topics by running:
+
+```shell
+# Set the ENV ("CODE" or "PROD")
+ENV="CODE"
+# Get the SNS topic for a particular environment from SSM: 
+TOPIC_ARN=$(aws ssm get-parameter --name /$ENV/deploy/amigo/anghammarad.sns.topicArn --region eu-west-1 --profile deployTools | jq -r ".Parameter.Value")
+# Send a notification to the topic using the --use-topic $TOPIC_ARN flag
+sbt "project dev" "run fields --config-stage CODE --targets Stack=testing-alerts --subject my_test_message --message testing --source test_user --email --use-topic $TOPIC_ARN"
+```
+
+This will use `Anhammarad.notify` from the client project, allowing you to test it is working as expected as well as being able to test `CODE` & `PROD` are behaving.
 
 ### Node Client
 

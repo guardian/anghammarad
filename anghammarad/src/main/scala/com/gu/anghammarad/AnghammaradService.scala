@@ -6,7 +6,7 @@ import com.gu.anghammarad.messages.{Messages, SendMessages}
 import scala.util.Try
 
 
-object Anghammarad {
+object AnghammaradService {
   def run(notification: Notification, config: Configuration): Try[List[(Message, Contact)]] = {
     // resolve targets
     for {

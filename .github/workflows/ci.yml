@@ -43,5 +43,22 @@ jobs:
             LAST_TEAMCITY_BUILD=250
             export GITHUB_RUN_NUMBER=$(( $GITHUB_RUN_NUMBER + $LAST_TEAMCITY_BUILD ))
             ./script/ci
+          
+      - uses: guardian/actions-riff-raff@v2
+        with:
+          app: anghammarad
+          config: |
+            stacks:
+              - deploy
+            regions:
+              - eu-west-1
+            allowedStages:
+              - CODE
+              - PROD
+          contentDirectories: |
+            anghammarad:
+              - anghammarad.jar
+            cfn:
+              - cfn.yml
 
 

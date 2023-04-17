@@ -38,13 +38,10 @@ jobs:
           distribution: 'corretto'
           cache: 'sbt'
 
-      - name: Build
-        run: sbt clean compile test
-
       - name: Upload to riff-raff
         run: |
             LAST_TEAMCITY_BUILD=250
             export GITHUB_RUN_NUMBER=$(( $GITHUB_RUN_NUMBER + $LAST_TEAMCITY_BUILD ))
-            sbt riffRaffUpload
+            ./script/ci
 
 

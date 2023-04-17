@@ -38,27 +38,20 @@ jobs:
           distribution: 'corretto'
           cache: 'sbt'
 
-      - name: Upload to riff-raff
+      - name: Build
         run: |
-            LAST_TEAMCITY_BUILD=250
-            export GITHUB_RUN_NUMBER=$(( $GITHUB_RUN_NUMBER + $LAST_TEAMCITY_BUILD ))
             ./script/ci
           
-      - uses: guardian/actions-riff-raff@v2
+      - name: Upload to riff-raff
+        uses: guardian/actions-riff-raff@v2
         with:
           app: anghammarad
-          config: |
-            stacks:
-              - deploy
-            regions:
-              - eu-west-1
-            allowedStages:
-              - CODE
-              - PROD
+          configPath: anghammarad/riff-raff.yaml
+          buildNumberOffset: 250
           contentDirectories: |
             anghammarad:
-              - anghammarad.jar
-            cloudformation:
-              - anghammarad.template.yaml
+              - anghammarad/anghammarad.jar
+            cfn:
+              - cfn/cfn.yml
 
 

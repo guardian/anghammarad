@@ -2,3 +2,6 @@
 
 sbt clean compile test assembly
 
+mkdir cfn
+mv cloudformation/anghammarad.template.yaml cfn/cfn.yml
+

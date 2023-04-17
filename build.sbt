@@ -104,7 +104,7 @@ lazy val anghammarad = project
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
     publish / skip := true,
-    assemblyJarName := s"${name.value}.jar",
+    assembly / assemblyOutputPath := file("anghammarad/anghammarad.jar"),
     assembly / assemblyMergeStrategy := {
       case path if path.endsWith("module-info.class") => MergeStrategy.last
       case x =>

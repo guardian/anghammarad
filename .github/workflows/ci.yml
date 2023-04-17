@@ -47,11 +47,12 @@ jobs:
         with:
           app: anghammarad
           configPath: anghammarad/riff-raff.yaml
+          projectName: tools::anghammarad
           buildNumberOffset: 250
           contentDirectories: |
             anghammarad:
               - anghammarad/anghammarad.jar
             cfn:
-              - cfn/cfn.yml
+              - cloudformation/anghammarad.template.yaml
 
 

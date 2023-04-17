@@ -46,7 +46,7 @@ lazy val root = project
     releaseCrossBuild := true,
     publish / skip := true,
     publishTo := sonatypePublishTo.value,
-    releaseProcess += releaseStepCommandAndRemaining("sonatypeRelease")
+    releaseProcess += releaseStepCommandAndRemaining("sonatypeRelease"),
   )
   .aggregate(anghammarad, client, common, dev)
 
@@ -71,10 +71,16 @@ lazy val client = project
     // publish settings
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
     publishTo := sonatypePublishTo.value,
+    assembly / assemblyMergeStrategy := {
+      case path if path.endsWith("module-info.class") => MergeStrategy.last
+      case x =>
+        val oldStrategy = (assembly / assemblyMergeStrategy).value
+        oldStrategy(x)
+    }
   )
 
 lazy val anghammarad = project
-  .enablePlugins(JavaAppPackaging, RiffRaffArtifact, ScalafixPlugin)
+  .enablePlugins(JavaAppPackaging, ScalafixPlugin)
   .dependsOn(common)
   .settings(
     name := "anghammarad",
@@ -98,18 +104,13 @@ lazy val anghammarad = project
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
     publish / skip := true,
-    assemblyJarName := s"${name.value}.jar",
+    assembly / assemblyOutputPath := file("anghammarad/anghammarad.jar"),
     assembly / assemblyMergeStrategy := {
-      case "module-info.class" => MergeStrategy.discard // See: https://stackoverflow.com/a/55557287
+      case path if path.endsWith("module-info.class") => MergeStrategy.last
       case x =>
-        val oldStrategy = (assemblyMergeStrategy in assembly).value
+        val oldStrategy = (assembly / assemblyMergeStrategy).value
         oldStrategy(x)
-    },
-    riffRaffPackageType := assembly.value,
-    riffRaffUploadArtifactBucket := Option("riffraff-artifact"),
-    riffRaffUploadManifestBucket := Option("riffraff-builds"),
-    riffRaffManifestProjectName := "tools::anghammarad",
-    riffRaffArtifactResources += (file("cloudformation/anghammarad.template.yaml"), "cfn/cfn.yaml")
+    }
   )
 
 lazy val dev = project
@@ -118,6 +119,12 @@ lazy val dev = project
     libraryDependencies ++= Seq(
       "com.github.scopt" %% "scopt" % "4.0.1"
     ),
-    publish / skip := true
+    publish / skip := true,
+      assembly / assemblyMergeStrategy := {
+      case path if path.endsWith("module-info.class") => MergeStrategy.last
+      case x =>
+        val oldStrategy = (assembly / assemblyMergeStrategy).value
+        oldStrategy(x)
+    }
   )
   .dependsOn(common, anghammarad, client)

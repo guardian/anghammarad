@@ -1,3 +1,7 @@
 #!/usr/bin/env bash
 
-sbt clean compile test riffRaffUpload
+sbt clean compile test assembly
+
+mkdir cfn
+mv cloudformation/anghammarad.template.yaml cfn/cfn.yml
+

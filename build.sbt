@@ -1,5 +1,3 @@
-import com.gu.riffraff.artifact.RiffRaffArtifact.autoImport.{riffRaffArtifactResources, riffRaffUploadManifestBucket}
-
 val compilerOptions = Seq(
   "-deprecation",
   "-Xfatal-warnings",
@@ -120,7 +118,7 @@ lazy val dev = project
       "com.github.scopt" %% "scopt" % "4.0.1"
     ),
     publish / skip := true,
-      assembly / assemblyMergeStrategy := {
+    assembly / assemblyMergeStrategy := {
       case path if path.endsWith("module-info.class") => MergeStrategy.last
       case x =>
         val oldStrategy = (assembly / assemblyMergeStrategy).value

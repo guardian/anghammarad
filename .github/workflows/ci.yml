@@ -53,6 +53,6 @@ jobs:
             anghammarad:
               - anghammarad/anghammarad.jar
             cfn:
-              - cloudformation/anghammarad.template.yaml
+              - cloudformation/cfn.yaml
 
 

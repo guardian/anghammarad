@@ -1,9 +1,16 @@
-import com.gu.riffraff.artifact.RiffRaffArtifact.autoImport.{riffRaffArtifactResources, riffRaffUploadManifestBucket}
-
 val compilerOptions = Seq(
   "-deprecation",
   "-Xfatal-warnings",
   "-encoding", "UTF-8"
+)
+
+val assemblySettings = Seq(
+  assembly / assemblyMergeStrategy := {
+    case path if path.endsWith("module-info.class") => MergeStrategy.last
+    case x =>
+      val oldStrategy = (assembly / assemblyMergeStrategy).value
+      oldStrategy(x)
+  }
 )
 
 inThisBuild(Seq(
@@ -34,7 +41,6 @@ val circeVersion = "0.14.1"
 val flexmarkVersion = "0.50.50"
 val scalaTestVersion = "3.2.14"
 val scalaLoggingVersion = "3.9.5"
-
 
 //Projects
 
@@ -71,12 +77,7 @@ lazy val client = project
     // publish settings
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
     publishTo := sonatypePublishTo.value,
-    assembly / assemblyMergeStrategy := {
-      case path if path.endsWith("module-info.class") => MergeStrategy.last
-      case x =>
-        val oldStrategy = (assembly / assemblyMergeStrategy).value
-        oldStrategy(x)
-    }
+    assemblySettings,
   )
 
 lazy val anghammarad = project
@@ -105,12 +106,7 @@ lazy val anghammarad = project
     ),
     publish / skip := true,
     assembly / assemblyOutputPath := file("anghammarad/anghammarad.jar"),
-    assembly / assemblyMergeStrategy := {
-      case path if path.endsWith("module-info.class") => MergeStrategy.last
-      case x =>
-        val oldStrategy = (assembly / assemblyMergeStrategy).value
-        oldStrategy(x)
-    }
+    assemblySettings,
   )
 
 lazy val dev = project
@@ -120,11 +116,6 @@ lazy val dev = project
       "com.github.scopt" %% "scopt" % "4.0.1"
     ),
     publish / skip := true,
-      assembly / assemblyMergeStrategy := {
-      case path if path.endsWith("module-info.class") => MergeStrategy.last
-      case x =>
-        val oldStrategy = (assembly / assemblyMergeStrategy).value
-        oldStrategy(x)
-    }
+    assemblySettings,
   )
   .dependsOn(common, anghammarad, client)

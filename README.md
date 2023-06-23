@@ -76,7 +76,7 @@ Follow the instructions in the [node client README](./anghammarad-client-node/RE
 
 You will need:
 
-* Sonatype account that has been whitelisted for the Guardian's group
+* Sonatype account that is a member of the Guardian's group
 * A published PGP key
 * Global SBT configuration to include your sonatype ceredentials
 

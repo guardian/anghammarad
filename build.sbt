@@ -70,7 +70,7 @@ lazy val client = project
     name := "anghammarad-client",
     libraryDependencies ++= Seq(
       "com.amazonaws" % "aws-java-sdk-sns" % awsSdkVersion,
-      "org.json" % "json" % "20180130",
+      "org.json" % "json" % "20230618",
       "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),

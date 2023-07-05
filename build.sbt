@@ -36,7 +36,7 @@ inThisBuild(Seq(
   )
 ))
 
-val awsSdkVersion = "1.12.338"
+val awsSdkVersion = "1.12.501"
 val circeVersion = "0.14.1"
 val flexmarkVersion = "0.50.50"
 val scalaTestVersion = "3.2.14"
@@ -87,8 +87,8 @@ lazy val anghammarad = project
     name := "anghammarad",
     libraryDependencies ++= Seq(
       "org.scala-lang.modules" %% "scala-collection-compat" % "2.6.0",
-      "com.amazonaws" % "aws-lambda-java-events" % "3.10.0",
-      "com.amazonaws" % "aws-lambda-java-core" % "1.2.1",
+      "com.amazonaws" % "aws-lambda-java-events" % "3.11.2",
+      "com.amazonaws" % "aws-lambda-java-core" % "1.2.2",
       "com.amazonaws" % "aws-java-sdk-lambda" % awsSdkVersion,
       "com.amazonaws" % "aws-java-sdk-ses" % awsSdkVersion,
       "com.amazonaws" % "aws-java-sdk-s3" % awsSdkVersion,

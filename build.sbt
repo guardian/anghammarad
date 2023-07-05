@@ -14,8 +14,8 @@ val assemblySettings = Seq(
 )
 
 inThisBuild(Seq(
-  scalaVersion := "2.13.10",
-  crossScalaVersions := Seq("2.12.17", scalaVersion.value),
+  scalaVersion := "2.13.11",
+  crossScalaVersions := Seq("2.12.18", scalaVersion.value),
   scalacOptions ++= Seq(
     "-deprecation",
     "-Xfatal-warnings",
@@ -37,9 +37,9 @@ inThisBuild(Seq(
 ))
 
 val awsSdkVersion = "1.12.501"
-val circeVersion = "0.14.1"
+val circeVersion = "0.14.5"
 val flexmarkVersion = "0.50.50"
-val scalaTestVersion = "3.2.14"
+val scalaTestVersion = "3.2.16"
 val scalaLoggingVersion = "3.9.5"
 
 //Projects
@@ -70,7 +70,7 @@ lazy val client = project
     name := "anghammarad-client",
     libraryDependencies ++= Seq(
       "com.amazonaws" % "aws-java-sdk-sns" % awsSdkVersion,
-      "org.json" % "json" % "20180130",
+      "org.json" % "json" % "20230618",
       "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
@@ -86,7 +86,7 @@ lazy val anghammarad = project
   .settings(
     name := "anghammarad",
     libraryDependencies ++= Seq(
-      "org.scala-lang.modules" %% "scala-collection-compat" % "2.6.0",
+      "org.scala-lang.modules" %% "scala-collection-compat" % "2.11.0",
       "com.amazonaws" % "aws-lambda-java-events" % "3.11.2",
       "com.amazonaws" % "aws-lambda-java-core" % "1.2.2",
       "com.amazonaws" % "aws-java-sdk-lambda" % awsSdkVersion,
@@ -95,13 +95,13 @@ lazy val anghammarad = project
       "io.circe" %% "circe-core" % circeVersion,
       "io.circe" %% "circe-generic" % circeVersion,
       "io.circe" %% "circe-parser" % circeVersion,
-      "com.softwaremill.sttp.client3" %% "core" % "3.8.3",
+      "com.softwaremill.sttp.client3" %% "core" % "3.8.15",
       "com.vladsch.flexmark" % "flexmark" % flexmarkVersion,
       "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % flexmarkVersion,
       "com.vladsch.flexmark" % "flexmark-ext-tables" % flexmarkVersion,
       "com.vladsch.flexmark" % "flexmark-util" % flexmarkVersion,
       "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
-      "ch.qos.logback" % "logback-classic" % "1.4.4",
+      "ch.qos.logback" % "logback-classic" % "1.4.8",
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
     publish / skip := true,
@@ -113,7 +113,7 @@ lazy val dev = project
   .settings(
     name := "dev",
     libraryDependencies ++= Seq(
-      "com.github.scopt" %% "scopt" % "4.0.1"
+      "com.github.scopt" %% "scopt" % "4.1.0"
     ),
     publish / skip := true,
     assemblySettings,

@@ -6,13 +6,21 @@ import com.vladsch.flexmark.ext.tables.TablesExtension
 import com.vladsch.flexmark.html.HtmlRenderer
 import com.vladsch.flexmark.parser.Parser
 import com.vladsch.flexmark.util.data.MutableDataSet
+import com.vladsch.flexmark.util.misc.Extension
 import io.circe.Json
+
 import scala.jdk.CollectionConverters._
 import scala.collection.compat._
 
 object Messages {
+  private val mdExtensions: List[Extension] = List(
+    TablesExtension.create(),
+    StrikethroughExtension.create()
+  )
+
   private[anghammarad] val mdOptions = new MutableDataSet()
-    .set(Parser.EXTENSIONS, List(TablesExtension.create(), StrikethroughExtension.create()).asJava)
+    .set(Parser.EXTENSIONS, mdExtensions.asJava)
+
   private[anghammarad] val mdParser = Parser.builder(mdOptions).build
   private[anghammarad] val mdRenderer = HtmlRenderer.builder(mdOptions).build()
 

@@ -77,6 +77,7 @@ object Contacts {
           if (includesApp(mappingTargets)) appMatches(targets, mappingTargets)
           else if (includesStack(mappingTargets)) stackMatches(targets, mappingTargets)
           else if (includesAwsAccount(mappingTargets)) awsAccountMatches(targets, mappingTargets)
+          else if (includesGithubTeamSlug(mappingTargets)) githubTeamSlugMatches(targets, mappingTargets)
           else true
         }
         sortMappingsByTargets(targets, validMatches)

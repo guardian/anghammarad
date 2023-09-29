@@ -119,6 +119,7 @@ object Serialization {
       case "Stage" => Success(Stage(value))
       case "App" => Success(App(value))
       case "AwsAccount" => Success(AwsAccount(value))
+      case "GithubTeamSlug" => Success(GithubTeamSlug(value))
       case _ => Fail(s"Unable to match keys to known targets")
     }
   }

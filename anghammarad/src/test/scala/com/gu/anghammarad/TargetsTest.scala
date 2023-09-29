@@ -136,6 +136,28 @@ class TargetsTest extends AnyFreeSpec with Matchers {
     }
   }
 
+  "githubTeamSlugMatches" - {
+    "returns true if the Slugs match" in {
+      githubTeamSlugMatches(List(GithubTeamSlug("slugs")), List(GithubTeamSlug("slugs"))) shouldBe true
+    }
+
+    "returns true if the Slugs match among other targets" in {
+      githubTeamSlugMatches(List(GithubTeamSlug("slugs"), Stack("stack")), List(AwsAccount("123456789"), GithubTeamSlug("slugs"))) shouldBe true
+    }
+
+    "returns false if the Slugs do not match" in {
+      githubTeamSlugMatches(List(GithubTeamSlug("slugs1")), List(GithubTeamSlug("slugs2"))) shouldBe false
+    }
+
+    "returns false if the Slugs do not match among other targets" in {
+      githubTeamSlugMatches(List(Stack("stack"), GithubTeamSlug("slugs1")), List(GithubTeamSlug("slugs2"), AwsAccount("123456789"))) shouldBe false
+    }
+
+    "returns true if multiple Slugs are present as long as there is an overlap" in {
+      githubTeamSlugMatches(List(GithubTeamSlug("slugs1"), GithubTeamSlug("slugs2")), List(GithubTeamSlug("slugs1"))) shouldBe true
+    }
+  }
+
   "sortMappingsByTargets" - {
     val expected = List(EmailAddress("expected"))
     val unexpected = List(EmailAddress("unexpected"))

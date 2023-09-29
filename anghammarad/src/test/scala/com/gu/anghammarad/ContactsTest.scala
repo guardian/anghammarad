@@ -57,6 +57,22 @@ class ContactsTest extends AnyFreeSpec with Matchers with TryValues {
         val targets = List(AwsAccount("123456789"), Stack("different-stack"), App("different-app"), Stage("PROD"))
         resolveTargetContacts(targets, mappings).success shouldEqual List(EmailAddress("123456789.email"))
       }
+
+      "chooses correct GithubTeamSlug match for specific target if GithubTeamSlug is configured" in {
+        val targets = List(GithubTeamSlug("slug1"))
+        resolveTargetContacts(targets, mappings).success shouldEqual List(EmailAddress("app2.CODE.email"))
+      }
+
+      "chooses correct GithubTeamSlug match for specific target if GithubTeamSlug is configured but stack and app are not" in {
+        val targets = List(GithubTeamSlug("slug1"), Stack("different-stack"), App("different-app"), Stage("PROD"))
+        resolveTargetContacts(targets, mappings).success shouldEqual List(EmailAddress("app2.CODE.email"))
+      }
+
+//      We don't support matching multiple choices on GithubTeamSlug - yet...
+//      "chooses most specific GithubTeamSlug match multiple choices (matches mapping with stack and githubTeamSlug, not the one with just githubTeamSlug)" in {
+//        val targets = List(AwsAccount("slug1"), Stack("stack2"))
+//        resolveTargetContacts(targets, mappings).success shouldEqual List(EmailAddress("stack2.app1.email"))
+//      }
     }
 
     "cannot resolve from empty mappings" in {

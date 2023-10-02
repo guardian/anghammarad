@@ -89,6 +89,24 @@
       "contacts": {
         "email": "app3.CODE.email"
       }
+    },
+    {
+      "target": {
+        "GithubTeamSlug": "slug4"
+      },
+      "contacts": {
+        "email": "slug4.email"
+      }
+    },
+    {
+      "target": {
+        "Stack": "stack4",
+        "Stage": "PROD4",
+        "App": "app4"
+      },
+      "contacts": {
+        "email": "stack4.email"
+      }
     }
   ]
 }

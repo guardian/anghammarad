@@ -68,16 +68,18 @@ class ContactsTest extends AnyFreeSpec with Matchers with TryValues {
         resolveTargetContacts(targets, mappings).success shouldEqual List(EmailAddress("app2.CODE.email"))
       }
 
-      "chooses Stack,Stage, App over GithubTeamSlug" in {
-        val targets = List(GithubTeamSlug("slug4"), Stack("stack4"), App("app4"), Stage("PROD4"))
-        resolveTargetContacts(targets, mappings).success shouldEqual List(EmailAddress("stack4.email"))
+      "does not choose GithubTeamSlug when another exact mapping is provided" in {
+        val stackStageAppTargets = List(GithubTeamSlug("slug4"), Stack("stack4"), App("app4"), Stage("PROD4"))
+        val accountIdTarget = List(GithubTeamSlug("slug4"), AwsAccount("111111111"))
+        val exactStackTarget = List(GithubTeamSlug("slug4"), Stack("stack1"))
+        resolveTargetContacts(stackStageAppTargets, mappings).success shouldEqual List(EmailAddress("stack4.email"))
+        resolveTargetContacts(accountIdTarget, mappings).success shouldEqual List(EmailAddress("111111111.email"))
+        resolveTargetContacts(exactStackTarget, mappings).success shouldEqual List(EmailAddress("stack1.email"), HangoutsRoom("stack1.channel"))
       }
-
-//      We don't support matching multiple choices on GithubTeamSlug - yet...
-//      "chooses most specific GithubTeamSlug match multiple choices (matches mapping with stack and githubTeamSlug, not the one with just githubTeamSlug)" in {
-//        val targets = List(AwsAccount("slug1"), Stack("stack2"))
-//        resolveTargetContacts(targets, mappings).success shouldEqual List(EmailAddress("stack2.app1.email"))
-//      }
+      "chooses GithubTeamSlug when an alternative, underspecified match is provided" in {
+        val stackTargets = List(GithubTeamSlug("slug4"), Stack("stack4"))
+        resolveTargetContacts(stackTargets, mappings).success shouldEqual List(EmailAddress("slug4.email"))
+      }
     }
 
     "cannot resolve from empty mappings" in {

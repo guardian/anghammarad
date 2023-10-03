@@ -12,6 +12,9 @@ object Targets {
     { case a @ App(_) => a }
   private val collectStage: PartialFunction[Target, Stage] =
     { case s @ Stage(_) => s }
+  private val collectGithubTeamSlug: PartialFunction[Target, GithubTeamSlug] = {
+    case s@GithubTeamSlug(_) => s
+  }
 
   def includesAwsAccount(targets: List[Target]): Boolean = {
     targets.collect(collectAwsAccount).nonEmpty
@@ -28,6 +31,11 @@ object Targets {
   def includesStage(targets: List[Target]): Boolean = {
     targets.collect(collectStage).nonEmpty
   }
+
+  def includesGithubTeamSlug(targets: List[Target]): Boolean = {
+    targets.collect(collectGithubTeamSlug).nonEmpty
+  }
+
 
   def stageMatches(targets1: List[Target], targets2: List[Target]): Boolean = {
     val stages1 = targets1.collect(collectStage).toSet
@@ -52,6 +60,13 @@ object Targets {
     val apps2 = targets2.collect(collectApp).toSet
     (apps1 intersect apps2).nonEmpty
   }
+
+  def githubTeamSlugMatches(targets1: List[Target], targets2: List[Target]): Boolean = {
+    val githubTeamSlug1 = targets1.collect(collectGithubTeamSlug).toSet
+    val githubTeamSlug2 = targets2.collect(collectGithubTeamSlug).toSet
+    (githubTeamSlug1 intersect githubTeamSlug2).nonEmpty
+  }
+
 
   def shouldDefaultBasedOnStage(targets1: List[Target], targets2: List[Target]): Boolean = {
     val prodOrStagelessMapping = targets1.collect(collectStage).toSet.contains(Stage("PROD")) || !includesStage(targets1)

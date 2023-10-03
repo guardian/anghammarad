@@ -5,6 +5,7 @@ case class Stack(stack: String) extends Target
 case class Stage(stage: String) extends Target
 case class App(app: String) extends Target
 case class AwsAccount(awsAccount: String) extends Target
+case class GithubTeamSlug(slug: String) extends Target
 
 sealed trait RequestedChannel
 case object All extends RequestedChannel

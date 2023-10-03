@@ -10,6 +10,7 @@ export interface Target {
   Stage?: string;
   App?: string;
   AwsAccount?: string;
+  GithubTeamSlug?: string;
 }
 
 export enum RequestedChannel {

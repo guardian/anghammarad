@@ -72,6 +72,41 @@
       "contacts": {
         "email": "app2.CODE.email"
       }
+    },
+    {
+      "target": {
+        "GithubTeamSlug": "slug1"
+      },
+      "contacts": {
+        "email": "app2.CODE.email"
+      }
+    },
+    {
+      "target": {
+        "GithubTeamSlug": "slug1",
+        "Stack": "stack2"
+      },
+      "contacts": {
+        "email": "app3.CODE.email"
+      }
+    },
+    {
+      "target": {
+        "GithubTeamSlug": "slug4"
+      },
+      "contacts": {
+        "email": "slug4.email"
+      }
+    },
+    {
+      "target": {
+        "Stack": "stack4",
+        "Stage": "PROD4",
+        "App": "app4"
+      },
+      "contacts": {
+        "email": "stack4.email"
+      }
     }
   ]
 }

@@ -79,8 +79,8 @@ object Main {
           json <- parse(jsonStr).toTry
           notification <- Serialization.generateNotification(subject, json)
         } yield notification
-      case Specified(subject, message, actions, targets, Some(channel), source, _, _) =>
-        Success(Notification(subject, message, actions, targets, channel, source))
+      case Specified(subject, message, actions, targets, Some(channel), source, _, _, threadKey) =>
+        Success(Notification(subject, message, actions, targets, channel, source, threadKey))
       case s: Specified =>
         Fail("No channel provided")
       case InitialArgs =>
@@ -93,7 +93,7 @@ object Main {
     args match {
       case JsonArgs(_, _, configStage) =>
         Success(configStage)
-      case Specified(_, _, _, _, _, _, configStage, _) =>
+      case Specified(_, _, _, _, _, _, configStage, _, _) =>
         Success(configStage)
       case InitialArgs =>
         argParser.showUsageOnError
@@ -105,7 +105,7 @@ object Main {
     args match {
       case JsonArgs(_, _, _) =>
         Success(None)
-      case Specified(_, _, _, _, _, _, _, useClient) =>
+      case Specified(_, _, _, _, _, _, _, useClient, _) =>
         Success(useClient)
       case InitialArgs =>
         argParser.showUsageOnError

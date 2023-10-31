@@ -62,10 +62,11 @@ object Serialization {
       rawChannel <- hCursor.downField("channel").as[String]
       rawActions <- hCursor.downField("actions").as[List[Json]]
       message <- hCursor.downField("message").as[String]
+      threadKey <- hCursor.downField("threadKey").as[Option[String]]
       channel <- parseRequestedChannel(rawChannel).toEither
       targets <- parseAllTargets(rawTargets).toEither
       actions <- rawActions.traverseT(parseAction).toEither
-    } yield Notification(subject, message, actions, targets, channel, sourceSystem)
+    } yield Notification(subject, message, actions, targets, channel, sourceSystem, threadKey)
 
     parsingResult.toTry
   }

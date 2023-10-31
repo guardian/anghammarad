@@ -49,7 +49,7 @@ object ArgParser {
       )
     cmd("fields")
       .action { (_, _) =>
-        Specified("", "", Nil, Nil, None, "", Arguments.defaultStage, None)
+        Specified("", "", Nil, Nil, None, "", Arguments.defaultStage, None, None)
       }
       .text("specify fields directly")
       .children(
@@ -171,6 +171,13 @@ object ArgParser {
             case _ => throw new RuntimeException("Arguments error")
           }
           text "Send message using client (will publish to SNS topic)",
+        opt[String]("thread-key")
+          .optional()
+          .action {
+            case (threadKey, fields: Specified) =>
+              fields.copy(threadKey = Some(threadKey))
+            case _ => throw new RuntimeException("Arguments error")
+          }
       )
   }
 
@@ -192,7 +199,8 @@ case class Specified(
   channel: Option[RequestedChannel],
   source: String,
   configStage: String,
-  useTopic: Option[String]
+  useTopic: Option[String],
+  threadKey: Option[String]
 ) extends Arguments
 object Arguments {
   val defaultStage = "DEV"

@@ -13,7 +13,7 @@ import scala.io.Source
 class ContactsTest extends AnyFreeSpec with Matchers with TryValues {
   val email = EmailMessage("subject", "text", "html")
   val emailAddress = EmailAddress("test@example.com")
-  val hangoutMessage = HangoutMessage("json")
+  val hangoutMessage = HangoutMessage("json", None)
   val hangoutsRoom = HangoutsRoom("webhook")
 
   "resolveTargetContacts" - {

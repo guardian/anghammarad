@@ -8,11 +8,16 @@ import sttp.client3._
 
 object HangoutsService {
 
-  def postMessage(webhook: String, message: String): Response[Either[String, String]] = {
+  def postMessage(webhook: String, message: HangoutMessage): Response[Either[String, String]] = {
+    val endpoint = message.threadKey match {
+      case Some(threadKey) => uri"$webhook&threadKey=$threadKey"
+      case _ => uri"$webhook"
+    }
+
     val backend = HttpURLConnectionBackend()
     basicRequest
-      .body(message)
-      .post(uri"$webhook")
+      .body(message.cardJson)
+      .post(endpoint)
       .send(backend)
   }
 
@@ -25,7 +30,7 @@ object HangoutsService {
 
   def sendHangoutsMessage(webhook: String, message: HangoutMessage): Try[Unit] = {
     for {
-      response <- Try {postMessage(webhook, message.cardJson)}
+      response <- Try {postMessage(webhook, message)}
       successOrFailure <- checkResponse(response)
     } yield successOrFailure
   }

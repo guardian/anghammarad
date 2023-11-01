@@ -30,4 +30,5 @@ export interface NotifyParams {
   sourceSystem: string;
   topicArn: string;
   client?: SNS;
+  threadKey?: string;
 }

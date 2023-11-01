@@ -86,7 +86,7 @@ object Messages {
          |  ]
          |}
          |""".stripMargin
-    HangoutMessage(json)
+    HangoutMessage(json, notification.threadKey)
   }
 
   private def buttonJson(actions: List[Action]): String = {

@@ -37,7 +37,8 @@ case class EmailMessage(
   html: String
 ) extends Message
 case class HangoutMessage(
-  cardJson: String
+  cardJson: String,
+  threadKey: Option[String]
 ) extends Message
 
 case class Notification(
@@ -46,7 +47,8 @@ case class Notification(
   actions: List[Action],
   target: List[Target],
   channel: RequestedChannel,
-  sourceSystem: String
+  sourceSystem: String,
+  threadKey: Option[String] = None // only used for Hangouts messages
 )
 
 case class Action(

@@ -10,12 +10,22 @@ export class Anghammarad {
   }
 
   messageJson(params: NotifyParams): string {
+    const {
+      message,
+      sourceSystem,
+      channel,
+      target,
+      actions,
+      threadKey
+    } = params
+
     return JSON.stringify({
-      message: params.message,
-      sender: params.sourceSystem,
-      channel: params.channel,
-      target: params.target,
-      actions: params.actions,
+      message,
+      sender: sourceSystem,
+      channel,
+      target,
+      actions,
+      ...(threadKey && { threadKey }), // only add "threadKey" when it is defined
     });
   }
 

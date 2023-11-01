@@ -27,7 +27,8 @@ class SerializationTest extends AnyFreeSpec with Matchers with EitherValues with
       List(Action("keep that name moving in the Overhead", "http://www.gnuterrypratchett.com/")),
       List(Stack("postal-service"), App("clacks-overhead")),
       Email,
-      "Terry Pratchett"
+      "Terry Pratchett",
+      None
     )
 
     "parseNotification" - {

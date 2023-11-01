@@ -48,7 +48,7 @@ case class Notification(
   target: List[Target],
   channel: RequestedChannel,
   sourceSystem: String,
-  threadKey: Option[String] // only used for Hangouts messages
+  threadKey: Option[String] = None // only used for Hangouts messages
 )
 
 case class Action(

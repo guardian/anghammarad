@@ -1,6 +1,6 @@
 {
   "name": "@guardian/anghammarad",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "description": "Notification service for the Guardian's dev teams",
   "main": "dist/src/main.js",
   "types": "dist/src/main.d.ts",

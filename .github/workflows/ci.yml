@@ -29,6 +29,11 @@ jobs:
           role-to-assume: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
           aws-region: eu-west-1
 
+      - name: Setup credentials for cloning https://github.com/guardian/private-infrastructure-config
+        uses: guardian/actions-read-private-repos@v0.1.1
+        with:
+          private-ssh-keys: ${{ secrets.PRIVATE_INFRASTRUCTURE_CONFIG_DEPLOY_KEY }}
+
       # Configuring caching is also recommended.
       # See https://github.com/actions/setup-java
       - name: Setup Java 11
@@ -42,7 +47,7 @@ jobs:
         run: |
             ./script/ci
           
-      - name: Upload to riff-raff
+      - name: Upload to riff-raff (anghammarad)
         uses: guardian/actions-riff-raff@v2
         with:
           app: anghammarad
@@ -54,5 +59,19 @@ jobs:
               - anghammarad/anghammarad.jar
             cfn:
               - cloudformation/cfn.yaml
+
+      - name: Upload to riff-raff (cloudwatch)
+        uses: guardian/actions-riff-raff@v2
+        with:
+          app: cloudwatch-to-anghammarad
+          configPath: cdk/cdk.out/riff-raff.yaml
+          projectName: tools::cloudwatch-to-anghammarad
+          contentDirectories: |
+            cloudwatch-to-anghammarad:
+              - cloudwatch/cloudwatch.jar
+            cdk.out:
+              - cdk/cdk.out/CloudwatchToAnghammarad-CODE.template.json
+              - cdk/cdk.out/CloudwatchToAnghammarad-PROD.template.json
+      
 
 

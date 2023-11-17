@@ -54,7 +54,7 @@ lazy val root = project
     publishTo := sonatypePublishTo.value,
     releaseProcess += releaseStepCommandAndRemaining("sonatypeRelease"),
   )
-  .aggregate(anghammarad, client, common, dev)
+  .aggregate(anghammarad, client, cloudwatch, common, dev)
 
 lazy val common = project
   .settings(
@@ -106,6 +106,27 @@ lazy val anghammarad = project
     ),
     publish / skip := true,
     assembly / assemblyOutputPath := file("anghammarad/anghammarad.jar"),
+    assemblySettings,
+  )
+
+lazy val cloudwatch = project
+  .enablePlugins(JavaAppPackaging, ScalafixPlugin)
+  .dependsOn(client)
+  .settings(
+    name := "cloudwatch",
+    libraryDependencies ++= Seq(
+      "com.amazonaws" % "aws-lambda-java-events" % "3.11.3",
+      "com.amazonaws" % "aws-lambda-java-core" % "1.2.3",
+      "com.amazonaws" % "aws-java-sdk-lambda" % awsSdkVersion,
+      "io.circe" %% "circe-core" % circeVersion,
+      "io.circe" %% "circe-generic" % circeVersion,
+      "io.circe" %% "circe-parser" % circeVersion,
+      "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
+      "ch.qos.logback" % "logback-classic" % "1.4.11",
+      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
+    ),
+    publish / skip := true,
+    assembly / assemblyOutputPath := file("cloudwatch/cloudwatch.jar"),
     assemblySettings,
   )
 

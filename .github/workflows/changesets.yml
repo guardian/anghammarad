@@ -1,4 +1,4 @@
-name: Tracker JS CI
+name: Changesets
 on:
   pull_request:
     paths:

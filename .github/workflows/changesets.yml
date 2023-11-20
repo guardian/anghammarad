@@ -21,7 +21,7 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      - run: yarn install --frozen-lockfile
+      - run: cd anghammarad-client-node && yarn install --frozen-lockfile
 
       # Build Tracker-js by running the script
       - name: Run build script

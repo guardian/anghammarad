@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - "anghammarad-client-node/**"
+  workflow_dispatch:
 
 jobs:
   publish:

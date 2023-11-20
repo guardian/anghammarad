@@ -13,19 +13,17 @@ jobs:
       pull-requests: write
 
     steps:
-      # Checkout the branch
       - uses: actions/checkout@v4
 
-      # Node is needed to run the app
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
 
-      - run: cd anghammarad-client-node && yarn install --frozen-lockfile
+      - name: Install dependencies
+        run: cd anghammarad-client-node && yarn install --frozen-lockfile
 
-      # Build Tracker-js by running the script
       - name: Run build script
-        run: cd anghammarad-client-node && npm run prepare
+        run: cd anghammarad-client-node && yarn build
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
@@ -35,6 +33,7 @@ jobs:
           title: "🦋 Release package updates"
           commit: "Bump package version"
           cwd: "./anghammarad-client-node"
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

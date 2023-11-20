@@ -5,20 +5,21 @@ on:
       - "anghammarad-client-node/**"
   workflow_dispatch:
 
+permissions:
+  id-token: write
+  contents: write
+  packages: write
+  pull-requests: write
+  issues: read
+
 jobs:
   publish:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: write
-      packages: write
-      pull-requests: write
-      issues: read
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v3
         with:
           node-version-file: .nvmrc
 

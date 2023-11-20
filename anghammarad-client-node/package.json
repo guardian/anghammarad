@@ -16,6 +16,7 @@
     "build": "tsc"
   },
   "dependencies": {
+    "@changesets/cli": "^2.26.2",
     "aws-sdk": "^2.769.0"
   },
   "devDependencies": {

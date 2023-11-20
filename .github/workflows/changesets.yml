@@ -14,12 +14,14 @@ jobs:
 
     steps:
       # Checkout the branch
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # Node is needed to run the app
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
+
+      - run: yarn install --frozen-lockfile
 
       # Build Tracker-js by running the script
       - name: Run build script

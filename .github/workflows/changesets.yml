@@ -1,0 +1,38 @@
+name: Tracker JS CI
+on:
+  pull_request:
+    paths:
+      - "anghammarad-client-node/**"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      # Checkout the branch
+      - uses: actions/checkout@v3
+
+      # Node is needed to run the app
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      # Build Tracker-js by running the script
+      - name: Run build script
+        run: cd anghammarad-client-node && npm run prepare
+
+      - name: Create Release Pull Request or Publish to npm
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          publish: npx changeset publish
+          title: "🦋 Release package updates"
+          commit: "Bump package version"
+          cwd: "./anghammarad-client-node"
+        if: github.ref == 'refs/heads/main'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

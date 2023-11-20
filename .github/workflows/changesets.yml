@@ -9,8 +9,11 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
+      id-token: write
       contents: write
+      packages: write
       pull-requests: write
+      issues: read
 
     steps:
       - uses: actions/checkout@v4

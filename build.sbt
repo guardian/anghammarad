@@ -36,7 +36,7 @@ inThisBuild(Seq(
   )
 ))
 
-val awsSdkVersion = "1.12.591"
+val awsSdkVersion = "1.12.596"
 val circeVersion = "0.14.6"
 val flexmarkVersion = "0.64.8"
 val scalaTestVersion = "3.2.17"
@@ -101,7 +101,7 @@ lazy val anghammarad = project
       "com.vladsch.flexmark" % "flexmark-ext-tables" % flexmarkVersion,
       "com.vladsch.flexmark" % "flexmark-util" % flexmarkVersion,
       "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
-      "ch.qos.logback" % "logback-classic" % "1.4.11",
+      "ch.qos.logback" % "logback-classic" % "1.4.12",
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
     publish / skip := true,

@@ -12,9 +12,9 @@ Notification service for the Guardian's dev teams.
 
 ### Scala Client
 
-To find the latest version of Anghammard's client, see [here](https://github.com/guardian/anghammarad/releases).
+[![anghammarad-client Scala version support](https://index.scala-lang.org/guardian/anghammarad/anghammarad-client/latest-by-scala-version.svg?platform=jvm)](https://index.scala-lang.org/guardian/anghammarad/anghammarad-client)
 
-[Changelist](CHANGES.md)
+[GitHub Release notes](https://github.com/guardian/anghammarad/releases) - [Changelist](CHANGES.md)
 
 To use Anghammarad from your project, include its client library in
 your sbt dependencies.

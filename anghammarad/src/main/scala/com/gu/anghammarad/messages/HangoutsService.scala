@@ -2,9 +2,9 @@ package com.gu.anghammarad.messages
 
 import com.gu.anghammarad.AnghammaradException.Fail
 import com.gu.anghammarad.models.HangoutMessage
+import sttp.client3.{HttpURLConnectionBackend, Response, UriContext, basicRequest}
 
 import scala.util.{Success, Try}
-import sttp.client3._
 
 object HangoutsService {
 

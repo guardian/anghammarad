@@ -101,7 +101,7 @@ lazy val anghammarad = project
       "com.vladsch.flexmark" % "flexmark-ext-tables" % flexmarkVersion,
       "com.vladsch.flexmark" % "flexmark-util" % flexmarkVersion,
       "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
-      "ch.qos.logback" % "logback-classic" % "1.5.1",
+      "ch.qos.logback" % "logback-classic" % "1.5.2",
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
     publish / skip := true,

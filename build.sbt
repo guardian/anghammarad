@@ -70,7 +70,7 @@ lazy val client = project
     name := "anghammarad-client",
     libraryDependencies ++= Seq(
       "com.amazonaws" % "aws-java-sdk-sns" % awsSdkVersion,
-      "org.json" % "json" % "20240205",
+      "org.json" % "json" % "20240303",
       "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
@@ -101,7 +101,7 @@ lazy val anghammarad = project
       "com.vladsch.flexmark" % "flexmark-ext-tables" % flexmarkVersion,
       "com.vladsch.flexmark" % "flexmark-util" % flexmarkVersion,
       "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
-      "ch.qos.logback" % "logback-classic" % "1.5.1",
+      "ch.qos.logback" % "logback-classic" % "1.5.2",
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
     publish / skip := true,

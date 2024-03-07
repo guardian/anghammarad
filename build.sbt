@@ -36,7 +36,7 @@ inThisBuild(Seq(
   )
 ))
 
-val awsSdkVersion = "1.12.667"
+val awsSdkVersion = "1.12.672"
 val circeVersion = "0.14.6"
 val flexmarkVersion = "0.64.8"
 val scalaTestVersion = "3.2.18"

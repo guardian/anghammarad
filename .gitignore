@@ -103,6 +103,7 @@ cmake-build-debug/
 
 # IntelliJ
 /out/
+.bsp/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
@@ -153,3 +154,7 @@ project/plugins/project/
 
 
 # End of https://www.gitignore.io/api/sbt,scala,emacs,intellij
+
+# VSCode
+.metals/
+.vscode/

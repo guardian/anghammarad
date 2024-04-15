@@ -1,3 +1,6 @@
+import sbtrelease.ReleaseStateTransformations.*
+import sbtversionpolicy.withsbtrelease.ReleaseVersion
+
 val compilerOptions = Seq(
   "-deprecation",
   "-Xfatal-warnings",
@@ -19,21 +22,12 @@ inThisBuild(Seq(
   scalacOptions ++= Seq(
     "-deprecation",
     "-Xfatal-warnings",
-    "-encoding", "UTF-8"
+    "-encoding", "UTF-8",
+    "-release:11",
   ),
   // sonatype metadata
   organization := "com.gu",
   licenses := Seq("Apache V2" -> url("https://www.apache.org/licenses/LICENSE-2.0.html")),
-  scmInfo := Some(
-    ScmInfo(
-      url("https://github.com/guardian/anghammarad"),
-      "scm:git@github.com:guardian/anghammarad"
-    )
-  ),
-  homepage := scmInfo.value.map(_.browseUrl),
-  developers := List(
-    Developer(id = "guardian", name = "Guardian", email = null, url = url("https://github.com/guardian"))
-  )
 ))
 
 val awsSdkVersion = "1.12.697"
@@ -48,20 +42,27 @@ lazy val root = project
   .in(file("."))
   .settings(
     name := "anghammarad-root",
-    // publish settings
-    releaseCrossBuild := true,
     publish / skip := true,
-    publishTo := sonatypePublishTo.value,
-    releaseProcess += releaseStepCommandAndRemaining("sonatypeRelease"),
+    // publish settings, for common and client
+    releaseCrossBuild := true,
+    releaseProcess := Seq[ReleaseStep](
+      checkSnapshotDependencies,
+      inquireVersions,
+      runClean,
+      runTest,
+      setReleaseVersion,
+      commitReleaseVersion,
+      tagRelease,
+      setNextVersion,
+      commitNextVersion,
+    ),
+    releaseVersion := ReleaseVersion.fromAggregatedAssessedCompatibilityWithLatestRelease().value,
   )
   .aggregate(anghammarad, client, common, dev)
 
 lazy val common = project
   .settings(
     name := "anghammarad-common",
-    // publish settings
-    releasePublishArtifactsAction := PgpKeys.publishSigned.value,
-    publishTo := sonatypePublishTo.value,
   )
 
 lazy val client = project
@@ -74,9 +75,6 @@ lazy val client = project
       "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
-    // publish settings
-    releasePublishArtifactsAction := PgpKeys.publishSigned.value,
-    publishTo := sonatypePublishTo.value,
     assemblySettings,
   )
 
@@ -104,9 +102,9 @@ lazy val anghammarad = project
       "ch.qos.logback" % "logback-classic" % "1.5.4",
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
-    publish / skip := true,
     assembly / assemblyOutputPath := file("anghammarad/anghammarad.jar"),
     assemblySettings,
+    publish / skip := true,
   )
 
 lazy val dev = project
@@ -115,7 +113,7 @@ lazy val dev = project
     libraryDependencies ++= Seq(
       "com.github.scopt" %% "scopt" % "4.1.0"
     ),
-    publish / skip := true,
     assemblySettings,
+    publish / skip := true,
   )
   .dependsOn(common, anghammarad, client)

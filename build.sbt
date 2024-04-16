@@ -27,7 +27,7 @@ inThisBuild(Seq(
   ),
   // sonatype metadata
   organization := "com.gu",
-  licenses := Seq("Apache V2" -> url("https://www.apache.org/licenses/LICENSE-2.0.html")),
+  licenses := Seq(License.Apache2),
 ))
 
 val awsSdkVersion = "1.12.697"

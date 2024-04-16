@@ -74,22 +74,11 @@ Follow the instructions in the [node client README](./anghammarad-client-node/RE
 
 ## Releasing the Scala client
 
-You will need:
+This repo uses [`gha-scala-library-release-workflow`](https://github.com/guardian/gha-scala-library-release-workflow)
+to automate publishing the Scala client (both full & preview releases) - see
+[**Making a Release**](https://github.com/guardian/gha-scala-library-release-workflow/blob/main/docs/making-a-release.md).
 
-* Sonatype account that is a member of the Guardian's group
-* A published PGP key
-* Global SBT configuration to include your sonatype ceredentials
-
-With the above in place, you can release a new version using sbt's
-`release` command from the root project.
-
-```bash
-sbt release
-```
-
-The sbt-release plugin will suggest the next version number, but consider
-what the next version number should be by considering the change against
-[the semantic versioning guidelines](https://semver.org/).
+You can run this workflow from Github Actions. It will automatically determine the next version number based on the changes that have been made.
 
 ## Releasing the Node client
 

@@ -74,7 +74,9 @@ Follow the instructions in the [node client README](./anghammarad-client-node/RE
 
 ## Releasing the Scala client
 
-The Scala client is released using [the sbt-release workflow](https://github.com/guardian/gha-scala-library-release-workflow) on Github.
+This repo uses [`gha-scala-library-release-workflow`](https://github.com/guardian/gha-scala-library-release-workflow)
+to automate publishing the Scala client (both full & preview releases) - see
+[**Making a Release**](https://github.com/guardian/gha-scala-library-release-workflow/blob/main/docs/making-a-release.md).
 
 You can run this workflow from Github Actions. It will automatically determine the next version number based on the changes that have been made.
 

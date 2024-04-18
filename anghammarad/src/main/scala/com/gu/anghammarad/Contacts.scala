@@ -3,7 +3,6 @@ package com.gu.anghammarad
 import com.gu.anghammarad.AnghammaradException.Fail
 import com.gu.anghammarad.models.{Channel, Contact, Email, EmailAddress, HangoutsChat, HangoutsRoom, Mapping, Message, _}
 import com.gu.anghammarad.Targets._
-import com.gu.anghammarad.messages.Messages.{emailMessage, hangoutMessage}
 
 import scala.util.{Success, Try}
 
@@ -167,15 +166,6 @@ object Contacts {
       Fail(s"Could not find contacts for messages on the requested channels $requestedChannel, contacts($channelContacts)")
     } else {
       Success(resolvedContacts)
-    }
-  }
-
-  def createMessages(notification: Notification, addressees: List[(Channel, Contact)]): List[(Message, Contact)] = {
-    addressees.map {
-      case (Email, contact) =>
-        emailMessage(notification) -> contact
-      case (HangoutsChat, contact) =>
-        hangoutMessage(notification) -> contact
     }
   }
 }

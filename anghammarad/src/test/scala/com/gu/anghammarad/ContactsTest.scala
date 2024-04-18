@@ -8,6 +8,7 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 
 import scala.io.Source
+import scala.util.Try
 
 
 class ContactsTest extends AnyFreeSpec with Matchers with TryValues {

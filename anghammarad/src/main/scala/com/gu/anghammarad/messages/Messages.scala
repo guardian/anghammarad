@@ -24,6 +24,15 @@ object Messages {
   private[anghammarad] val mdParser = Parser.builder(mdOptions).build
   private[anghammarad] val mdRenderer = HtmlRenderer.builder(mdOptions).build()
 
+  def createMessages(notification: Notification, addressees: List[(Channel, Contact)]): List[(Message, Contact)] = {
+    addressees.map {
+      case (Email, contact) =>
+        emailMessage(notification) -> contact
+      case (HangoutsChat, contact) =>
+        hangoutMessage(notification) -> contact
+    }
+  }
+
   def emailMessage(notification: Notification): EmailMessage = {
     val (markdown, plaintext) =
       if (notification.actions.isEmpty) {

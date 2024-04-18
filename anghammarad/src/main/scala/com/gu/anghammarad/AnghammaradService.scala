@@ -16,7 +16,7 @@ object AnghammaradService {
       // find contacts for each message
       contacts <- Contacts.contactsForMessage(notification.channel, channelContacts)
       // address messages
-      toSend = Contacts.createMessages(notification, contacts)
+      toSend = Messages.createMessages(notification, contacts)
       // send resolved notifications
       result <- SendMessages.sendAll(config, toSend)
     } yield toSend

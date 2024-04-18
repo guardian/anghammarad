@@ -2,14 +2,9 @@ package com.gu.anghammarad
 
 import com.gu.anghammarad.Contacts._
 import com.gu.anghammarad.models._
-import com.gu.anghammarad.serialization.Serialization
 import com.gu.anghammarad.testutils.TryValues
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
-
-import scala.io.Source
-import scala.util.Try
-
 
 class ContactsTest extends AnyFreeSpec with Matchers with TryValues {
   val email = EmailMessage("subject", "text", "html")
@@ -21,8 +16,56 @@ class ContactsTest extends AnyFreeSpec with Matchers with TryValues {
     // checks that contacts resolution still works in realistic scenarios
     // implementation details are covered in the following tests
     "integration tests with larger mappings" - {
-      val integrationConfigStr = Source.fromURL(getClass.getResource("/contacts-integration-fixture.json")).mkString
-      val mappings = Serialization.parseAllMappings(integrationConfigStr).success
+      val mappings = List(
+          Mapping(
+            targets = List(Stack("stack1")),
+            contacts = List(EmailAddress("stack1.email"), HangoutsRoom("stack1.channel"))
+          ),
+          Mapping(
+            targets = List(AwsAccount("stack2")),
+            contacts = List(EmailAddress("stack2.email"))
+          ),
+          Mapping(
+            targets = List(App("app1")),
+            contacts = List(EmailAddress("app1.email"), HangoutsRoom("app1.channel"))
+          ),
+          Mapping(
+            targets = List(Stack("stack2"), App("app1")),
+            contacts = List(EmailAddress("stack2.app1.email"))
+          ),
+          Mapping(
+            targets = List(AwsAccount("123456789")),
+            contacts = List(EmailAddress("123456789.email"))
+          ),
+          Mapping(
+            targets = List(AwsAccount("111111111")),
+            contacts = List(EmailAddress("111111111.email"))
+          ),
+          Mapping(
+            targets = List(AwsAccount("123456789"), Stack("stack2"), App("app2")),
+            contacts = List(EmailAddress("app2.email"))
+          ),
+          Mapping(
+            targets = List(AwsAccount("123456789"), Stack("stack2"), App("app2"), Stage("CODE")),
+            contacts = List(EmailAddress("app2.CODE.email"))
+          ),
+          Mapping(
+            targets = List(GithubTeamSlug("slug1")),
+            contacts = List(EmailAddress("app2.CODE.email"))
+          ),
+          Mapping(
+            targets = List(GithubTeamSlug("slug1"), Stack("stack2")),
+            contacts = List(EmailAddress("app3.CODE.email"))
+          ),
+          Mapping(
+            targets = List(GithubTeamSlug("slug4")),
+            contacts = List(EmailAddress("slug4.email"))
+          ),
+          Mapping(
+            targets = List(Stack("stack4"), Stage("PROD4"), App("app4")),
+            contacts = List(EmailAddress("stack4.email"))
+          )
+        )
 
       "finds exact match among mappings" in {
         val targets = List(AwsAccount("123456789"), App("app2"), Stack("stack2"))

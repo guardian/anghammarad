@@ -1,12 +1,6 @@
 import sbtrelease.ReleaseStateTransformations.*
 import sbtversionpolicy.withsbtrelease.ReleaseVersion
 
-val compilerOptions = Seq(
-  "-deprecation",
-  "-Xfatal-warnings",
-  "-encoding", "UTF-8"
-)
-
 val assemblySettings = Seq(
   assembly / assemblyMergeStrategy := {
     case path if path.endsWith("module-info.class") => MergeStrategy.last

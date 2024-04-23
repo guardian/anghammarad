@@ -6,7 +6,7 @@ import org.scalatest.matchers.should.Matchers
 
 
 class TargetsTest extends AnyFreeSpec with Matchers {
-  import com.gu.anghammarad.Targets._
+  import com.gu.anghammarad.common.Targets._
 
   "includesAwsAccount" - {
     "returns false if AwsAccount is enquired about and not present" in {

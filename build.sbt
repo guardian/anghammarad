@@ -78,7 +78,7 @@ lazy val anghammarad = project
   .settings(
     name := "anghammarad",
     libraryDependencies ++= Seq(
-      "org.scala-lang.modules" %% "scala-collection-compat" % "2.11.0",
+      "org.scala-lang.modules" %% "scala-collection-compat" % "2.12.0",
       "com.amazonaws" % "aws-lambda-java-events" % "3.11.5",
       "com.amazonaws" % "aws-lambda-java-core" % "1.2.3",
       "com.amazonaws" % "aws-java-sdk-lambda" % awsSdkVersion,
@@ -93,7 +93,7 @@ lazy val anghammarad = project
       "com.vladsch.flexmark" % "flexmark-ext-tables" % flexmarkVersion,
       "com.vladsch.flexmark" % "flexmark-util" % flexmarkVersion,
       "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
-      "ch.qos.logback" % "logback-classic" % "1.5.4",
+      "ch.qos.logback" % "logback-classic" % "1.5.5",
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
     assembly / assemblyOutputPath := file("anghammarad/anghammarad.jar"),

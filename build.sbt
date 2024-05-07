@@ -12,7 +12,7 @@ val assemblySettings = Seq(
 
 inThisBuild(Seq(
   scalaVersion := "3.4.0",
-  crossScalaVersions := Seq("2.13.13", scalaVersion.value),
+  crossScalaVersions := Seq("2.13.14", scalaVersion.value),
   scalacOptions ++= Seq(
     "-deprecation",
     "-Xfatal-warnings",
@@ -87,7 +87,7 @@ lazy val anghammarad = project
       "io.circe" %% "circe-core" % circeVersion,
       "io.circe" %% "circe-generic" % circeVersion,
       "io.circe" %% "circe-parser" % circeVersion,
-      "com.softwaremill.sttp.client3" %% "core" % "3.9.5",
+      "com.softwaremill.sttp.client3" %% "core" % "3.9.6",
       "com.vladsch.flexmark" % "flexmark" % flexmarkVersion,
       "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % flexmarkVersion,
       "com.vladsch.flexmark" % "flexmark-ext-tables" % flexmarkVersion,

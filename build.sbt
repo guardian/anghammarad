@@ -12,7 +12,7 @@ val assemblySettings = Seq(
 
 inThisBuild(Seq(
   scalaVersion := "3.4.0",
-  crossScalaVersions := Seq("2.13.13", scalaVersion.value),
+  crossScalaVersions := Seq("2.13.14", scalaVersion.value),
   scalacOptions ++= Seq(
     "-deprecation",
     "-Xfatal-warnings",
@@ -24,8 +24,8 @@ inThisBuild(Seq(
   licenses := Seq(License.Apache2),
 ))
 
-val awsSdkVersion = "1.12.709"
-val circeVersion = "0.14.6"
+val awsSdkVersion = "1.12.719"
+val circeVersion = "0.14.7"
 val flexmarkVersion = "0.64.8"
 val scalaTestVersion = "3.2.18"
 val scalaLoggingVersion = "3.9.5"
@@ -87,7 +87,7 @@ lazy val anghammarad = project
       "io.circe" %% "circe-core" % circeVersion,
       "io.circe" %% "circe-generic" % circeVersion,
       "io.circe" %% "circe-parser" % circeVersion,
-      "com.softwaremill.sttp.client3" %% "core" % "3.9.5",
+      "com.softwaremill.sttp.client3" %% "core" % "3.9.6",
       "com.vladsch.flexmark" % "flexmark" % flexmarkVersion,
       "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % flexmarkVersion,
       "com.vladsch.flexmark" % "flexmark-ext-tables" % flexmarkVersion,

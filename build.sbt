@@ -24,7 +24,7 @@ inThisBuild(Seq(
   licenses := Seq(License.Apache2),
 ))
 
-val awsSdkVersion = "1.12.724"
+val awsSdkVersion = "1.12.729"
 val circeVersion = "0.14.7"
 val flexmarkVersion = "0.64.8"
 val scalaTestVersion = "3.2.18"
@@ -90,7 +90,7 @@ lazy val anghammarad = project
       "io.circe" %% "circe-core" % circeVersion,
       "io.circe" %% "circe-generic" % circeVersion,
       "io.circe" %% "circe-parser" % circeVersion,
-      "com.softwaremill.sttp.client3" %% "core" % "3.9.6",
+      "com.softwaremill.sttp.client3" %% "core" % "3.9.7",
       "com.vladsch.flexmark" % "flexmark" % flexmarkVersion,
       "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % flexmarkVersion,
       "com.vladsch.flexmark" % "flexmark-ext-tables" % flexmarkVersion,

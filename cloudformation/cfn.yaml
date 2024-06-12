@@ -61,7 +61,7 @@ Resources:
               - s3:GetObject
             Resource: !Sub arn:aws:s3:::${ConfigBucket}/*
       Handler: com.gu.anghammarad.Lambda::handleRequest
-      Runtime: java11
+      Runtime: java21
       MemorySize: 512
       Timeout: 30
       CodeUri:

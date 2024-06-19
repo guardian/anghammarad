@@ -1,6 +1,6 @@
 package com.gu.anghammarad
 
-import com.gu.anghammarad.AnghammaradException.Fail
+import com.gu.anghammarad.common.AnghammaradException.Fail
 import com.gu.anghammarad.ArgParser.argParser
 import com.gu.anghammarad.models.{EmailAddress, HangoutsRoom, Notification}
 import com.gu.anghammarad.serialization.Serialization

@@ -79,7 +79,7 @@ lazy val anghammarad = project
     name := "anghammarad",
     libraryDependencies ++= Seq(
       "org.scala-lang.modules" %% "scala-collection-compat" % "2.12.0",
-      "com.amazonaws" % "aws-lambda-java-events" % "3.11.5",
+      "com.amazonaws" % "aws-lambda-java-events" % "3.11.6",
       "com.amazonaws" % "aws-lambda-java-core" % "1.2.3",
       "com.amazonaws" % "aws-java-sdk-lambda" % awsSdkVersion,
       "com.amazonaws" % "aws-java-sdk-ses" % awsSdkVersion,

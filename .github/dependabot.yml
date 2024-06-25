@@ -8,4 +8,4 @@ updates:
   - package-ecosystem: "npm" # See documentation for possible values
     directory: "anghammarad-client-node/" # Location of package manifests
     schedule:
-      interval: "weekly"
+      interval: "monthly"

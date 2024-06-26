@@ -24,7 +24,7 @@ inThisBuild(Seq(
   licenses := Seq(License.Apache2),
 ))
 
-val awsSdkVersion = "1.12.746"
+val awsSdkVersion = "1.12.750"
 val circeVersion = "0.14.8"
 val flexmarkVersion = "0.64.8"
 val scalaTestVersion = "3.2.19"

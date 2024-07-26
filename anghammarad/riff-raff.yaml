@@ -12,7 +12,7 @@ deployments:
     type: aws-lambda
     parameters:
       fileName: anghammarad.jar
-      bucket: deploy-tools-dist
+      bucketSsmLookup: true
       prefixStack: false
       functionNames:
       - anghammarad-

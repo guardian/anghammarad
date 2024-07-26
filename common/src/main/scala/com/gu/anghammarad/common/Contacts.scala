@@ -1,8 +1,8 @@
-package com.gu.anghammarad
+package com.gu.anghammarad.common
 
-import com.gu.anghammarad.AnghammaradException.Fail
-import com.gu.anghammarad.models.{Channel, Contact, Email, EmailAddress, HangoutsChat, HangoutsRoom, Mapping, Message, _}
-import com.gu.anghammarad.Targets._
+import com.gu.anghammarad.common.AnghammaradException.Fail
+import com.gu.anghammarad.common.Targets.{appMatches, awsAccountMatches, githubTeamSlugMatches, includesApp, includesAwsAccount, includesGithubTeamSlug, includesStack, sortMappingsByTargets, stackMatches}
+import com.gu.anghammarad.models._
 
 import scala.util.{Success, Try}
 

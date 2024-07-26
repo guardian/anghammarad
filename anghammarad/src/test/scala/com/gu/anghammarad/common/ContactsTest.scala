@@ -1,6 +1,6 @@
-package com.gu.anghammarad
+package com.gu.anghammarad.common
 
-import com.gu.anghammarad.Contacts._
+import com.gu.anghammarad.common.Contacts._
 import com.gu.anghammarad.models._
 import com.gu.anghammarad.serialization.Serialization
 import com.gu.anghammarad.testutils.TryValues
@@ -8,7 +8,6 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 
 import scala.io.Source
-import scala.util.Try
 
 
 class ContactsTest extends AnyFreeSpec with Matchers with TryValues {

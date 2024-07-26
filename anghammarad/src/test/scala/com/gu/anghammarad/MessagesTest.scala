@@ -62,6 +62,14 @@ class MessagesTest extends AnyFreeSpec with Matchers with EitherValues {
     }
 
     "html" - {
+      "for all messages" - {
+        val notification = testNotification("subject", "message line 1\nmessage line 2")
+
+        "replaces newlines with <br> tags" in {
+          emailMessage(notification).html should include("message line 1<br>message line 2")
+        }
+      }
+
       "if actions are present" - {
         val notification = testNotification("subject", "message", Action("cta1", "url1"), Action("cta2", "url2"))
 

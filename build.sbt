@@ -12,7 +12,7 @@ val assemblySettings = Seq(
 
 inThisBuild(Seq(
   scalaVersion := "3.4.0",
-  crossScalaVersions := Seq("2.13.13", scalaVersion.value),
+  crossScalaVersions := Seq("2.13.14", scalaVersion.value),
   scalacOptions ++= Seq(
     "-deprecation",
     "-Xfatal-warnings",
@@ -24,10 +24,10 @@ inThisBuild(Seq(
   licenses := Seq(License.Apache2),
 ))
 
-val awsSdkVersion = "1.12.704"
-val circeVersion = "0.14.6"
+val awsSdkVersion = "1.12.759"
+val circeVersion = "0.14.9"
 val flexmarkVersion = "0.64.8"
-val scalaTestVersion = "3.2.18"
+val scalaTestVersion = "3.2.19"
 val scalaLoggingVersion = "3.9.5"
 
 //Projects
@@ -57,6 +57,9 @@ lazy val root = project
 lazy val common = project
   .settings(
     name := "anghammarad-common",
+    libraryDependencies ++= Seq(
+      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
+    )
   )
 
 lazy val client = project
@@ -79,7 +82,7 @@ lazy val anghammarad = project
     name := "anghammarad",
     libraryDependencies ++= Seq(
       "org.scala-lang.modules" %% "scala-collection-compat" % "2.12.0",
-      "com.amazonaws" % "aws-lambda-java-events" % "3.11.5",
+      "com.amazonaws" % "aws-lambda-java-events" % "3.12.0",
       "com.amazonaws" % "aws-lambda-java-core" % "1.2.3",
       "com.amazonaws" % "aws-java-sdk-lambda" % awsSdkVersion,
       "com.amazonaws" % "aws-java-sdk-ses" % awsSdkVersion,
@@ -87,13 +90,13 @@ lazy val anghammarad = project
       "io.circe" %% "circe-core" % circeVersion,
       "io.circe" %% "circe-generic" % circeVersion,
       "io.circe" %% "circe-parser" % circeVersion,
-      "com.softwaremill.sttp.client3" %% "core" % "3.9.5",
+      "com.softwaremill.sttp.client3" %% "core" % "3.9.7",
       "com.vladsch.flexmark" % "flexmark" % flexmarkVersion,
       "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % flexmarkVersion,
       "com.vladsch.flexmark" % "flexmark-ext-tables" % flexmarkVersion,
       "com.vladsch.flexmark" % "flexmark-util" % flexmarkVersion,
       "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
-      "ch.qos.logback" % "logback-classic" % "1.5.5",
+      "ch.qos.logback" % "logback-classic" % "1.5.6",
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
     assembly / assemblyOutputPath := file("anghammarad/anghammarad.jar"),

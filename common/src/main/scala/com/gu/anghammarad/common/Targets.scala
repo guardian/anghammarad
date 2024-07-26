@@ -1,4 +1,4 @@
-package com.gu.anghammarad
+package com.gu.anghammarad.common
 
 import com.gu.anghammarad.models._
 

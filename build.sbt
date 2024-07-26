@@ -24,10 +24,10 @@ inThisBuild(Seq(
   licenses := Seq(License.Apache2),
 ))
 
-val awsSdkVersion = "1.12.742"
-val circeVersion = "0.14.7"
+val awsSdkVersion = "1.12.759"
+val circeVersion = "0.14.9"
 val flexmarkVersion = "0.64.8"
-val scalaTestVersion = "3.2.18"
+val scalaTestVersion = "3.2.19"
 val scalaLoggingVersion = "3.9.5"
 
 //Projects
@@ -82,7 +82,7 @@ lazy val anghammarad = project
     name := "anghammarad",
     libraryDependencies ++= Seq(
       "org.scala-lang.modules" %% "scala-collection-compat" % "2.12.0",
-      "com.amazonaws" % "aws-lambda-java-events" % "3.11.5",
+      "com.amazonaws" % "aws-lambda-java-events" % "3.12.0",
       "com.amazonaws" % "aws-lambda-java-core" % "1.2.3",
       "com.amazonaws" % "aws-java-sdk-lambda" % awsSdkVersion,
       "com.amazonaws" % "aws-java-sdk-ses" % awsSdkVersion,

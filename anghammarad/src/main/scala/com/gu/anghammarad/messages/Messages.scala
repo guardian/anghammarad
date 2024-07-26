@@ -57,7 +57,7 @@ object Messages {
     val markdownWithNotice = markdown + anghammaradNotice(notification)
     val plaintextWithNotice = plaintext + anghammaradNotice(notification)
 
-    val html = mdRenderer.render(mdParser.parse(markdownWithNotice))
+    val html = mdRenderer.render(mdParser.parse(markdownWithNotice)).replace("\n", "<br>")
 
     EmailMessage(
       notification.subject,

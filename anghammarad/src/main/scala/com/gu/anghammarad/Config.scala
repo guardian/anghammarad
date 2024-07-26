@@ -5,7 +5,7 @@ import com.amazonaws.auth.profile.ProfileCredentialsProvider
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.{GetObjectRequest, S3ObjectInputStream}
-import com.gu.anghammarad.AnghammaradException.Fail
+import com.gu.anghammarad.common.AnghammaradException.Fail
 
 import scala.io.Source
 import scala.util.{Success, Try}

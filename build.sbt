@@ -57,6 +57,9 @@ lazy val root = project
 lazy val common = project
   .settings(
     name := "anghammarad-common",
+    libraryDependencies ++= Seq(
+      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
+    )
   )
 
 lazy val client = project

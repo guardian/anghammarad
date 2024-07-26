@@ -1,5 +1,6 @@
 package com.gu.anghammarad
 
+import com.gu.anghammarad.common.Contacts
 import com.gu.anghammarad.models.{Configuration, Contact, Message, Notification}
 import com.gu.anghammarad.messages.{Messages, SendMessages}
 

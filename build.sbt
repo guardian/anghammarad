@@ -11,7 +11,7 @@ val assemblySettings = Seq(
 )
 
 inThisBuild(Seq(
-  scalaVersion := "3.3.3",
+  scalaVersion := "3.3.4",
   crossScalaVersions := Seq("2.13.15", scalaVersion.value),
   scalacOptions ++= Seq(
     "-deprecation",

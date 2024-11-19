@@ -4,6 +4,7 @@ import sbtversionpolicy.withsbtrelease.ReleaseVersion
 val assemblySettings = Seq(
   assembly / assemblyMergeStrategy := {
     case path if path.endsWith("module-info.class") => MergeStrategy.last
+    case PathList("META-INF", "io.netty.versions.properties") => MergeStrategy.first //see https://github.com/sbt/sbt-assembly/issues/362
     case x =>
       val oldStrategy = (assembly / assemblyMergeStrategy).value
       oldStrategy(x)

@@ -1,11 +1,14 @@
 package com.gu.anghammarad
 
-import com.amazonaws.AmazonWebServiceRequest
-import com.amazonaws.auth.profile.ProfileCredentialsProvider
-import com.amazonaws.auth.{AWSCredentialsProviderChain, EnvironmentVariableCredentialsProvider, InstanceProfileCredentialsProvider}
-import com.amazonaws.handlers.AsyncHandler
-import com.amazonaws.regions.Regions
-import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
+
+import java.util.concurrent.CompletableFuture
+
+import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.sns.SnsAsyncClient
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain
+import software.amazon.awssdk.auth.credentials.{EnvironmentVariableCredentialsProvider, ProfileCredentialsProvider, InstanceProfileCredentialsProvider}
+
+
 
 import scala.concurrent.{Future, Promise}
 
@@ -14,36 +17,31 @@ object AWS {
   /**
     * Use this to make an SNS client, or provide your own.
     */
-  def snsClient(credentialsProvider: AWSCredentialsProviderChain): AmazonSNSAsync = {
-    AmazonSNSAsyncClientBuilder.standard()
-      .withRegion(Regions.EU_WEST_1)
-      .withCredentials(credentialsProvider)
+  def snsClient(credentialsProvider: AwsCredentialsProviderChain): SnsAsyncClient = {
+    SnsAsyncClient.builder()
+      .region(Region.EU_WEST_1)
+      .credentialsProvider(credentialsProvider)
       .build()
   }
 
-  def credentialsProvider(): AWSCredentialsProviderChain = {
-    new AWSCredentialsProviderChain(
+  def credentialsProvider(): AwsCredentialsProviderChain = {
+    AwsCredentialsProviderChain.of(
       // EC2
-      InstanceProfileCredentialsProvider.getInstance(),
+      InstanceProfileCredentialsProvider.create(),
       // Lambda
-      new EnvironmentVariableCredentialsProvider(),
+      EnvironmentVariableCredentialsProvider.create(),
       // local
-      new ProfileCredentialsProvider("deployTools")
+      ProfileCredentialsProvider.create("deployTools"),
     )
   }
 
-  private class AwsAsyncPromiseHandler[R <: AmazonWebServiceRequest, T](promise: Promise[T]) extends AsyncHandler[R, T] {
-    def onError(e: Exception): Unit = {
-      promise failure e
-    }
-    def onSuccess(r: R, t: T): Unit = {
-      promise success t
-    }
+  private[anghammarad] def asScala[T](cf: CompletableFuture[T]): Future[T] = {
+    val p = Promise[T]()                                                                                                                                           
+    cf.whenCompleteAsync{ (result, ex) =>                                                                                                                          
+      if (result == null) p failure ex                                                                                                                             
+      else                p success result                                                                                                                         
+    }                                                                                                                                                              
+    p.future 
   }
 
-  private[anghammarad] def awsToScala[R <: AmazonWebServiceRequest, T](sdkMethod: ( (R, AsyncHandler[R, T]) => java.util.concurrent.Future[T])): (R => Future[T]) = { req =>
-    val p = Promise[T]()
-    sdkMethod(req, new AwsAsyncPromiseHandler(p))
-    p.future
-  }
 }

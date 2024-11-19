@@ -1,10 +1,13 @@
 package com.gu.anghammarad
 
-import com.amazonaws.auth._
-import com.amazonaws.auth.profile.ProfileCredentialsProvider
-import com.amazonaws.regions.Regions
-import com.amazonaws.services.s3.AmazonS3Client
-import com.amazonaws.services.s3.model.{GetObjectRequest, S3ObjectInputStream}
+import software.amazon.awssdk.auth._
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain
+import software.amazon.awssdk.auth.credentials.{EnvironmentVariableCredentialsProvider, ProfileCredentialsProvider}
+import software.amazon.awssdk.core.ResponseInputStream
+import software.amazon.awssdk.core.sync.ResponseTransformer
+import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.s3.S3Client
+import software.amazon.awssdk.services.s3.model.{GetObjectRequest, GetObjectResponse}
 import com.gu.anghammarad.common.AnghammaradException.Fail
 
 import scala.io.Source
@@ -12,19 +15,19 @@ import scala.util.{Success, Try}
 
 
 object Config {
-  val credentialsProvider = new AWSCredentialsProviderChain(
-    new ProfileCredentialsProvider("deployTools"),
-    new EnvironmentVariableCredentialsProvider()
+  val credentialsProvider = AwsCredentialsProviderChain.of(
+    ProfileCredentialsProvider.create("deployTools"),
+    EnvironmentVariableCredentialsProvider.create()
   )
 
-  private val s3Client = AmazonS3Client
+  private val s3Client = S3Client
     .builder
-    .withCredentials(credentialsProvider)
-    .withRegion(Regions.EU_WEST_1)
+    .credentialsProvider(credentialsProvider)
+    .region(Region.EU_WEST_1)
     .build()
 
-  private def fetchContent(request: GetObjectRequest): Try[S3ObjectInputStream] = {
-    Try(s3Client.getObject(request).getObjectContent)
+  private def fetchContent(request: GetObjectRequest): Try[ResponseInputStream[GetObjectResponse]] = {
+    Try(s3Client.getObject(request, ResponseTransformer.toInputStream()))
   }
 
   private def fetchString(request: GetObjectRequest): Try[String] = {
@@ -46,7 +49,8 @@ object Config {
     val bucket = s"anghammarad-configuration"
     val key = s"$stage/anghammarad-config.json"
 
-    val request = new GetObjectRequest(bucket, key)
+    val request = GetObjectRequest.builder().key(key).bucket(bucket).build();
+
     fetchString(request)
   }
 }

@@ -1,10 +1,10 @@
 package com.gu.anghammarad
 
-import com.amazonaws.services.sns.AmazonSNSAsync
-import com.amazonaws.services.sns.model.PublishRequest
 import com.gu.anghammarad.AWS._
 import com.gu.anghammarad.Json._
 import com.gu.anghammarad.models._
+import software.amazon.awssdk.services.sns.SnsAsyncClient
+import software.amazon.awssdk.services.sns.model.PublishRequest
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -25,13 +25,14 @@ object Anghammarad {
     * @return             Future containing the resulting SNS Message ID
     */
   def notify(subject: String, message: String, actions: List[Action], target: List[Target], channel: RequestedChannel,
-             sourceSystem: String, topicArn: String, client: AmazonSNSAsync = defaultClient)
+             sourceSystem: String, topicArn: String, client: SnsAsyncClient = defaultClient)
             (implicit executionContext: ExecutionContext): Future[String] = {
-    val request = new PublishRequest()
-      .withTopicArn(topicArn)
-      .withSubject(subject)
-      .withMessage(messageJson(message, sourceSystem, channel, target, actions))
-    awsToScala(client.publishAsync)(request).map(_.getMessageId)
+    val request = PublishRequest.builder()
+      .topicArn(topicArn)
+      .subject(subject)
+      .message(messageJson(message, sourceSystem, channel, target, actions))
+      .build()
+    asScala(client.publish(request)).map(_.messageId)
   }
 
   /**
@@ -44,11 +45,12 @@ object Anghammarad {
     */
   def notify(notification: Notification, topicArn: String)
             (implicit executionContext: ExecutionContext): Future[String] = {
-    val request = new PublishRequest()
-      .withTopicArn(topicArn)
-      .withSubject(notification.subject)
-      .withMessage(messageJson(notification.message, notification.sourceSystem, notification.channel, notification.target, notification.actions))
-    awsToScala(defaultClient.publishAsync)(request).map(_.getMessageId)
+    val request = PublishRequest.builder()
+      .topicArn(topicArn)
+      .subject(notification.subject)
+      .message(messageJson(notification.message, notification.sourceSystem, notification.channel, notification.target, notification.actions))
+      .build()
+     asScala(defaultClient.publish(request)).map(_.messageId)
   }
 
   /**
@@ -59,12 +61,13 @@ object Anghammarad {
     * @param client       The SNS client used to add your notification to the topic
     * @return             Future containing the resulting SNS Message ID
     */
-  def notify(notification: Notification, topicArn: String, client: AmazonSNSAsync)
+  def notify(notification: Notification, topicArn: String, client: SnsAsyncClient)
             (implicit executionContext: ExecutionContext): Future[String] = {
-    val request = new PublishRequest()
-      .withTopicArn(topicArn)
-      .withSubject(notification.subject)
-      .withMessage(messageJson(notification.message, notification.sourceSystem, notification.channel, notification.target, notification.actions))
-    awsToScala(client.publishAsync)(request).map(_.getMessageId)
+    val request = PublishRequest.builder()
+      .topicArn(topicArn)
+      .subject(notification.subject)
+      .message(messageJson(notification.message, notification.sourceSystem, notification.channel, notification.target, notification.actions))
+      .build()
+    asScala(client.publish(request)).map(_.messageId)
   }
 }

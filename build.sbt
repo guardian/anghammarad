@@ -4,6 +4,7 @@ import sbtversionpolicy.withsbtrelease.ReleaseVersion
 val assemblySettings = Seq(
   assembly / assemblyMergeStrategy := {
     case path if path.endsWith("module-info.class") => MergeStrategy.last
+    case PathList("META-INF", "io.netty.versions.properties") => MergeStrategy.first //see https://github.com/sbt/sbt-assembly/issues/362
     case x =>
       val oldStrategy = (assembly / assemblyMergeStrategy).value
       oldStrategy(x)
@@ -24,7 +25,7 @@ inThisBuild(Seq(
   licenses := Seq(License.Apache2),
 ))
 
-val awsSdkVersion = "1.12.778"
+val awsSdkVersion = "2.29.15"
 val circeVersion = "0.14.10"
 val flexmarkVersion = "0.64.8"
 val scalaTestVersion = "3.2.19"
@@ -67,7 +68,8 @@ lazy val client = project
   .settings(
     name := "anghammarad-client",
     libraryDependencies ++= Seq(
-      "com.amazonaws" % "aws-java-sdk-sns" % awsSdkVersion,
+      "software.amazon.awssdk" % "sns" % awsSdkVersion,
+
       "org.json" % "json" % "20240303",
       "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
@@ -84,9 +86,9 @@ lazy val anghammarad = project
       "org.scala-lang.modules" %% "scala-collection-compat" % "2.12.0",
       "com.amazonaws" % "aws-lambda-java-events" % "3.14.0",
       "com.amazonaws" % "aws-lambda-java-core" % "1.2.3",
-      "com.amazonaws" % "aws-java-sdk-lambda" % awsSdkVersion,
-      "com.amazonaws" % "aws-java-sdk-ses" % awsSdkVersion,
-      "com.amazonaws" % "aws-java-sdk-s3" % awsSdkVersion,
+      "software.amazon.awssdk" % "lambda" % awsSdkVersion,
+      "software.amazon.awssdk" % "ses" % awsSdkVersion,
+      "software.amazon.awssdk" % "s3" % awsSdkVersion,
       "io.circe" %% "circe-core" % circeVersion,
       "io.circe" %% "circe-generic" % circeVersion,
       "io.circe" %% "circe-parser" % circeVersion,

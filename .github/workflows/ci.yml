@@ -20,16 +20,9 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # Configuring caching is also recommended.
-      # See https://github.com/actions/setup-java
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'corretto'
-          cache: 'sbt'
+      - uses: guardian/setup-scala@v1
 
       - name: Build
         run: |

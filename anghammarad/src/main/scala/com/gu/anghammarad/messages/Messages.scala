@@ -24,16 +24,16 @@ object Messages {
   private[anghammarad] val mdParser = Parser.builder(mdOptions).build
   private[anghammarad] val mdRenderer = HtmlRenderer.builder(mdOptions).build()
 
-  def createMessages(notification: Notification, addressees: List[(Channel, Contact)]): List[(Message, Contact)] = {
+  def createMessages(notification: Notification, addressees: List[(Channel, Contact)], anghammaradStage: String): List[(Message, Contact)] = {
     addressees.map {
       case (Email, contact) =>
-        emailMessage(notification) -> contact
+        emailMessage(notification, anghammaradStage) -> contact
       case (HangoutsChat, contact) =>
-        hangoutMessage(notification) -> contact
+        hangoutMessage(notification, anghammaradStage) -> contact
     }
   }
 
-  def emailMessage(notification: Notification): EmailMessage = {
+  def emailMessage(notification: Notification, anghammaradStage: String): EmailMessage = {
     val (markdown, plaintext) =
       if (notification.actions.isEmpty) {
         (notification.message, notification.message)
@@ -54,8 +54,8 @@ object Messages {
         (notification.message + actionPrefix + htmlActions, notification.message + actionPrefix + plainTextActions)
       }
 
-    val markdownWithNotice = markdown + anghammaradNotice(notification)
-    val plaintextWithNotice = plaintext + anghammaradNotice(notification)
+    val markdownWithNotice = markdown + anghammaradNotice(notification, anghammaradStage)
+    val plaintextWithNotice = plaintext + anghammaradNotice(notification, anghammaradStage)
 
     val html = mdRenderer.render(mdParser.parse(markdownWithNotice)).replace("\n", "<br>")
 
@@ -66,8 +66,8 @@ object Messages {
     )
   }
 
-  def hangoutMessage(notification: Notification): HangoutMessage = {
-    val messageWithAnghammaradNotice = notification.message ++ anghammaradNotice(notification)
+  def hangoutMessage(notification: Notification, anghammaradStage: String): HangoutMessage = {
+    val messageWithAnghammaradNotice = notification.message ++ anghammaradNotice(notification, anghammaradStage)
 
     val html = mdRenderer.render(mdParser.parse(messageWithAnghammaradNotice))
       // hangouts chat supports a subset of tags that differs from the flexmark-generated HTML
@@ -129,10 +129,10 @@ object Messages {
        |""".stripMargin
   }
 
-  private def anghammaradNotice(notification: Notification): String = {
+  private def anghammaradNotice(notification: Notification, anghammaradStage: String): String = {
     s"""
        |
-       |This message was sent by ${notification.sourceSystem} via [Anghammarad](https://github.com/guardian/anghammarad).
+       |This message was sent by ${notification.sourceSystem} via [Anghammarad (${anghammaradStage})](https://github.com/guardian/anghammarad).
        |""".stripMargin
   }
 }

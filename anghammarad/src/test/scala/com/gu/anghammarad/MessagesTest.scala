@@ -12,33 +12,35 @@ import scala.util.{Failure, Success}
 
 
 class MessagesTest extends AnyFreeSpec with Matchers with EitherValues {
+  val anghammaradStage: String = "TEST"
+
   "emailMessage" - {
     "plain text" - {
       "sets the subject" in {
         val notification = testNotification("subject", "message")
-        emailMessage(notification).subject shouldEqual "subject"
+        emailMessage(notification, anghammaradStage).subject shouldEqual "subject"
       }
 
       "if actions are present" - {
         val notification = testNotification("subject", "message", Action("cta1", "url1"), Action("cta2", "url2"))
 
         "adds divider" in {
-          emailMessage(notification).plainText should include("_____________")
+          emailMessage(notification, anghammaradStage).plainText should include("_____________")
         }
 
         "adds actions after divider" in {
-          val chunks = emailMessage(notification).plainText.split("_____________")
+          val chunks = emailMessage(notification, anghammaradStage).plainText.split("_____________")
           chunks(1) should (include("cta1") and include("url1") and include("cta2") and include("url2"))
         }
 
         "includes the message" in {
           val notification = testNotification("subject", "message")
-          emailMessage(notification).plainText should include("message")
+          emailMessage(notification, anghammaradStage).plainText should include("message")
         }
 
         "includes the Anghammarad notice with source system" in {
           val notification = testNotification("subject", "message")
-          emailMessage(notification).plainText should (include(notification.sourceSystem) and include("Anghammarad"))
+          emailMessage(notification, anghammaradStage).plainText should (include(notification.sourceSystem) and include("Anghammarad"))
         }
       }
 
@@ -46,17 +48,17 @@ class MessagesTest extends AnyFreeSpec with Matchers with EitherValues {
         val notification = testNotification("subject", "message")
 
         "does not add divider" in {
-          emailMessage(notification).plainText should not include "_____________"
+          emailMessage(notification, anghammaradStage).plainText should not include "_____________"
         }
 
         "uses the given message" in {
           val notification = testNotification("subject", "message")
-          emailMessage(notification).plainText should startWith("message")
+          emailMessage(notification, anghammaradStage).plainText should startWith("message")
         }
 
         "includes the Anghammarad notice with source system" in {
           val notification = testNotification("subject", "message")
-          emailMessage(notification).plainText should (include(notification.sourceSystem) and include("Anghammarad"))
+          emailMessage(notification, anghammaradStage).plainText should (include(notification.sourceSystem) and include("Anghammarad"))
         }
       }
     }
@@ -66,7 +68,7 @@ class MessagesTest extends AnyFreeSpec with Matchers with EitherValues {
         val notification = testNotification("subject", "message line 1\nmessage line 2")
 
         "replaces newlines with <br> tags" in {
-          emailMessage(notification).html should include("message line 1<br>message line 2")
+          emailMessage(notification, anghammaradStage).html should include("message line 1<br>message line 2")
         }
       }
 
@@ -74,22 +76,22 @@ class MessagesTest extends AnyFreeSpec with Matchers with EitherValues {
         val notification = testNotification("subject", "message", Action("cta1", "url1"), Action("cta2", "url2"))
 
         "adds divider" in {
-          emailMessage(notification).html should include("<hr")
+          emailMessage(notification, anghammaradStage).html should include("<hr")
         }
 
         "adds actions after divider" in {
-          val chunks = emailMessage(notification).html.split("<hr")
+          val chunks = emailMessage(notification, anghammaradStage).html.split("<hr")
           chunks(1) should (include("""<a href="url1">cta1</a>""") and include("""<a href="url2">cta2</a>"""))
         }
 
         "includes the given message if it is simple" in {
           val notification = testNotification("subject", "message")
-          emailMessage(notification).html should include("message")
+          emailMessage(notification, anghammaradStage).html should include("message")
         }
 
         "includes the Anghammarad notice with source system" in {
           val notification = testNotification("subject", "message")
-          emailMessage(notification).html should (include(notification.sourceSystem) and include("Anghammarad"))
+          emailMessage(notification, anghammaradStage).html should (include(notification.sourceSystem) and include("Anghammarad"))
         }
       }
 
@@ -97,22 +99,22 @@ class MessagesTest extends AnyFreeSpec with Matchers with EitherValues {
         val notification = testNotification("subject", "message")
 
         "does not add divider" in {
-          emailMessage(notification).html should not include "<hr"
+          emailMessage(notification, anghammaradStage).html should not include "<hr"
         }
 
         "includes the given message if it is simple" in {
           val notification = testNotification("subject", "message")
-          emailMessage(notification).html should include("message")
+          emailMessage(notification, anghammaradStage).html should include("message")
         }
 
         "converts markdown to HTML" in {
           val notification = testNotification("subject", "*em* **strong**")
-          emailMessage(notification).html should (include("<em>em</em>") and include("<strong>strong</strong>"))
+          emailMessage(notification, anghammaradStage).html should (include("<em>em</em>") and include("<strong>strong</strong>"))
         }
 
         "includes the Anghammarad notice with source system" in {
           val notification = testNotification("subject", "message")
-          emailMessage(notification).html should (include(notification.sourceSystem) and include("Anghammarad"))
+          emailMessage(notification, anghammaradStage).html should (include(notification.sourceSystem) and include("Anghammarad"))
         }
       }
     }
@@ -123,7 +125,7 @@ class MessagesTest extends AnyFreeSpec with Matchers with EitherValues {
       val notification = testNotification("subject", "message", Action("cta1", "url1"), Action("cta2", "url2"))
 
       "is valid JSON" in {
-        val message = hangoutMessage(notification)
+        val message = hangoutMessage(notification, anghammaradStage)
         val result = parse(message.cardJson)
         result match {
           case Right(_) =>
@@ -132,18 +134,18 @@ class MessagesTest extends AnyFreeSpec with Matchers with EitherValues {
       }
 
       "includes buttons for actions" in {
-        val message = hangoutMessage(notification)
+        val message = hangoutMessage(notification, anghammaradStage)
         val json = parse(message.cardJson).value
         json.\\("textButton") should have length 2
       }
 
       "sets header as subject" in {
-        val message = hangoutMessage(notification)
+        val message = hangoutMessage(notification, anghammaradStage)
         message.cardJson should include(s""""header": "subject"""")
       }
 
       "includes the Anghammarad notice with source system" in {
-        val message = hangoutMessage(notification)
+        val message = hangoutMessage(notification, anghammaradStage)
         message.cardJson should (include(notification.sourceSystem) and include("Anghammarad"))
       }
     }
@@ -152,7 +154,7 @@ class MessagesTest extends AnyFreeSpec with Matchers with EitherValues {
       val notification = testNotification("subject", "message")
 
       "is valid JSON" in {
-        val message = hangoutMessage(notification)
+        val message = hangoutMessage(notification, anghammaradStage)
         val result = parse(message.cardJson)
         result match {
           case Right(_) =>
@@ -161,13 +163,13 @@ class MessagesTest extends AnyFreeSpec with Matchers with EitherValues {
       }
 
       "does not include buttons widgets at all" in {
-        val message = hangoutMessage(notification)
+        val message = hangoutMessage(notification, anghammaradStage)
         val json = parse(message.cardJson).value
         json.\\("buttons") shouldBe empty
       }
 
       "includes the Anghammarad notice with source system" in {
-        val message = hangoutMessage(notification)
+        val message = hangoutMessage(notification, anghammaradStage)
         message.cardJson should (include(notification.sourceSystem) and include("Anghammarad"))
       }
     }
@@ -196,7 +198,7 @@ class MessagesTest extends AnyFreeSpec with Matchers with EitherValues {
       "Testing",
       None
     )
-    val message = Messages.hangoutMessage(notification)
+    val message = Messages.hangoutMessage(notification, anghammaradStage)
     // println(message.cardJson)
     val result = HangoutsService.sendHangoutsMessage("???", message)
     result match {

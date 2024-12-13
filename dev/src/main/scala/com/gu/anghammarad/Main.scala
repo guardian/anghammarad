@@ -20,7 +20,7 @@ object Main {
     val sentMessages = for {
       config <- Config.loadConfig(stage)
       configuration <- Serialization.parseConfig(config)
-      sent <- AnghammaradService.run(notification, configuration)
+      sent <- AnghammaradService.run(notification, configuration, stage)
     } yield sent
 
     sentMessages match {

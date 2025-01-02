@@ -70,7 +70,7 @@ lazy val client = project
     libraryDependencies ++= Seq(
       "software.amazon.awssdk" % "sns" % awsSdkVersion,
 
-      "org.json" % "json" % "20240303",
+      "org.json" % "json" % "20241224",
       "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),

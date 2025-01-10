@@ -70,7 +70,7 @@ lazy val client = project
     libraryDependencies ++= Seq(
       "software.amazon.awssdk" % "sns" % awsSdkVersion,
 
-      "org.json" % "json" % "20241224",
+      "org.json" % "json" % "20250107",
       "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
@@ -98,7 +98,7 @@ lazy val anghammarad = project
       "com.vladsch.flexmark" % "flexmark-ext-tables" % flexmarkVersion,
       "com.vladsch.flexmark" % "flexmark-util" % flexmarkVersion,
       "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
-      "ch.qos.logback" % "logback-classic" % "1.5.15",
+      "ch.qos.logback" % "logback-classic" % "1.5.16",
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
     assembly / assemblyOutputPath := file("anghammarad/anghammarad.jar"),

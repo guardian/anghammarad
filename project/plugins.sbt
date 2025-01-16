@@ -2,7 +2,7 @@ addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.11.0")
 
 addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "2.3.0")
 
-addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.13.0")
+addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.0")
 
 // for publishing the scala client
 addSbtPlugin("com.github.sbt" % "sbt-release" % "1.4.0")

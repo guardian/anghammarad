@@ -92,7 +92,7 @@ lazy val anghammarad = project
       "io.circe" %% "circe-core" % circeVersion,
       "io.circe" %% "circe-generic" % circeVersion,
       "io.circe" %% "circe-parser" % circeVersion,
-      "com.softwaremill.sttp.client3" %% "core" % "3.10.2",
+      "com.softwaremill.sttp.client3" %% "core" % "3.10.3",
       "com.vladsch.flexmark" % "flexmark" % flexmarkVersion,
       "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % flexmarkVersion,
       "com.vladsch.flexmark" % "flexmark-ext-tables" % flexmarkVersion,

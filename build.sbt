@@ -26,7 +26,7 @@ inThisBuild(Seq(
 ))
 
 val awsSdkVersion = "2.30.38"
-val circeVersion = "0.14.10"
+val circeVersion = "0.14.12"
 val flexmarkVersion = "0.64.8"
 val scalaTestVersion = "3.2.19"
 val scalaLoggingVersion = "3.9.5"
@@ -98,7 +98,7 @@ lazy val anghammarad = project
       "com.vladsch.flexmark" % "flexmark-ext-tables" % flexmarkVersion,
       "com.vladsch.flexmark" % "flexmark-util" % flexmarkVersion,
       "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
-      "ch.qos.logback" % "logback-classic" % "1.5.17",
+      "ch.qos.logback" % "logback-classic" % "1.5.18",
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
     assembly / assemblyOutputPath := file("anghammarad/anghammarad.jar"),

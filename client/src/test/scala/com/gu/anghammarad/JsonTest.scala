@@ -23,9 +23,14 @@ class JsonTest extends AnyFreeSpec with Matchers {
     "produces valid JSON for an AwsAccount" in {
       targetJson(List(AwsAccount("123456789"))) shouldEqual """{"AwsAccount":"123456789"}"""
     }
+
+    "produces valid JSON for a GitHubTeamSlug" in {
+      targetJson(List(GithubTeamSlug("my-team"))) shouldEqual """{"GithubTeamSlug":"my-team"}"""
+    }
+
     "produces valid JSON for all" in {
-      targetJson(List(Stack("stack"), Stage("stage"), App("app"), AwsAccount("123456789"))) shouldEqual
-        """{"Stack":"stack","Stage":"stage","App":"app","AwsAccount":"123456789"}"""
+      targetJson(List(Stack("stack"), Stage("stage"), App("app"), AwsAccount("123456789"), GithubTeamSlug("my-team"))) shouldEqual
+        """{"Stack":"stack","Stage":"stage","App":"app","AwsAccount":"123456789","GithubTeamSlug":"my-team"}"""
     }
   }
 

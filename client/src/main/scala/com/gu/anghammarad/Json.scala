@@ -30,7 +30,7 @@ object Json extends StrictLogging {
       case Stage(stage) => targetJsonString("Stage", stage)
       case App(app) => targetJsonString("App", app)
       case AwsAccount(awsAccount) => targetJsonString("AwsAccount", awsAccount)
-      case _ => ""
+      case GithubTeamSlug(gitHubTeamSlug) => targetJsonString("GithubTeamSlug", gitHubTeamSlug)
     }.mkString(",")
     s"{$kvpairs}"
   }

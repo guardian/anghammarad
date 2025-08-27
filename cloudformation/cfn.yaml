@@ -82,11 +82,19 @@ Resources:
       DeadLetterQueue:
         TargetArn: !GetAtt DeadLetterQueue.Arn
         Type: SQS
+      KmsKeyArn: "PLACEHOLDER_FOR_YOUR_KMS_KEY_ARN"
+      ReservedConcurrentExecutions: 100
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-xxx
+        SubnetIds:
+          - subnet-xxx
 
   NotificationTopic:
     Type: AWS::SNS::Topic
     Properties:
       DisplayName: !Sub Anghammarad ${Stage} notification topic
+      KmsMasterKeyId: alias/aws/sns
 
   NotificationTopicPolicy:
     Type: "AWS::SNS::TopicPolicy"

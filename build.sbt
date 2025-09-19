@@ -29,7 +29,7 @@ val awsSdkVersion = "2.32.25"
 val circeVersion = "0.14.14"
 val flexmarkVersion = "0.64.8"
 val scalaTestVersion = "3.2.19"
-val scalaLoggingVersion = "3.9.5"
+val scalaLoggingVersion = "3.9.6"
 
 //Projects
 

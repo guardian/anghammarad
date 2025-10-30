@@ -4,7 +4,9 @@
   "description": "Notification service for the Guardian's dev teams",
   "main": "dist/src/main.js",
   "types": "dist/src/main.d.ts",
-  "repository": "https://github.com/guardian/anghammarad.git",
+  "repository": {
+    "url": "https://github.com/guardian/anghammarad"
+  },
   "author": "Guardian",
   "license": "MIT",
   "scripts": {

@@ -26,6 +26,11 @@ jobs:
         with:
           node-version-file: .nvmrc
 
+      # See https://docs.npmjs.com/trusted-publishers
+      # Find the latest version with `npm info npm@latest version`
+      - name: Install suitable NPM version for trusted publishing
+        run: npm install -g npm@11.6.2
+
       - name: Install dependencies
         run: cd anghammarad-client-node && yarn install --frozen-lockfile
 
@@ -43,4 +48,3 @@ jobs:
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -1,6 +1,38 @@
-import { NotifyParams } from "./interfaces";
 import {PublishCommand, SNSClient} from "@aws-sdk/client-sns";
 import {fromNodeProviderChain} from "@aws-sdk/credential-providers";
+
+export interface Action {
+ cta: string;
+ url: string;
+}
+
+export interface Target {
+ Stack?: string;
+ Stage?: string;
+ App?: string;
+ AwsAccount?: string;
+ GithubTeamSlug?: string;
+}
+
+export enum RequestedChannel {
+ All = "all",
+ PreferHangouts = "prefer hangouts",
+ PreferEmail = "prefer email",
+ Email = "email",
+ HangoutsChat = "hangouts",
+}
+
+export interface NotifyParams {
+ subject: string;
+ message: string;
+ actions: Action[];
+ target: Target;
+ channel: RequestedChannel;
+ sourceSystem: string;
+ topicArn: string;
+ threadKey?: string;
+}
+
 
 export class Anghammarad {
   private readonly snsClient: SNSClient;
@@ -40,5 +72,3 @@ export class Anghammarad {
     return request.MessageId;
   }
 }
-
-export * from "./interfaces";

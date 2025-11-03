@@ -5,6 +5,4 @@ out
 gen
 
 node_modules
-yarn-error.log
 dist
-package-lock.json

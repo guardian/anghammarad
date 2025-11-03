@@ -14,7 +14,6 @@
   "license": "MIT",
   "scripts": {
     "prepare": "npm run build",
-    "postversion": "git push && git push --tags",
     "build": "tsc"
   },
   "dependencies": {

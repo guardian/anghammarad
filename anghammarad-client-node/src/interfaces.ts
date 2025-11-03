@@ -1,5 +1,3 @@
-import { SNS } from "aws-sdk";
-
 export interface Action {
   cta: string;
   url: string;
@@ -29,6 +27,5 @@ export interface NotifyParams {
   channel: RequestedChannel;
   sourceSystem: string;
   topicArn: string;
-  client?: SNS;
   threadKey?: string;
 }

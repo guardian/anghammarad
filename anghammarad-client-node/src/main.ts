@@ -1,12 +1,12 @@
 import { NotifyParams } from "./interfaces";
-import { SNS } from "aws-sdk";
-import { credentialsProvider, snsClient } from "./aws";
+import {PublishCommand, SNSClient} from "@aws-sdk/client-sns";
+import {fromNodeProviderChain} from "@aws-sdk/credential-providers";
 
 export class Anghammarad {
-  client: SNS;
+  private readonly snsClient: SNSClient;
 
-  constructor(client = snsClient(credentialsProvider())) {
-    this.client = client;
+  constructor() {
+   this.snsClient = new SNSClient({region: "eu-west-1", credentials: fromNodeProviderChain({profile: 'deployTools'})});
   }
 
   messageJson(params: NotifyParams): string {
@@ -30,15 +30,13 @@ export class Anghammarad {
   }
 
   async notify(params: NotifyParams) {
-    const sns = this.client;
-    const request = await sns
-      .publish({
-        TopicArn: params.topicArn,
-        Subject: params.subject,
-        Message: this.messageJson(params),
-      })
-      .promise();
+   const command = new PublishCommand({
+    TopicArn: params.topicArn,
+    Subject: params.subject,
+    Message: this.messageJson(params),
+   });
 
+    const request = await this.snsClient.send(command);
     return request.MessageId;
   }
 }

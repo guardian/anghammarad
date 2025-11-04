@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - "anghammarad-client-node/**"
+  pull_request:
+    types: [ labeled, synchronize ]
 
 permissions:
   id-token: write
@@ -13,7 +15,84 @@ permissions:
   pull-requests: write
 
 jobs:
+  beta:
+    if: github.event.label.name == '[beta] @guardian/anghammarad'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      # See https://docs.npmjs.com/trusted-publishers
+      # Find the latest version with `npm info npm@latest version`
+      - name: Install suitable NPM version for trusted publishing
+        run: npm install -g npm@11.6.2
+
+      - name: Install dependencies
+        working-directory: ./anghammarad-client-node
+        run: npm ci
+
+      - name: Run build script
+        working-directory: ./anghammarad-client-node
+        run: npm run build
+
+      - name: Version
+        working-directory: ./anghammarad-client-node
+        run: npx changeset version --snapshot beta
+
+      - name: Create beta release
+        uses: changesets/action@v1
+        id: changesets
+        with:
+          publish: npx changeset publish --tag beta
+          cwd: ./anghammarad-client-node
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/github-script@v8
+        if: steps.changesets.outputs.published == 'true'
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const publishedPackages = ${{ steps.changeset.outputs.publishedPackages }};
+
+            if(publishedPackages.length === 0) {
+              throw new Error('No packages published, did you forget to add a changeset?');
+            }
+
+            const version = publishedPackages[0].version;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🚀 \`${version}\` published to npm as a beta release
+
+            To install the beta version, run one of the following commands in your project directory:
+            \`\`\`
+            npm install @guardian/anghammarad@${version}
+            pnpm add @guardian/anghammarad@${version}
+            yarn add @guardian/anghammarad@${version}
+            \`\`\`
+            `
+            });
+
+      - name: Remove label
+        uses: actions/github-script@v8
+        if: always()
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.rest.issues.removeLabel({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: '[beta] @guardian/anghammarad'
+            });
+
   publish:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

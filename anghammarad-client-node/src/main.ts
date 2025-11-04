@@ -32,6 +32,24 @@ export interface AnghammaradNotification {
  threadKey?: string;
 }
 
+/**
+ * Send notifications to teams via Anghammarad.
+ * Messages will be published to the SNS topic referenced by the SSM parameter `/account/services/anghammarad.topic.arn`.
+ *
+ * This class is a singleton, use `getInstance` to get the instance.
+ *
+ * @usage
+ * ```ts
+ * import { Anghammarad, type AnghammaradNotification } from "@guardian/anghammarad";
+ * const anghammarad = await Anghammarad.getInstance();
+ * await anghammarad.notify("An important message", { });
+ * ```
+ *
+ * @note
+ * The following IAM permissions are required:
+ * - `ssm:GetParameter` to read the SSM parameter `/account/services/anghammarad.topic.arn` storing the SNS topic ARN
+ * - `sns:Publish` to publish to SNS
+ */
 export class Anghammarad {
   private readonly snsClient: SNSClient;
   private readonly topicArn: string;

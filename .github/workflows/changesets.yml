@@ -42,7 +42,7 @@ jobs:
         run: npx changeset version --snapshot beta
 
       - name: Create beta release
-        uses: changesets/action@v1
+        uses: changesets/action@v1.5.1 # Pin to a version that respects `cwd`. See https://github.com/changesets/action/issues/501.
         id: changesets
         with:
           publish: npx changeset publish --tag beta
@@ -118,7 +118,7 @@ jobs:
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
-        uses: changesets/action@v1
+        uses: changesets/action@v1.5.1 # Pin to a version that respects `cwd`. See https://github.com/changesets/action/issues/501.
         with:
           publish: npx changeset publish
           title: "🦋 Release package updates"

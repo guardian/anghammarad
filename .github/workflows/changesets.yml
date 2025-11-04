@@ -32,16 +32,16 @@ jobs:
         run: npm install -g npm@11.6.2
 
       - name: Install dependencies
-        run: cd anghammarad-client-node && yarn install --frozen-lockfile
+        run: cd anghammarad-client-node && npm ci
 
       - name: Run build script
-        run: cd anghammarad-client-node && yarn build
+        run: cd anghammarad-client-node && npm run build
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: yarn changeset publish
+          publish: npx changeset publish
           title: "🦋 Release package updates"
           commit: "Bump package version"
           cwd: "./anghammarad-client-node"

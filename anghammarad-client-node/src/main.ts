@@ -1,46 +1,82 @@
-import { NotifyParams } from "./interfaces";
-import { SNS } from "aws-sdk";
-import { credentialsProvider, snsClient } from "./aws";
+import {PublishCommand, SNSClient} from "@aws-sdk/client-sns";
+import {fromNodeProviderChain} from "@aws-sdk/credential-providers";
+import {GetParameterCommand, SSMClient} from "@aws-sdk/client-ssm";
+
+export interface Action {
+ cta: string;
+ url: string;
+}
+
+export interface Target {
+ Stack?: string;
+ Stage?: string;
+ App?: string;
+ AwsAccount?: string;
+ GithubTeamSlug?: string;
+}
+
+export enum RequestedChannel {
+ All = "all",
+ PreferHangouts = "prefer hangouts",
+ PreferEmail = "prefer email",
+ Email = "email",
+ HangoutsChat = "hangouts",
+}
+
+export interface AnhammaradNotification {
+ message: string;
+ actions: Action[];
+ target: Target;
+ channel: RequestedChannel;
+ sender: string;
+ threadKey?: string;
+}
 
 export class Anghammarad {
-  client: SNS;
+  private readonly snsClient: SNSClient;
+  private readonly topicArn: string;
+  private static instance: Anghammarad | undefined;
 
-  constructor(client = snsClient(credentialsProvider())) {
-    this.client = client;
+  private constructor(snsClient: SNSClient, topicArn: string) {
+   this.snsClient = snsClient;
+   this.topicArn = topicArn;
   }
 
-  messageJson(params: NotifyParams): string {
-    const {
-      message,
-      sourceSystem,
-      channel,
-      target,
-      actions,
-      threadKey
-    } = params
+  public static async getInstance() {
+   if(!this.instance) {
+    const awsConfiguration = {
+     region: "eu-west-1",
+     credentials: fromNodeProviderChain({profile: 'deployTools'})
+    };
 
-    return JSON.stringify({
-      message,
-      sender: sourceSystem,
-      channel,
-      target,
-      actions,
-      ...(threadKey && { threadKey }), // only add "threadKey" when it is defined
+    const snsClient = new SNSClient(awsConfiguration);
+    const ssmClient = new SSMClient(awsConfiguration);
+
+    const parameterName = "/account/services/anghammarad.topic.arn";
+    const command = new GetParameterCommand({
+     Name: parameterName,
     });
+
+    const { Parameter } = await ssmClient.send(command);
+
+    if(!Parameter || !Parameter.Value) {
+     throw new Error(`Unable to read SSM parameter ${parameterName}`);
+    }
+
+    this.instance = new Anghammarad(snsClient, Parameter.Value);
+   }
+
+   return this.instance;
   }
 
-  async notify(params: NotifyParams) {
-    const sns = this.client;
-    const request = await sns
-      .publish({
-        TopicArn: params.topicArn,
-        Subject: params.subject,
-        Message: this.messageJson(params),
-      })
-      .promise();
+  async notify(subject: string, body: AnhammaradNotification) {
+   const command = new PublishCommand({
+    TopicArn: this.topicArn,
+    Subject: subject,
+    Message: JSON.stringify(body),
+   });
 
+    const request = await this.snsClient.send(command);
     return request.MessageId;
   }
 }
-
-export * from "./interfaces";

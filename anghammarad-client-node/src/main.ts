@@ -1,6 +1,6 @@
 import {PublishCommand, SNSClient} from "@aws-sdk/client-sns";
-import {fromNodeProviderChain} from "@aws-sdk/credential-providers";
 import {GetParameterCommand, SSMClient} from "@aws-sdk/client-ssm";
+import type {AwsCredentialIdentityProvider} from "@smithy/types";
 
 export interface Action {
  cta: string;
@@ -64,15 +64,45 @@ export class Anghammarad {
    this.topicArn = topicArn;
   }
 
-  public static async getInstance() {
+ /**
+  * Obtain the singleton instance of the Anghammarad client.
+  *
+  * @param credentialProvider AWS credential provider
+  *
+  * @example Use AWS profile credentials only, e.g. in DEV
+  *
+  * ```ts
+  * import { fromIni } from "@aws-sdk/credential-providers";
+  *
+  * const anghammaradClient = await Anghammarad.getInstance(
+  *   fromIni({ profile: 'deployTools' })
+  * );
+  * ```
+  *
+  * @example Using a credential provider chain
+  *
+  * ```ts
+  * import { createCredentialChain, fromEnv, fromIni } from "@aws-sdk/credential-providers";
+  *
+  * const anghammaradClient = await Anghammarad.getInstance(
+  *   createCredentialChain(
+  *     fromEnv(),
+  *     fromIni({ profile: 'deployTools' })
+  *   )
+  * );
+  * ```
+  */
+  public static async getInstance(credentialProvider: AwsCredentialIdentityProvider) {
    if(!this.instance) {
-    const awsConfiguration = {
+    const snsClient = new SNSClient({
      region: "eu-west-1",
-     credentials: fromNodeProviderChain({profile: 'deployTools'})
-    };
+     credentials: credentialProvider
+    });
 
-    const snsClient = new SNSClient(awsConfiguration);
-    const ssmClient = new SSMClient(awsConfiguration);
+    const ssmClient = new SSMClient({
+     region: "eu-west-1",
+     credentials: credentialProvider
+    });
 
     const parameterName = "/account/services/anghammarad.topic.arn";
     const command = new GetParameterCommand({

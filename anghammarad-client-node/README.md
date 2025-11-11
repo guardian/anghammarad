@@ -14,7 +14,7 @@ The Anghammarad client contains a function that will send a notification.
 ```js
 import { Anghammarad, type AnghammaradNotification } from '@guardian/anghammarad';
 
-const client = await Anghammarad.getInstance();
+const client = new Anghammarad(snsClient, snsTopic);
 const notification: AnghammaradNotification = { };
 await client.notify(notification);
 ```
@@ -24,7 +24,7 @@ For example
 ```js
 import { Anghammarad, RequestedChannel } from '@guardian/anghammarad';
 
-const client = await Anghammarad.getInstance();
+const client = new Anghammarad(snsClient, snsTopic);
 
 await client.notify({
   subject: "Hello",

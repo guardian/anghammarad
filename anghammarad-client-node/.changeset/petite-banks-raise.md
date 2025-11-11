@@ -13,5 +13,5 @@ To send a message:
 import { Anghammarad, type AnghammaradNotification } from '@guardian/anghammarad';
 const anghammarad = await Anghammarad.getInstance();
 const notification: AnghammaradNotification = { };
-await anghammarad.notify("an important message for you", notification);
+await anghammarad.notify(notification);
 ```

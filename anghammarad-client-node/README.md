@@ -12,10 +12,11 @@ your package.json.
 The Anghammarad client contains a function that will send a notification.
 
 ```js
-import { Anghammarad } from '@guardian/anghammarad';
+import { Anghammarad, type AnghammaradNotification } from '@guardian/anghammarad';
 
 const client = await Anghammarad.getInstance();
-await client.notify("A message for you", { ...parameters });
+const notification: AnghammaradNotification = { };
+await client.notify(notification);
 ```
 
 For example
@@ -25,7 +26,8 @@ import { Anghammarad, RequestedChannel } from '@guardian/anghammarad';
 
 const client = await Anghammarad.getInstance();
 
-await client.notify("A message for you", {
+await client.notify({
+  subject: "Hello",
   message: "Hi there, something has happened which we'd like to tell you about",
   actions: [{ url: 'https://example.com' }],
   target: { Stack: 'my-stack', Stage: 'CODE', App: 'my-app' },
@@ -36,13 +38,14 @@ await client.notify("A message for you", {
 
 ### Parameters
 
-| key     | description                                                                    | required | example                                                          |
-|---------| ------------------------------------------------------------------------------ | -------- | ---------------------------------------------------------------- |
-| message | The body of the message                                                        | Y        | "This is an example alert. Please ignore"                        |
-| actions | An array of objects containing a cta and/or a url                              | Y        | [{"url": "https://example.com}]                                  |
-| target  | A target object containing one or more of Stage, Stack, App and Account number | Y        | {Stage: "CODE"}                                                  |
-| channel | One of the accepted channel types                                              | Y        | "prefer hangouts"                                                |
-| sender  | The name of the process sending the alert                                      | Y        | "my app"                                                         |
+| key     | description                                                                    | required | example                                   |
+|---------| ------------------------------------------------------------------------------ | -------- |-------------------------------------------|
+| subject | The subject line of the message                                                | Y        | "An example alert"                        |
+| message | The body of the message                                                        | Y        | "This is an example alert. Please ignore" |
+| actions | An array of objects containing a cta and/or a url                              | Y        | [{"url": "https://example.com}]           |
+| target  | A target object containing one or more of Stage, Stack, App and Account number | Y        | {Stage: "CODE"}                           |
+| channel | One of the accepted channel types                                              | Y        | "prefer hangouts"                         |
+| sender  | The name of the process sending the alert                                      | Y        | "my app"                                  |
 
 ### Channels
 

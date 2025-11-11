@@ -23,13 +23,17 @@ export enum RequestedChannel {
  HangoutsChat = "hangouts",
 }
 
-export interface AnghammaradNotification {
+interface AnghammaradSnsPayload {
  message: string;
  actions: Action[];
  target: Target;
  channel: RequestedChannel;
  sender: string;
  threadKey?: string;
+}
+
+export interface AnghammaradNotification extends AnghammaradSnsPayload {
+ subject: string;
 }
 
 /**
@@ -42,7 +46,7 @@ export interface AnghammaradNotification {
  * ```ts
  * import { Anghammarad, type AnghammaradNotification } from "@guardian/anghammarad";
  * const anghammarad = await Anghammarad.getInstance();
- * await anghammarad.notify("An important message", { });
+ * await anghammarad.notify({ ... });
  * ```
  *
  * @note
@@ -87,11 +91,13 @@ export class Anghammarad {
    return this.instance;
   }
 
-  async notify(subject: string, body: AnghammaradNotification) {
+  async notify(notification: AnghammaradNotification) {
+   const { subject, ...snsPayload } = notification;
+
    const command = new PublishCommand({
     TopicArn: this.topicArn,
     Subject: subject,
-    Message: JSON.stringify(body),
+    Message: JSON.stringify(snsPayload),
    });
 
     const request = await this.snsClient.send(command);

@@ -1,5 +1,10 @@
 import {PublishCommand, SNSClient} from "@aws-sdk/client-sns";
-import {fromNodeProviderChain} from "@aws-sdk/credential-providers";
+import {
+ createCredentialChain, fromContainerMetadata,
+ fromEnv,
+ fromIni,
+ fromInstanceMetadata,
+} from "@aws-sdk/credential-providers";
 import {GetParameterCommand, SSMClient} from "@aws-sdk/client-ssm";
 
 export interface Action {
@@ -68,7 +73,19 @@ export class Anghammarad {
    if(!this.instance) {
     const awsConfiguration = {
      region: "eu-west-1",
-     credentials: fromNodeProviderChain({profile: 'deployTools'})
+     credentials: createCredentialChain(
+      // EC2
+      fromInstanceMetadata(),
+
+      // ECS
+      fromContainerMetadata(),
+
+      // Lambda
+      fromEnv(),
+
+      // Local
+      fromIni({profile: 'deployTools'})
+     )
     };
 
     const snsClient = new SNSClient(awsConfiguration);

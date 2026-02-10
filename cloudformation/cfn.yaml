@@ -109,6 +109,8 @@ Resources:
         Triggers if Anghammarad failed to process some messages in ${Stage}.
         
         For suggested actions, see: https://docs.google.com/document/d/1cDd9mVAKFAYibuBPiCw4HkSCl16dG5zSu0qdSXDPuSE/edit#
+        
+        To check if there are any failed messages in the logs, see: https://logs.gutools.co.uk/s/devx/app/r/s/y56BI
 
       Namespace: AWS/SQS
       MetricName: ApproximateNumberOfMessagesVisible

@@ -1,5 +1,11 @@
 # @guardian/anghammarad
 
+## 3.0.1
+
+### Patch Changes
+
+- 357bb54: Update `fast-xml-parser` from 5.2.5 to 5.3.4
+
 ## 3.0.0
 
 ### Major Changes

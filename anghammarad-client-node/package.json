@@ -1,6 +1,6 @@
 {
   "name": "@guardian/anghammarad",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Notification service for the Guardian's dev teams",
   "type": "module",
   "files": [

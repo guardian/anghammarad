@@ -1,5 +1,11 @@
 # @guardian/anghammarad
 
+## 3.0.3
+
+### Patch Changes
+
+- e6ca59f: Update transitive dependency fast-xml-parser from 5.3.6 to 5.4.1
+
 ## 3.0.2
 
 ### Patch Changes

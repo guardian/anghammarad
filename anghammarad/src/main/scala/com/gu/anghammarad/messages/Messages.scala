@@ -33,10 +33,30 @@ object Messages {
     }
   }
 
+  def failureMessage(originalNotification: Notification): String = {
+    s"""
+       |Anghammarad failed to find contacts for the following notification:
+       |
+       |Source system: ${originalNotification.sourceSystem}
+       |Notification targets: ${originalNotification.target.mkString(", ")}
+       |Requested channel: ${originalNotification.channel}
+       |Anghammarad config: https://github.com/guardian/anghammarad-config
+       |
+       |The original message that should have been sent can be found below
+       |---
+       |Subject: ${originalNotification.subject}
+       |Body:
+       |${originalNotification.message}
+       |""".stripMargin
+  }
+
   def createMessagesWithFallback(originalNotification: Notification, addresseesWithFallback: Either[List[(Channel, Contact)], List[(Channel, Contact)]]): List[(Message, Contact)] = {
     addresseesWithFallback match {
       case Left(fallbackAddressees) =>
-        val notificationForDevX = originalNotification.copy(subject = s"Failed to deliver the following notification to ${originalNotification.target.mkString(",")}")
+        val notificationForDevX = originalNotification.copy(
+          subject = s"Anghammarad failed to deliver a notification",
+          message = failureMessage(originalNotification)
+        )
         createMessages(notificationForDevX, fallbackAddressees)
       case Right(originalAddressees) => createMessages(originalNotification, originalAddressees)
     }

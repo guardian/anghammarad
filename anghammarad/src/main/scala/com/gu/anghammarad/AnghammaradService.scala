@@ -12,16 +12,9 @@ object AnghammaradService {
       config: Configuration
   ): Try[List[(Message, Contact)]] = {
     for {
-      contactsOrFallback <- Contacts.lookupContactsWithFallback(
-        notification.target,
-        notification.channel,
-        config.mappings
-      )
+      contactsOrFallback <- Contacts.lookupContactsWithFallback(notification.target, notification.channel, config.mappings)
       // address messages
-      toSend = Messages.createMessagesWithFallback(
-        notification,
-        contactsOrFallback
-      )
+      toSend = Messages.createMessagesWithFallback(notification, contactsOrFallback)
       // send resolved notifications
       result <- SendMessages.sendAll(config, toSend)
     } yield toSend

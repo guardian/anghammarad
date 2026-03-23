@@ -36,7 +36,7 @@ object Messages {
   def failureMessage(originalNotification: Notification, err: Throwable): String = {
     s"""
        |Anghammarad's [config](https://github.com/guardian/anghammarad-config) is missing or incomplete for the following targets:
-       |\t${originalNotification.target.mkString("\n\t")}.
+       |${originalNotification.target.mkString("\n")}.
        |
        |**Error**:
        |${err.getMessage}
@@ -58,7 +58,6 @@ object Messages {
     subject = "Anghammarad failed to deliver a notification",
     message = failureMessage(notification, err)
   )
-
 
   def emailMessage(notification: Notification): EmailMessage = {
     val (markdown, plaintext) =

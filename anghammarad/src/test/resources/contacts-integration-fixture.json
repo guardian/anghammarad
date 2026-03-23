@@ -1,5 +1,6 @@
 {
   "emailDomain": "example.com",
+  "fallbackContacts": "devx-email",
   "mappings": [
     {
       "target": {

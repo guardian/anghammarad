@@ -35,17 +35,15 @@ object Messages {
 
   def failureMessage(originalNotification: Notification): String = {
     s"""
-       |Anghammarad failed to find contacts for the following notification:
+       |The [config](https://github.com/guardian/anghammarad-config) is missing information for the following targets: ${originalNotification.target.mkString(", ")}.
        |
-       |Source system: ${originalNotification.sourceSystem}
-       |Notification targets: ${originalNotification.target.mkString(", ")}
-       |Requested channel: ${originalNotification.channel}
-       |Anghammarad config: https://github.com/guardian/anghammarad-config
+       |**Requested channel**:
+       |${originalNotification.channel}
        |
-       |The original message that should have been sent can be found below
-       |---
-       |Subject: ${originalNotification.subject}
-       |Body:
+       |**Subject**:
+       |${originalNotification.subject}
+       |
+       |**Body**:
        |${originalNotification.message}
        |""".stripMargin
   }

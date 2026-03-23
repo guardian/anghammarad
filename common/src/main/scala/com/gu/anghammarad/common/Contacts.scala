@@ -223,7 +223,7 @@ object Contacts {
       case Failure(_) =>
         lookupContacts(
           targets = List(App("anghammarad")),
-          requestedChannel,
+          HangoutsChat,
           mappings
         ).map(fallbackContacts => Left(fallbackContacts))
       case Success(originalContacts) => Success(Right(originalContacts))

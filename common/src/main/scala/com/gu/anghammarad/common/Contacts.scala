@@ -1,71 +1,88 @@
 package com.gu.anghammarad.common
 
 import com.gu.anghammarad.common.AnghammaradException.Fail
-import com.gu.anghammarad.common.Targets.{appMatches, awsAccountMatches, githubTeamSlugMatches, includesApp, includesAwsAccount, includesGithubTeamSlug, includesStack, sortMappingsByTargets, stackMatches}
+import com.gu.anghammarad.common.Targets.{
+  appMatches,
+  awsAccountMatches,
+  githubTeamSlugMatches,
+  includesApp,
+  includesAwsAccount,
+  includesGithubTeamSlug,
+  includesStack,
+  sortMappingsByTargets,
+  stackMatches
+}
 import com.gu.anghammarad.models._
 
-import scala.util.{Success, Try}
-
+import scala.util.{Failure, Success, Try}
 
 object Contacts {
-  /**
-    * Gets all available contacts for this target, from configuration.
+
+  /** Gets all available contacts for this target, from configuration.
     *
-    * The logic is complex, the tests are a good reference for the expected behaviour.
+    * The logic is complex, the tests are a good reference for the expected
+    * behaviour.
     *
-    * Exact matches are prioritised, then we apply logic to route other messages correctly.
-    * App, Stack and AWS Account use a hierarchy, App > Stack > AwsAccount.
+    * Exact matches are prioritised, then we apply logic to route other messages
+    * correctly. App, Stack and AWS Account use a hierarchy, App > Stack >
+    * AwsAccount.
     *
-    * If there are multiple matches then stage is used as a tiebreaker.
-    * If stage is not sent by the source system then we assume a notification should be sent to the PROD mapping (note
-    * that for legacy reasons mappings which omit stage are assumed to be PROD).
+    * If there are multiple matches then stage is used as a tiebreaker. If stage
+    * is not sent by the source system then we assume a notification should be
+    * sent to the PROD mapping (note that for legacy reasons mappings which omit
+    * stage are assumed to be PROD).
     */
-  def resolveTargetContacts(targets: List[Target], mappings: List[Mapping]): Try[List[Contact]] = for {
+  def resolveTargetContacts(
+      targets: List[Target],
+      mappings: List[Mapping]
+  ): Try[List[Contact]] = for {
     exactMatches <- findExactMatches(targets, mappings)
     underSpecifiedMatches = findUnderSpecifiedMatches(targets, mappings)
     overSpecifiedMatches = findOverSpecifiedMatches(targets, mappings)
-    contacts <- exactMatches.orElse(underSpecifiedMatches).orElse(overSpecifiedMatches).fold[Try[List[Contact]]] {
-      Fail(s"Could not find matching contacts for $targets")
-    }(Success(_))
+    contacts <- exactMatches
+      .orElse(underSpecifiedMatches)
+      .orElse(overSpecifiedMatches)
+      .fold[Try[List[Contact]]] {
+        Fail(s"Could not find matching contacts for $targets")
+      }(Success(_))
   } yield contacts
 
-  /**
-    * Check for a mapping that exactly matches the target.
+  /** Check for a mapping that exactly matches the target.
     *
     * Multiple exact matches is an error, so we fail straight away.
     */
-  private def findExactMatches(targets: List[Target], mappings: List[Mapping]): Try[Option[List[Contact]]] = {
+  private def findExactMatches(
+      targets: List[Target],
+      mappings: List[Mapping]
+  ): Try[Option[List[Contact]]] = {
     mappings.filter(_.targets.toSet == targets.toSet) match {
       case Nil =>
         Success(None)
       case exactMatch :: Nil =>
         Success(Some(exactMatch.contacts))
       case multipleMatches =>
-        Fail(s"Found multiple exact matches while resolving contacts for $targets")
+        Fail(
+          s"Found multiple exact matches while resolving contacts for $targets"
+        )
     }
   }
 
-  /**
-    * Searches among mappings that have more detail than requested.
+  /** Searches among mappings that have more detail than requested.
     *
-    * e.g.
-    * Ask for:
-    *   App("app")
-    * Mapping has:
-    *   Stack("stack"), App("app")
+    * e.g. Ask for: App("app") Mapping has: Stack("stack"), App("app")
     *
     * This is tricky because we wouldn't want to match on the following
     *
-    * Ask for:
-    *   Stack("stack")
-    * Mapping has:
-    *   Stack("stack"), App("app")
+    * Ask for: Stack("stack") Mapping has: Stack("stack"), App("app")
     *
     * Accordingly, if the mapping is defined for a target that we don't ask for
     * that is more important (according to the target hierarchy), we will not
     * consider that a match.
     */
-  private def findUnderSpecifiedMatches(targets: List[Target], mappings: List[Mapping]): Option[List[Contact]] = {
+  private def findUnderSpecifiedMatches(
+      targets: List[Target],
+      mappings: List[Mapping]
+  ): Option[List[Contact]] = {
     mappings.filter { case Mapping(mappingTargets, _) =>
       targets.toSet subsetOf mappingTargets.toSet
     } match {
@@ -74,50 +91,52 @@ object Contacts {
       case matches =>
         val validMatches = matches.filter { case Mapping(mappingTargets, _) =>
           if (includesApp(mappingTargets)) appMatches(targets, mappingTargets)
-          else if (includesStack(mappingTargets)) stackMatches(targets, mappingTargets)
-          else if (includesAwsAccount(mappingTargets)) awsAccountMatches(targets, mappingTargets)
-          else if (includesGithubTeamSlug(mappingTargets)) githubTeamSlugMatches(targets, mappingTargets)
+          else if (includesStack(mappingTargets))
+            stackMatches(targets, mappingTargets)
+          else if (includesAwsAccount(mappingTargets))
+            awsAccountMatches(targets, mappingTargets)
+          else if (includesGithubTeamSlug(mappingTargets))
+            githubTeamSlugMatches(targets, mappingTargets)
           else true
         }
-        sortMappingsByTargets(targets, validMatches)
-          .headOption.map(_.contacts)
+        sortMappingsByTargets(targets, validMatches).headOption.map(_.contacts)
     }
   }
 
-  /**
-    * Searches among mappings that have less detail than requested.
-    * This is likely to be the normal way people specify targets.
+  /** Searches among mappings that have less detail than requested. This is
+    * likely to be the normal way people specify targets.
     *
-    * e.g.
-    * Ask for:
-    *   AwsAccount("xxx") Stack("stack") App("app")
-    * Mapping has:
-    *   App("App")
+    * e.g. Ask for: AwsAccount("xxx") Stack("stack") App("app") Mapping has:
+    * App("App")
     *
-    * we prioritise mappings that include higher priority targets
-    * (according to the target hierarchy).
+    * we prioritise mappings that include higher priority targets (according to
+    * the target hierarchy).
     */
-  private def findOverSpecifiedMatches(targets: List[Target], mappings: List[Mapping]): Option[List[Contact]] = {
+  private def findOverSpecifiedMatches(
+      targets: List[Target],
+      mappings: List[Mapping]
+  ): Option[List[Contact]] = {
     mappings.filter { case Mapping(mappingTargets, _) =>
       mappingTargets.toSet subsetOf targets.toSet
     } match {
       case Nil =>
         None
       case matches =>
-        sortMappingsByTargets(targets, matches)
-          .headOption.map(_.contacts)
+        sortMappingsByTargets(targets, matches).headOption.map(_.contacts)
     }
   }
 
-  /**
-    * Attempts to find contacts for each requested channel.
+  /** Attempts to find contacts for each requested channel.
     */
-  def resolveContactsForChannels(contacts: List[Contact], requestedChannel: RequestedChannel): Try[List[(Channel, Contact)]] = {
-    val emails = contacts.collect {
-      case ea: EmailAddress => Email -> ea
+  def resolveContactsForChannels(
+      contacts: List[Contact],
+      requestedChannel: RequestedChannel
+  ): Try[List[(Channel, Contact)]] = {
+    val emails = contacts.collect { case ea: EmailAddress =>
+      Email -> ea
     }
-    val webhooks = contacts.collect {
-      case hr: HangoutsRoom => HangoutsChat -> hr
+    val webhooks = contacts.collect { case hr: HangoutsRoom =>
+      HangoutsChat -> hr
     }
     val resolved = requestedChannel match {
       case Email =>
@@ -133,14 +152,19 @@ object Contacts {
         if (webhooks.nonEmpty) webhooks
         else emails
     }
-    if (resolved.isEmpty) Fail(s"Could not find any contacts for requested channel, $requestedChannel")
+    if (resolved.isEmpty)
+      Fail(
+        s"Could not find any contacts for requested channel, $requestedChannel"
+      )
     else Success(resolved)
   }
 
-  /**
-    * Finds a contact (from provided available targets) for each message.
+  /** Finds a contact (from provided available targets) for each message.
     */
-  def contactsForMessage(requestedChannel: RequestedChannel, channelContacts: List[(Channel, Contact)]): Try[List[(Channel, Contact)]] = {
+  def contactsForMessage(
+      requestedChannel: RequestedChannel,
+      channelContacts: List[(Channel, Contact)]
+  ): Try[List[(Channel, Contact)]] = {
     val emailContacts = channelContacts.filter { case (channel, _) =>
       channel == Email
     }
@@ -163,9 +187,46 @@ object Contacts {
     }
 
     if (resolvedContacts.isEmpty) {
-      Fail(s"Could not find contacts for messages on the requested channels $requestedChannel, contacts($channelContacts)")
+      Fail(
+        s"Could not find contacts for messages on the requested channels $requestedChannel, contacts($channelContacts)"
+      )
     } else {
       Success(resolvedContacts)
     }
   }
+
+  def lookupContacts(
+      targets: List[Target],
+      requestedChannel: RequestedChannel,
+      mappings: List[Mapping]
+  ): Try[List[(Channel, Contact)]] = for {
+    // resolve targets
+    contacts <- Contacts.resolveTargetContacts(targets, mappings)
+    // get contacts for desired channels (if possible)
+    channelContacts <- Contacts.resolveContactsForChannels(
+      contacts,
+      requestedChannel
+    )
+    // find contacts for each message
+    contacts <- Contacts.contactsForMessage(
+      requestedChannel,
+      channelContacts
+    )
+  } yield contacts
+
+  def lookupContactsWithFallback(
+      targets: List[Target],
+      requestedChannel: RequestedChannel,
+      mappings: List[Mapping]
+  ): Try[Either[List[(Channel, Contact)], List[(Channel, Contact)]]] =
+    lookupContacts(targets, requestedChannel, mappings) match {
+      case Failure(_) =>
+        lookupContacts(
+          targets = List(App("anghammarad")),
+          requestedChannel,
+          mappings
+        ).map(fallbackContacts => Left(fallbackContacts))
+      case Success(originalContacts) => Success(Right(originalContacts))
+    }
+
 }

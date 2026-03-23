@@ -33,6 +33,15 @@ object Messages {
     }
   }
 
+  def createMessagesWithFallback(originalNotification: Notification, addresseesWithFallback: Either[List[(Channel, Contact)], List[(Channel, Contact)]]): List[(Message, Contact)] = {
+    addresseesWithFallback match {
+      case Left(fallbackAddressees) =>
+        val notificationForDevX = originalNotification.copy(subject = s"Failed to deliver the following notification to ${originalNotification.target.mkString(",")}")
+        createMessages(notificationForDevX, fallbackAddressees)
+      case Right(originalAddressees) => createMessages(originalNotification, originalAddressees)
+    }
+  }
+
   def emailMessage(notification: Notification): EmailMessage = {
     val (markdown, plaintext) =
       if (notification.actions.isEmpty) {

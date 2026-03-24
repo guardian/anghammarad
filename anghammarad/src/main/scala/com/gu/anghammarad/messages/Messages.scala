@@ -33,33 +33,6 @@ object Messages {
     }
   }
 
-  def failureMessage(originalNotification: Notification): String = {
-    s"""
-       |The [config](https://github.com/guardian/anghammarad-config) is missing information for the following targets: ${originalNotification.target.mkString(", ")}.
-       |
-       |**Requested channel**:
-       |${originalNotification.channel}
-       |
-       |**Subject**:
-       |${originalNotification.subject}
-       |
-       |**Body**:
-       |${originalNotification.message}
-       |""".stripMargin
-  }
-
-  def createMessagesWithFallback(originalNotification: Notification, addresseesWithFallback: Either[List[(Channel, Contact)], List[(Channel, Contact)]]): List[(Message, Contact)] = {
-    addresseesWithFallback match {
-      case Left(fallbackAddressees) =>
-        val notificationForDevX = originalNotification.copy(
-          subject = s"Anghammarad failed to deliver a notification",
-          message = failureMessage(originalNotification)
-        )
-        createMessages(notificationForDevX, fallbackAddressees)
-      case Right(originalAddressees) => createMessages(originalNotification, originalAddressees)
-    }
-  }
-
   def emailMessage(notification: Notification): EmailMessage = {
     val (markdown, plaintext) =
       if (notification.actions.isEmpty) {

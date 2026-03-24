@@ -4,7 +4,7 @@ import com.gu.anghammarad.common.AnghammaradException.Fail
 import com.gu.anghammarad.common.Targets.{appMatches, awsAccountMatches, githubTeamSlugMatches, includesApp, includesAwsAccount, includesGithubTeamSlug, includesStack, sortMappingsByTargets, stackMatches}
 import com.gu.anghammarad.models._
 
-import scala.util.{Failure, Success, Try}
+import scala.util.{Success, Try}
 
 
 object Contacts {
@@ -170,28 +170,15 @@ object Contacts {
   }
 
   def lookupContacts(targets: List[Target], requestedChannel: RequestedChannel, mappings: List[Mapping]): Try[List[(Channel, Contact)]] = for {
-    // resolve targets
-    contacts <- Contacts.resolveTargetContacts(targets, mappings)
-    // get contacts for desired channels (if possible)
-    channelContacts <- Contacts.resolveContactsForChannels(
+    contacts <- resolveTargetContacts(targets, mappings)
+    channelContacts <- resolveContactsForChannels(
       contacts,
       requestedChannel
     )
-    // find contacts for each message
-    contacts <- Contacts.contactsForMessage(
+    contacts <- contactsForMessage(
       requestedChannel,
       channelContacts
     )
   } yield contacts
 
-  def lookupContactsWithFallback(targets: List[Target], requestedChannel: RequestedChannel, mappings: List[Mapping]): Try[Either[List[(Channel, Contact)], List[(Channel, Contact)]]] =
-    lookupContacts(targets, requestedChannel, mappings) match {
-      case Failure(_) =>
-        lookupContacts(
-          targets = List(App("anghammarad")),
-          HangoutsChat,
-          mappings
-        ).map(fallbackContacts => Left(fallbackContacts))
-      case Success(originalContacts) => Success(Right(originalContacts))
-    }
 }

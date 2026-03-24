@@ -7,9 +7,9 @@ import com.gu.anghammarad.messages.{Messages, SendMessages}
 import scala.util.Try
 
 object AnghammaradService {
-  private val fallbackTarget = List(App("anghammarad"))
-  private val fallbackChannel = HangoutsChat
-  private val fallbackSubject = "Anghammarad failed to deliver a notification"
+  private val FALLBACK_TARGET = List(App("anghammarad"))
+  private val FALLBACK_CHANNEL = HangoutsChat
+  private val FALLBACK_SUBJECT = "Anghammarad failed to deliver a notification"
 
   def run(
       notification: Notification,
@@ -39,8 +39,8 @@ object AnghammaradService {
       .recoverWith { case _ =>
         Contacts
           .lookupContacts(
-            targets = fallbackTarget,
-            requestedChannel = fallbackChannel,
+            targets = FALLBACK_TARGET,
+            requestedChannel = FALLBACK_CHANNEL,
             mappings = config.mappings
           )
           .map(fallbackContacts => fallbackNotification(originalNotification) -> fallbackContacts)
@@ -51,14 +51,16 @@ object AnghammaradService {
       originalNotification: Notification
   ): Notification = {
     originalNotification.copy(
-      subject = fallbackSubject,
+      subject = FALLBACK_SUBJECT,
       message = failureMessage(originalNotification)
     )
   }
 
   private def failureMessage(originalNotification: Notification): String = {
+    val missingTargets = originalNotification.target.mkString(", ")
+
     s"""
-       |The [config](https://github.com/guardian/anghammarad-config) is missing information for the following targets: ${originalNotification.target.mkString(", ")}.
+       |The [config](https://github.com/guardian/anghammarad-config) is missing information for the following targets: $missingTargets.
        |
        |**Requested channel**:
        |${originalNotification.channel}

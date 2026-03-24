@@ -9,17 +9,17 @@ import scala.util.{Success, Try}
 
 object Contacts {
   /**
-   * Gets all available contacts for this target, from configuration.
-   *
-   * The logic is complex, the tests are a good reference for the expected behaviour.
-   *
-   * Exact matches are prioritised, then we apply logic to route other messages correctly.
-   * App, Stack and AWS Account use a hierarchy, App > Stack > AwsAccount.
-   *
-   * If there are multiple matches then stage is used as a tiebreaker.
-   * If stage is not sent by the source system then we assume a notification should be sent to the PROD mapping (note
-   * that for legacy reasons mappings which omit stage are assumed to be PROD).
-   */
+    * Gets all available contacts for this target, from configuration.
+    *
+    * The logic is complex, the tests are a good reference for the expected behaviour.
+    *
+    * Exact matches are prioritised, then we apply logic to route other messages correctly.
+    * App, Stack and AWS Account use a hierarchy, App > Stack > AwsAccount.
+    *
+    * If there are multiple matches then stage is used as a tiebreaker.
+    * If stage is not sent by the source system then we assume a notification should be sent to the PROD mapping (note
+    * that for legacy reasons mappings which omit stage are assumed to be PROD).
+    */
   def resolveTargetContacts(targets: List[Target], mappings: List[Mapping]): Try[List[Contact]] = for {
     exactMatches <- findExactMatches(targets, mappings)
     underSpecifiedMatches = findUnderSpecifiedMatches(targets, mappings)
@@ -30,10 +30,10 @@ object Contacts {
   } yield contacts
 
   /**
-   * Check for a mapping that exactly matches the target.
-   *
-   * Multiple exact matches is an error, so we fail straight away.
-   */
+    * Check for a mapping that exactly matches the target.
+    *
+    * Multiple exact matches is an error, so we fail straight away.
+    */
   private def findExactMatches(targets: List[Target], mappings: List[Mapping]): Try[Option[List[Contact]]] = {
     mappings.filter(_.targets.toSet == targets.toSet) match {
       case Nil =>
@@ -46,25 +46,25 @@ object Contacts {
   }
 
   /**
-   * Searches among mappings that have more detail than requested.
-   *
-   * e.g.
-   * Ask for:
-   *   App("app")
-   * Mapping has:
-   *   Stack("stack"), App("app")
-   *
-   * This is tricky because we wouldn't want to match on the following
-   *
-   * Ask for:
-   *   Stack("stack")
-   * Mapping has:
-   *   Stack("stack"), App("app")
-   *
-   * Accordingly, if the mapping is defined for a target that we don't ask for
-   * that is more important (according to the target hierarchy), we will not
-   * consider that a match.
-   */
+    * Searches among mappings that have more detail than requested.
+    *
+    * e.g.
+    * Ask for:
+    *   App("app")
+    * Mapping has:
+    *   Stack("stack"), App("app")
+    *
+    * This is tricky because we wouldn't want to match on the following
+    *
+    * Ask for:
+    *   Stack("stack")
+    * Mapping has:
+    *   Stack("stack"), App("app")
+    *
+    * Accordingly, if the mapping is defined for a target that we don't ask for
+    * that is more important (according to the target hierarchy), we will not
+    * consider that a match.
+    */
   private def findUnderSpecifiedMatches(targets: List[Target], mappings: List[Mapping]): Option[List[Contact]] = {
     mappings.filter { case Mapping(mappingTargets, _) =>
       targets.toSet subsetOf mappingTargets.toSet
@@ -85,18 +85,18 @@ object Contacts {
   }
 
   /**
-   * Searches among mappings that have less detail than requested.
-   * This is likely to be the normal way people specify targets.
-   *
-   * e.g.
-   * Ask for:
-   *   AwsAccount("xxx") Stack("stack") App("app")
-   * Mapping has:
-   *   App("App")
-   *
-   * we prioritise mappings that include higher priority targets
-   * (according to the target hierarchy).
-   */
+    * Searches among mappings that have less detail than requested.
+    * This is likely to be the normal way people specify targets.
+    *
+    * e.g.
+    * Ask for:
+    *   AwsAccount("xxx") Stack("stack") App("app")
+    * Mapping has:
+    *   App("App")
+    *
+    * we prioritise mappings that include higher priority targets
+    * (according to the target hierarchy).
+    */
   private def findOverSpecifiedMatches(targets: List[Target], mappings: List[Mapping]): Option[List[Contact]] = {
     mappings.filter { case Mapping(mappingTargets, _) =>
       mappingTargets.toSet subsetOf targets.toSet
@@ -110,8 +110,8 @@ object Contacts {
   }
 
   /**
-   * Attempts to find contacts for each requested channel.
-   */
+    * Attempts to find contacts for each requested channel.
+    */
   def resolveContactsForChannels(contacts: List[Contact], requestedChannel: RequestedChannel): Try[List[(Channel, Contact)]] = {
     val emails = contacts.collect {
       case ea: EmailAddress => Email -> ea
@@ -138,8 +138,8 @@ object Contacts {
   }
 
   /**
-   * Finds a contact (from provided available targets) for each message.
-   */
+    * Finds a contact (from provided available targets) for each message.
+    */
   def contactsForMessage(requestedChannel: RequestedChannel, channelContacts: List[(Channel, Contact)]): Try[List[(Channel, Contact)]] = {
     val emailContacts = channelContacts.filter { case (channel, _) =>
       channel == Email
@@ -169,16 +169,20 @@ object Contacts {
     }
   }
 
-  def lookupContacts(targets: List[Target], requestedChannel: RequestedChannel, mappings: List[Mapping]): Try[List[(Channel, Contact)]] = for {
+  def lookupContacts(
+      targets: List[Target],
+      requestedChannel: RequestedChannel,
+      mappings: List[Mapping]
+  ): Try[List[(Channel, Contact)]] = for {
     contacts <- resolveTargetContacts(targets, mappings)
     channelContacts <- resolveContactsForChannels(
       contacts,
       requestedChannel
     )
-    contacts <- contactsForMessage(
+    resolvedContacts <- contactsForMessage(
       requestedChannel,
       channelContacts
     )
-  } yield contacts
+  } yield resolvedContacts
 
 }

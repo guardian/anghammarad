@@ -1,14 +1,29 @@
 package com.gu.anghammarad
 
 import com.gu.anghammarad.common.Contacts
-import com.gu.anghammarad.models.{Configuration, Contact, Message, Mapping, Notification}
+import com.gu.anghammarad.models.{Configuration, Contact, Mapping, Message, Notification}
 import com.gu.anghammarad.messages.{Messages, SendMessages}
 
 import scala.util.Try
+import scala.util.control.NonFatal
 
 object AnghammaradService {
 
-  def lookupContactsAndCreateMessages(notification: Notification, mappings: List[Mapping]): Try[List[(Message, Contact)]] = {
+  def run(
+      notification: Notification,
+      config: Configuration
+  ): Try[List[(Message, Contact)]] = {
+    for {
+      toSend <- lookupContactsAndCreateMessages(notification, config.mappings)
+        .recoverWith {
+          case NonFatal(err) =>
+            lookupContactsAndCreateMessages(Messages.fallbackNotification(notification, err), config.mappings)
+        }
+      result <- SendMessages.sendAll(config, toSend)
+    } yield toSend
+  }
+
+  private def lookupContactsAndCreateMessages(notification: Notification, mappings: List[Mapping]): Try[List[(Message, Contact)]] = {
     for {
       // resolve targets
       contacts <- Contacts.resolveTargetContacts(notification.target, mappings)
@@ -20,14 +35,4 @@ object AnghammaradService {
     } yield messages
   }
 
-  def run(
-      notification: Notification,
-      config: Configuration
-  ): Try[List[(Message, Contact)]] = {
-    for {
-      toSend <- lookupContactsAndCreateMessages(notification, config.mappings)
-        .recoverWith { case err => lookupContactsAndCreateMessages(Messages.fallbackNotification(notification, err), config.mappings) }
-      result <- SendMessages.sendAll(config, toSend)
-    } yield toSend
-  }
 }

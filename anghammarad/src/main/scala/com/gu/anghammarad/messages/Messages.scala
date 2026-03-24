@@ -33,7 +33,14 @@ object Messages {
     }
   }
 
-  def failureMessage(originalNotification: Notification, err: Throwable): String = {
+  def fallbackNotification(notification: Notification, err: Throwable): Notification = notification.copy(
+    target = List(App("anghammarad")),
+    channel = Preferred(HangoutsChat),
+    subject = "Anghammarad failed to deliver a notification",
+    message = failureMessage(notification, err)
+  )
+
+  private def failureMessage(originalNotification: Notification, err: Throwable): String = {
     s"""
        |Anghammarad's [config](https://github.com/guardian/anghammarad-config) is missing or incomplete for the following targets:
        |${originalNotification.target.mkString("\n")}.
@@ -51,13 +58,6 @@ object Messages {
        |${originalNotification.message}
        |""".stripMargin
   }
-
-  def fallbackNotification(notification: Notification, err: Throwable): Notification = notification.copy(
-    target = List(App("anghammarad")),
-    channel = Preferred(HangoutsChat),
-    subject = "Anghammarad failed to deliver a notification",
-    message = failureMessage(notification, err)
-  )
 
   def emailMessage(notification: Notification): EmailMessage = {
     val (markdown, plaintext) =

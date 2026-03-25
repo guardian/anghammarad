@@ -33,6 +33,32 @@ object Messages {
     }
   }
 
+  def fallbackNotification(notification: Notification, err: Throwable): Notification = notification.copy(
+    target = List(App("anghammarad")),
+    channel = Preferred(HangoutsChat),
+    subject = "Anghammarad failed to deliver a notification",
+    message = failureMessage(notification, err)
+  )
+
+  private def failureMessage(originalNotification: Notification, err: Throwable): String = {
+    s"""
+       |Anghammarad's [config](https://github.com/guardian/anghammarad-config) is missing or incomplete for the following targets:
+       |${originalNotification.target.mkString("\n")}.
+       |
+       |**Error**:
+       |${err.getMessage}
+       |
+       |**Requested channel**:
+       |${originalNotification.channel}
+       |
+       |**Subject**:
+       |${originalNotification.subject}
+       |
+       |**Body**:
+       |${originalNotification.message}
+       |""".stripMargin
+  }
+
   def emailMessage(notification: Notification): EmailMessage = {
     val (markdown, plaintext) =
       if (notification.actions.isEmpty) {

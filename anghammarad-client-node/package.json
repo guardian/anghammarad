@@ -23,6 +23,6 @@
   "devDependencies": {
     "@changesets/cli": "^2.26.2",
     "@guardian/tsconfig": "1.0.1",
-    "typescript": "5.9.3"
+    "typescript": "6.0.3"
   }
 }

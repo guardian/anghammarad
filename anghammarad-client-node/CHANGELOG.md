@@ -1,5 +1,12 @@
 # @guardian/anghammarad
 
+## 3.0.4
+
+### Patch Changes
+
+- e543475: Update dependencies
+- 74e186b: Update dependencies
+
 ## 3.0.3
 
 ### Patch Changes

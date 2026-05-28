@@ -4,7 +4,8 @@
     "vscode" : {
       "extensions" : [
         "hverlin.mise-vscode",
-        "scala-lang.scala"
+        "scala-lang.scala",
+        "scalameta.metals"
       ]
     },
     "jetbrains" : {

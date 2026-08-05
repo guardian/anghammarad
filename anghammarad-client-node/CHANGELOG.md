@@ -1,5 +1,11 @@
 # @guardian/anghammarad
 
+## 3.0.5
+
+### Patch Changes
+
+- 3cf2984: Update AWS SDK from 3.922.0 to 3.1100.0
+
 ## 3.0.4
 
 ### Patch Changes

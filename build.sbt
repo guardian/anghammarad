@@ -13,7 +13,7 @@ val assemblySettings = Seq(
 
 inThisBuild(Seq(
   scalaVersion := "3.3.8",
-  crossScalaVersions := Seq("2.13.18", scalaVersion.value),
+  crossScalaVersions := Seq("3.9.0", scalaVersion.value),
   scalacOptions ++= Seq(
     "-deprecation",
     "-Xfatal-warnings",

@@ -110,7 +110,7 @@ lazy val dev = project
   .settings(
     name := "dev",
     libraryDependencies ++= Seq(
-      "com.github.scopt" %% "scopt" % "4.1.0"
+      "com.github.scopt" %% "scopt" % "4.2.0"
     ),
     assemblySettings,
     publish / skip := true,

@@ -36,7 +36,7 @@ Details about the function's arguments are available in the javadoc.
 
 ### Mappings
 
-You can find Anghammarad's latest mappings of AWS account to email address in Anghammarad's config, which are kept in S3. You will need Janus credentials for the deploy tools account to access this.
+You can find Anghammarad's latest mappings in [Anghammarad's config](https://github.com/guardian/anghammarad-config). Please ask DevX if you need help accessing this or updating your team's config. For implementation examples, feel free to look at recent PRs.
 
 ### Required AWS permissions 
 
